@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>The Forbidden Style — Curated Drops</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --surface: #111111;
+      --surface2: #1a1a1a;
+      --border: #2a2a2a;
+      --text: #f0ece4;
+      --muted: #888;
+      --accent: #c9a96e;
+      --accent2: #e8d5b0;
+      --danger: #e05252;
+      --success: #52c07a;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 5%;
+      background: rgba(10,10,10,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.35rem;
+      font-weight: 400;
+      letter-spacing: 0.12em;
+      text-transform: lowercase;
+      color: var(--text);
+      text-decoration: none;
+    }
+    .nav-logo span { color: var(--accent); }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--text); }
+    .nav-right { display: flex; align-items: center; gap: 1.5rem; }
+    .cart-btn {
+      background: none; border: 1px solid var(--border);
+      color: var(--text); padding: 8px 18px;
+      border-radius: 2px; cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.82rem; letter-spacing: 0.08em;
+      text-transform: uppercase;
+      display: flex; align-items: center; gap: 8px;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .cart-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .cart-count {
+      background: var(--accent);
+      color: #000;
+      border-radius: 50%;
+      width: 18px; height: 18px;
+      font-size: 0.7rem; font-weight: 500;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* HERO */
+    .hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+      padding: 100px 5% 60px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 40%, rgba(201,169,110,0.07) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 40% at 20% 80%, rgba(201,169,110,0.04) 0%, transparent 60%);
+    }
+    .hero-eyebrow {
+      font-size: 0.72rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      animation: fadeUp 0.8s 0.2s forwards;
+    }
+    .hero h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(3.5rem, 9vw, 8rem);
+      font-weight: 300;
+      line-height: 1.0;
+      letter-spacing: -0.02em;
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      animation: fadeUp 0.9s 0.35s forwards;
+    }
+    .hero h1 em {
+      font-style: italic;
+      color: var(--accent);
+    }
+    .hero-sub {
+      font-size: 1rem;
+      color: var(--muted);
+      max-width: 480px;
+      line-height: 1.7;
+      margin-bottom: 2.5rem;
+      opacity: 0;
+      animation: fadeUp 0.9s 0.5s forwards;
+    }
+    .hero-cta {
+      display: inline-block;
+      padding: 14px 36px;
+      background: var(--accent);
+      color: #000;
+      text-decoration: none;
+      font-size: 0.82rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-weight: 500;
+      border-radius: 2px;
+      transition: background 0.2s, transform 0.2s;
+      opacity: 0;
+      animation: fadeUp 0.9s 0.65s forwards;
+    }
+    .hero-cta:hover { background: var(--accent2); transform: translateY(-2px); }
+    .hero-scroll {
+      position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      color: var(--muted); font-size: 0.7rem; letter-spacing: 0.15em;
+      text-transform: uppercase;
+      animation: fadeIn 1s 1.2s both;
+    }
+    .scroll-line {
+      width: 1px; height: 40px;
+      background: linear-gradient(to bottom, var(--accent), transparent);
+      animation: scrollPulse 2s infinite;
+    }
+
+    /* CATEGORIES */
+    .section { padding: 80px 5%; }
+    .section-label {
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.8rem;
+    }
+    .section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      font-weight: 300;
+      margin-bottom: 3rem;
+      color: var(--text);
+    }
+    .categories-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5px;
+    }
+    .category-card {
+      position: relative;
+      aspect-ratio: 3/4;
+      overflow: hidden;
+      cursor: pointer;
+      text-decoration: none;
+      display: block;
+    }
+    .category-card:hover .cat-overlay { opacity: 1; }
+    .category-card:hover .cat-img-wrap { transform: scale(1.04); }
+    .category-card:hover .cat-arrow { transform: translateX(6px); }
+    .cat-img-wrap {
+      width: 100%; height: 100%;
+      transition: transform 0.6s cubic-bezier(0.25,0.46,0.45,0.94);
+    }
+    .cat-placeholder {
+      width: 100%; height: 100%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 5rem;
+    }
+    .cat-placeholder.clothes { background: linear-gradient(135deg, #1a1510 0%, #2d2418 50%, #1a1510 100%); }
+    .cat-placeholder.bracelets { background: linear-gradient(135deg, #0f1a1a 0%, #182828 50%, #0f1a1a 100%); }
+    .cat-placeholder.speakers { background: linear-gradient(135deg, #111218 0%, #1c1d2a 50%, #111218 100%); }
+    .cat-overlay {
+      position: absolute; inset: 0;
+      background: rgba(0,0,0,0.2);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .cat-info {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      padding: 2rem;
+      background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 100%);
+    }
+    .cat-tag {
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.4rem;
+    }
+    .cat-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2rem;
+      font-weight: 400;
+      color: var(--text);
+      line-height: 1.1;
+      margin-bottom: 0.6rem;
+    }
+    .cat-desc { font-size: 0.82rem; color: rgba(240,236,228,0.6); margin-bottom: 1rem; }
+    .cat-arrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 0.75rem; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--accent);
+      transition: transform 0.3s;
+    }
+
+    /* FEATURES */
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 2px;
+      background: var(--border);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .feature {
+      background: var(--surface);
+      padding: 2.5rem 2rem;
+      text-align: center;
+    }
+    .feature-icon { font-size: 1.8rem; margin-bottom: 1rem; }
+    .feature-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.1rem; margin-bottom: 0.4rem;
+    }
+    .feature-text { font-size: 0.8rem; color: var(--muted); line-height: 1.6; }
+
+    /* FOOTER */
+    footer {
+      padding: 3rem 5%;
+      border-top: 1px solid var(--border);
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 1rem;
+    }
+    .footer-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.3rem; color: var(--text);
+    }
+    .footer-logo span { color: var(--accent); }
+    footer p { font-size: 0.78rem; color: var(--muted); }
+    footer a { color: var(--muted); text-decoration: none; }
+    footer a:hover { color: var(--accent); }
+
+    /* CART MODAL */
+    .modal-bg {
+      display: none; position: fixed; inset: 0; z-index: 200;
+      background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
+    }
+    .modal-bg.open { display: block; }
+    .modal {
+      position: fixed; right: 0; top: 0; bottom: 0; z-index: 201;
+      width: min(420px, 100vw);
+      background: var(--surface);
+      border-left: 1px solid var(--border);
+      display: flex; flex-direction: column;
+      transform: translateX(100%);
+      transition: transform 0.35s cubic-bezier(0.25,0.46,0.45,0.94);
+    }
+    .modal.open { transform: translateX(0); }
+    .modal-header {
+      padding: 1.5rem 1.5rem 1rem;
+      border-bottom: 1px solid var(--border);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .modal-header h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.4rem; font-weight: 400;
+    }
+    .close-btn {
+      background: none; border: none; color: var(--muted);
+      font-size: 1.4rem; cursor: pointer; padding: 4px;
+      transition: color 0.2s;
+    }
+    .close-btn:hover { color: var(--text); }
+    .cart-items { flex: 1; overflow-y: auto; padding: 1rem 1.5rem; }
+    .cart-empty {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      height: 100%; color: var(--muted); gap: 1rem;
+      font-size: 0.9rem;
+    }
+    .cart-empty-icon { font-size: 3rem; opacity: 0.3; }
+    .cart-item {
+      display: flex; gap: 1rem; padding: 1rem 0;
+      border-bottom: 1px solid var(--border);
+      align-items: flex-start;
+    }
+    .cart-item-thumb {
+      width: 60px; height: 60px;
+      background: var(--surface2);
+      border-radius: 2px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem; flex-shrink: 0;
+    }
+    .cart-item-info { flex: 1; }
+    .cart-item-name { font-size: 0.88rem; margin-bottom: 0.2rem; }
+    .cart-item-meta { font-size: 0.75rem; color: var(--muted); }
+    .cart-item-price { font-size: 0.88rem; color: var(--accent); font-weight: 500; }
+    .cart-item-remove {
+      background: none; border: none; color: var(--muted);
+      cursor: pointer; font-size: 1rem; padding: 2px;
+      transition: color 0.2s;
+    }
+    .cart-item-remove:hover { color: var(--danger); }
+    .cart-footer {
+      padding: 1rem 1.5rem 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+    .cart-total {
+      display: flex; justify-content: space-between;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.2rem; margin-bottom: 1rem;
+    }
+    .cart-total-price { color: var(--accent); }
+    .checkout-btn {
+      width: 100%; padding: 14px;
+      background: var(--accent); color: #000;
+      border: none; cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.82rem; letter-spacing: 0.12em;
+      text-transform: uppercase; font-weight: 500;
+      border-radius: 2px;
+      transition: background 0.2s;
+    }
+    .checkout-btn:hover { background: var(--accent2); }
+    .checkout-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* ORDER MODAL */
+    .order-modal {
+      position: fixed; inset: 0; z-index: 300;
+      background: rgba(0,0,0,0.85); backdrop-filter: blur(6px);
+      display: none; align-items: center; justify-content: center;
+      padding: 1rem;
+    }
+    .order-modal.open { display: flex; }
+    .order-form-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      width: min(520px, 100%);
+      max-height: 90vh; overflow-y: auto;
+      border-radius: 4px;
+      padding: 2rem;
+    }
+    .order-form-box h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.8rem; font-weight: 400;
+      margin-bottom: 0.4rem;
+    }
+    .order-subtitle { font-size: 0.8rem; color: var(--muted); margin-bottom: 1.8rem; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .form-group { margin-bottom: 1rem; }
+    .form-group label {
+      display: block; font-size: 0.72rem;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 0.4rem;
+    }
+    .form-group input,
+    .form-group select {
+      width: 100%; padding: 10px 12px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      border-radius: 2px;
+      transition: border-color 0.2s;
+      outline: none;
+      appearance: none;
+    }
+    .form-group input:focus,
+    .form-group select:focus { border-color: var(--accent); }
+    .form-group select option { background: var(--surface2); }
+    .order-summary-box {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 2px; padding: 1rem;
+      margin-bottom: 1.2rem;
+    }
+    .order-summary-title {
+      font-size: 0.7rem; letter-spacing: 0.15em;
+      text-transform: uppercase; color: var(--accent);
+      margin-bottom: 0.6rem;
+    }
+    .order-summary-item {
+      display: flex; justify-content: space-between;
+      font-size: 0.82rem; padding: 0.3rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .order-summary-item:last-child { border-bottom: none; }
+    .order-total-row {
+      display: flex; justify-content: space-between;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.1rem; margin-top: 0.6rem;
+    }
+    .order-total-row span:last-child { color: var(--accent); }
+    .form-actions { display: flex; gap: 1rem; }
+    .btn-submit {
+      flex: 1; padding: 13px;
+      background: var(--accent); color: #000;
+      border: none; cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.82rem; letter-spacing: 0.12em;
+      text-transform: uppercase; font-weight: 500;
+      border-radius: 2px; transition: background 0.2s;
+    }
+    .btn-submit:hover { background: var(--accent2); }
+    .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-back {
+      padding: 13px 20px;
+      background: none; border: 1px solid var(--border);
+      color: var(--muted); cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.82rem; border-radius: 2px;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .btn-back:hover { border-color: var(--text); color: var(--text); }
+
+    /* SUCCESS */
+    .success-screen {
+      display: none; flex-direction: column;
+      align-items: center; text-align: center; gap: 1rem;
+    }
+    .success-screen.show { display: flex; }
+    .success-icon {
+      width: 64px; height: 64px;
+      background: rgba(82,192,122,0.1);
+      border: 1px solid var(--success);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.8rem;
+    }
+    .success-screen h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.6rem; font-weight: 400;
+    }
+    .success-screen p { font-size: 0.85rem; color: var(--muted); max-width: 320px; }
+    .btn-close-success {
+      padding: 12px 30px;
+      background: var(--accent); color: #000;
+      border: none; cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.82rem; letter-spacing: 0.1em;
+      text-transform: uppercase; font-weight: 500;
+      border-radius: 2px; margin-top: 0.5rem;
+    }
+
+    /* COOKIE */
+    .cookie-bar {
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 400;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 1rem 5%;
+      display: flex; align-items: center;
+      justify-content: space-between; gap: 1rem;
+      flex-wrap: wrap;
+      font-size: 0.78rem; color: var(--muted);
+    }
+    .cookie-bar.hidden { display: none; }
+    .cookie-accept {
+      padding: 8px 20px;
+      background: var(--accent); color: #000;
+      border: none; cursor: pointer;
+      font-size: 0.75rem; letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border-radius: 2px; white-space: nowrap;
+    }
+
+    /* HAMBURGER */
+    .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; background: none; border: none; padding: 4px; }
+    .hamburger span { display: block; width: 22px; height: 1.5px; background: var(--text); transition: all 0.3s; }
+
+    /* ANIMATIONS */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+    @keyframes scrollPulse {
+      0%, 100% { opacity: 0.4; }
+      50% { opacity: 1; }
+    }
+
+    /* MOBILE */
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .hamburger { display: flex; }
+      .nav-links.open {
+        display: flex; flex-direction: column;
+        position: fixed; top: 65px; left: 0; right: 0;
+        background: var(--surface);
+        padding: 1.5rem 5%;
+        border-bottom: 1px solid var(--border);
+      }
+      .form-row { grid-template-columns: 1fr; }
+      .categories-grid { grid-template-columns: 1fr; }
+      .category-card { aspect-ratio: 4/3; }
+      footer { flex-direction: column; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html"><em style="font-style:italic;font-weight:300;font-size:0.85em;">the</em> forbidden<span> style</span></a>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="index.html">Начало</a></li>
+    <li><a href="products.html">Продукти</a></li>
+    <li><a href="#contact">Контакт</a></li>
+  </ul>
+  <div class="nav-right">
+    <button class="cart-btn" onclick="openCart()">
+      <span>🛒</span> Количка
+      <span class="cart-count" id="cartCount">0</span>
+    </button>
+    <button class="hamburger" id="hamburger" onclick="toggleNav()" aria-label="Меню">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <p class="hero-eyebrow">Нова колекция 2026</p>
+  <h1>Живей<br>с <em>Аура</em></h1>
+
+  <a href="products.html" class="hero-cta">Разгледай колекцията</a>
+  <div class="hero-scroll">
+    <div class="scroll-line"></div>
+    <span>Scroll</span>
+  </div>
+</section>
+
+<!-- CATEGORIES -->
+<section class="section">
+  <p class="section-label">Категории</p>
+  <h2 class="section-title">Намери своя стил</h2>
+  <div class="categories-grid" id="categoriesGrid">
+    <p id="catLoading" style="color:var(--muted); font-size:0.85rem;">Зареждане...</p>
+  </div>
+</section>
+
+<template id="tpl-clothes">
+  <a class="category-card" href="products.html?cat=clothes">
+    <div class="cat-img-wrap"><div class="cat-placeholder clothes">👕</div></div>
+    <div class="cat-overlay"></div>
+    <div class="cat-info">
+      <p class="cat-tag">Нова колекция</p>
+      <h3 class="cat-name">Дрехи</h3>
+      <p class="cat-desc">Oversize, streetwear и ежедневен комфорт</p>
+      <span class="cat-arrow">Виж продукти →</span>
+    </div>
+  </a>
+</template>
+<template id="tpl-bracelets">
+  <a class="category-card" href="products.html?cat=bracelets">
+    <div class="cat-img-wrap"><div class="cat-placeholder bracelets">⌚</div></div>
+    <div class="cat-overlay"></div>
+    <div class="cat-info">
+      <p class="cat-tag">Смарт технология</p>
+      <h3 class="cat-name">Смарт гривни</h3>
+      <p class="cat-desc">Фитнес трекер, пулс и нотификации</p>
+      <span class="cat-arrow">Виж продукти →</span>
+    </div>
+  </a>
+</template>
+<template id="tpl-speakers">
+  <a class="category-card" href="products.html?cat=speakers">
+    <div class="cat-img-wrap"><div class="cat-placeholder speakers">🔊</div></div>
+    <div class="cat-overlay"></div>
+    <div class="cat-info">
+      <p class="cat-tag">Преносим звук</p>
+      <h3 class="cat-name">Тонколонки</h3>
+      <p class="cat-desc">Bluetooth, водоустойчиви, мощен бас</p>
+      <span class="cat-arrow">Виж продукти →</span>
+    </div>
+  </a>
+</template>
+
+<!-- FEATURES -->
+<div class="features">
+  <div class="feature">
+    <div class="feature-icon">⚡</div>
+    <h4 class="feature-title">Бърза доставка</h4>
+    <p class="feature-text">Econt и Speedy<br>с наложен платеж</p>
+  </div>
+  <div class="feature">
+    <div class="feature-icon">✓</div>
+    <h4 class="feature-title">Проверено качество</h4>
+    <p class="feature-text">Всеки продукт е проверен<br>преди изпращане</p>
+  </div>
+  <div class="feature">
+    <div class="feature-icon">🔄</div>
+    <h4 class="feature-title">Лесна замяна</h4>
+    <p class="feature-text">Свържи се с нас<br>при проблем</p>
+  </div>
+  <div class="feature">
+    <div class="feature-icon">📞</div>
+    <h4 class="feature-title">Поддръжка</h4>
+    <p class="feature-text">0876 127 997<br>Всеки ден</p>
+  </div>
+</div>
+
+<!-- CONTACT -->
+<section class="section" id="contact">
+  <p class="section-label">Контакт</p>
+  <h2 class="section-title">Свържи се с нас</h2>
+  <p style="color:var(--muted); font-size:0.95rem; margin-bottom:1.5rem;">Имаш въпрос за продукт или поръчка? Обади се или изпрати съобщение.</p>
+  <a href="tel:0876127997" style="display:inline-flex; align-items:center; gap:10px; font-size:1.3rem; color:var(--accent); text-decoration:none; font-family:'Cormorant Garamond',serif;">
+    📞 0876 127 997
+  </a>
+</section>
+
+<footer>
+  <div class="footer-logo"><em style="font-style:italic;font-weight:300;font-size:0.85em;">the</em> forbidden<span> style</span></div>
+  <p>© 2026 The Forbidden Style. Всички права запазени.</p>
+  <p><a href="products.html">Продукти</a> · <a href="#contact">Контакт</a></p>
+</footer>
+
+<!-- COOKIE BAR -->
+<div class="cookie-bar" id="cookieBar">
+  <span>Използваме cookies за статистика и подобряване на изживяването.</span>
+  <button class="cookie-accept" onclick="acceptCookies()">Приемам</button>
+</div>
+
+<!-- CART DRAWER -->
+<div class="modal-bg" id="cartBg" onclick="closeCart()"></div>
+<div class="modal" id="cartModal">
+  <div class="modal-header">
+    <h3>Количка</h3>
+    <button class="close-btn" onclick="closeCart()">✕</button>
+  </div>
+  <div class="cart-items" id="cartItems">
+    <div class="cart-empty">
+      <div class="cart-empty-icon">🛒</div>
+      <span>Количката е празна</span>
+    </div>
+  </div>
+  <div class="cart-footer">
+    <div class="cart-total">
+      <span>Общо</span>
+      <span class="cart-total-price" id="cartTotal">лв 0.00</span>
+    </div>
+    <button class="checkout-btn" id="checkoutBtn" onclick="openOrderForm()" disabled>
+      Продължи към поръчка
+    </button>
+  </div>
+</div>
+
+<!-- ORDER MODAL -->
+<div class="order-modal" id="orderModal">
+  <div class="order-form-box">
+    <div id="formContent">
+      <h2>Финализирай поръчката</h2>
+      <p class="order-subtitle">Попълни данните за доставка</p>
+
+      <div class="order-summary-box">
+        <p class="order-summary-title">Твоята поръчка</p>
+        <div id="orderSummaryItems"></div>
+        <div class="order-total-row">
+          <span>Общо:</span>
+          <span id="orderSummaryTotal">лв 0.00</span>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Куриер *</label>
+          <select id="courier" required>
+            <option value="">Избери</option>
+            <option value="Econt">Econt</option>
+            <option value="Speedy">Speedy</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Имe и фамилия *</label>
+          <input type="text" id="fullName" placeholder="Иван Иванов" required />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Телефон *</label>
+          <input type="tel" id="phone" placeholder="08XXXXXXXX" required />
+        </div>
+        <div class="form-group">
+          <label>Имейл ✉️</label>
+          <input type="email" id="email" placeholder="За потвърждение (опция)" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Град *</label>
+          <input type="text" id="city" placeholder="София" required />
+        </div>
+        <div class="form-group">
+          <label>Офис на куриера *</label>
+          <input type="text" id="office" placeholder="Офис / адрес" required />
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn-back" onclick="closeOrderForm()">← Назад</button>
+        <button class="btn-submit" id="submitBtn" onclick="submitOrder()">Изпрати поръчка</button>
+      </div>
+    </div>
+
+    <div class="success-screen" id="successScreen">
+      <div class="success-icon">✓</div>
+      <h3>Поръчката е изпратена!</h3>
+      <p>Ще се свържем с теб скоро. Провери имейла си за потвърждение.</p>
+      <button class="btn-close-success" onclick="closeAll()">Затвори</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ─── CONFIG ───
+  const SCRIPT_URL = 'YOUR_GOOGLE_SCRIPT_URL_HERE';
+
+  // ─── LOAD CATEGORIES (only show categories that have in-stock products) ───
+  async function loadCategories() {
+    let products = [];
+    try {
+      const res = await fetch(SCRIPT_URL + '?action=getProducts');
+      const data = await res.json();
+      products = data.products || [];
+    } catch (e) {
+      console.warn('Demo данни (Google Script не е свързан още).');
+      products = [
+        { category: 'bracelets', active: true },
+        { category: 'speakers', active: true },
+      ];
+    }
+
+    const order = ['clothes', 'bracelets', 'speakers'];
+    const grid = document.getElementById('categoriesGrid');
+    grid.innerHTML = '';
+
+    const visibleCats = order.filter(cat =>
+      products.some(p => p.category === cat && isVisible(p))
+    );
+
+    if (visibleCats.length === 0) {
+      grid.innerHTML = `<p style="color:var(--muted); font-size:0.9rem;">Очаквайте скоро нови продукти.</p>`;
+      return;
+    }
+
+    visibleCats.forEach(cat => {
+      const tpl = document.getElementById('tpl-' + cat);
+      if (tpl) grid.appendChild(tpl.content.cloneNode(true));
+    });
+  }
+
+  function isVisible(p) {
+    return p.active === true || p.active === 'TRUE' || p.active === 1 || p.active === '1';
+  }
+
+  loadCategories();
+
+  // ─── CART STATE ───
+  let cart = [];
+
+  function openCart() {
+    document.getElementById('cartBg').classList.add('open');
+    document.getElementById('cartModal').classList.add('open');
+    renderCart();
+  }
+  function closeCart() {
+    document.getElementById('cartBg').classList.remove('open');
+    document.getElementById('cartModal').classList.remove('open');
+  }
+  function openOrderForm() {
+    closeCart();
+    renderOrderSummary();
+    document.getElementById('orderModal').classList.add('open');
+  }
+  function closeOrderForm() {
+    document.getElementById('orderModal').classList.remove('open');
+    openCart();
+  }
+  function closeAll() {
+    document.getElementById('orderModal').classList.remove('open');
+    cart = [];
+    updateCartCount();
+    renderCart();
+    document.getElementById('formContent').style.display = 'block';
+    document.getElementById('successScreen').classList.remove('show');
+  }
+
+  function addToCart(product) {
+    const existing = cart.find(i =>
+      i.id === product.id && i.size === product.size
+    );
+    if (existing) {
+      existing.qty += 1;
+    } else {
+      cart.push({ ...product, qty: 1 });
+    }
+    updateCartCount();
+    // Flash cart button
+    const btn = document.querySelector('.cart-btn');
+    btn.style.borderColor = 'var(--accent)';
+    btn.style.color = 'var(--accent)';
+    setTimeout(() => {
+      btn.style.borderColor = '';
+      btn.style.color = '';
+    }, 800);
+  }
+
+  function removeFromCart(index) {
+    cart.splice(index, 1);
+    renderCart();
+    updateCartCount();
+  }
+
+  function updateCartCount() {
+    const total = cart.reduce((s, i) => s + i.qty, 0);
+    document.getElementById('cartCount').textContent = total;
+    document.getElementById('checkoutBtn').disabled = total === 0;
+  }
+
+  function cartTotalBGN() {
+    return cart.reduce((s, i) => s + i.price * i.qty, 0);
+  }
+
+  function renderCart() {
+    const box = document.getElementById('cartItems');
+    if (cart.length === 0) {
+      box.innerHTML = `<div class="cart-empty"><div class="cart-empty-icon">🛒</div><span>Количката е празна</span></div>`;
+    } else {
+      box.innerHTML = cart.map((item, i) => `
+        <div class="cart-item">
+          <div class="cart-item-thumb">${item.emoji || '📦'}</div>
+          <div class="cart-item-info">
+            <div class="cart-item-name">${item.name}</div>
+            <div class="cart-item-meta">${item.size ? 'Размер: ' + item.size + ' · ' : ''}Бр: ${item.qty}</div>
+          </div>
+          <div class="cart-item-price">лв ${(item.price * item.qty).toFixed(2)}</div>
+          <button class="cart-item-remove" onclick="removeFromCart(${i})">✕</button>
+        </div>
+      `).join('');
+    }
+    document.getElementById('cartTotal').textContent = 'лв ' + cartTotalBGN().toFixed(2);
+  }
+
+  function renderOrderSummary() {
+    const box = document.getElementById('orderSummaryItems');
+    box.innerHTML = cart.map(item => `
+      <div class="order-summary-item">
+        <span>${item.name}${item.size ? ' ('+item.size+')' : ''} ×${item.qty}</span>
+        <span>лв ${(item.price * item.qty).toFixed(2)}</span>
+      </div>
+    `).join('');
+    document.getElementById('orderSummaryTotal').textContent = 'лв ' + cartTotalBGN().toFixed(2);
+  }
+
+  // ─── SUBMIT ORDER ───
+  const SCRIPT_URL = 'YOUR_GOOGLE_SCRIPT_URL_HERE';
+
+  async function submitOrder() {
+    const courier = document.getElementById('courier').value;
+    const fullName = document.getElementById('fullName').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const city = document.getElementById('city').value.trim();
+    const office = document.getElementById('office').value.trim();
+
+    if (!courier || !fullName || !phone || !city || !office) {
+      alert('Моля попълни всички задължителни полета.');
+      return;
+    }
+
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.textContent = 'Изпращане...';
+
+    const orderData = {
+      courier, fullName, phone, email, city, office,
+      items: cart.map(i => ({
+        name: i.name,
+        size: i.size || '',
+        qty: i.qty,
+        price: i.price
+      })),
+      total: cartTotalBGN().toFixed(2)
+    };
+
+    try {
+      await fetch(SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderData)
+      });
+      document.getElementById('formContent').style.display = 'none';
+      document.getElementById('successScreen').classList.add('show');
+    } catch (e) {
+      alert('Грешка при изпращане. Опитай отново.');
+      btn.disabled = false;
+      btn.textContent = 'Изпрати поръчка';
+    }
+  }
+
+  // ─── NAV ───
+  function toggleNav() {
+    document.getElementById('navLinks').classList.toggle('open');
+  }
+
+  // ─── COOKIES ───
+  if (localStorage.getItem('cookieAccepted')) {
+    document.getElementById('cookieBar').classList.add('hidden');
+  }
+  function acceptCookies() {
+    localStorage.setItem('cookieAccepted', '1');
+    document.getElementById('cookieBar').classList.add('hidden');
+  }
+</script>
+</body>
+</html>
