@@ -580,7 +580,7 @@
     document.getElementById('inventoryLoading').style.display = 'block';
     document.getElementById('inventoryTable').style.display = 'none';
     try {
-      const res = await fetch(SCRIPT_URL + '?action=getProducts&admin=1);
+      const res = await fetch(SCRIPT_URL + '?action=getProducts&admin=1');
       const data = await res.json();
       products = data.products || [];
     } catch(e) {
@@ -727,7 +727,7 @@
     document.getElementById('ordersLoading').style.display = 'block';
     document.getElementById('ordersTable').style.display = 'none';
     try {
-      const res = await fetch(SCRIPT_URL + '?action=getOrders&admin=1);
+      const res = await fetch(SCRIPT_URL + '?action=getOrders&admin=1');
       const data = await res.json();
       renderOrders(data.orders || []);
       document.getElementById('statOrders').textContent = (data.orders || []).filter(o => isToday(o.date)).length;
