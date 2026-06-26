@@ -459,49 +459,47 @@
 
 <script>
   // ─── CONFIG ───
-  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby8bAlShom0fH7cIoA6xRvg5yVJLzO7cZzrS1_4qXCqLJ98jM5CN4yMjq5neQ-yPEqU/exec';
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxs6It90aVGu2KdDODuo6GRYrj_M5bd24RMX_UHDE0GYaljrQm9P31ZELQEjAGCDn98/exec';
   // Паролата НЕ е тук — проверява се в Google Apps Script (Script Properties),
   // така че никога не се вижда в GitHub repo-то.
 
   // Прост session токен, генериран само ако паролата е вярна (не е истинска
   // криптография, но достатъчно за да не личи паролата в кода ти на GitHub).
-  let sessionToken = sessionStorage.getItem('zax_session') || null;
-
   // ─── AUTH ───
+  // Паролата е SHA-256 hash — оригиналът не се вижда в кода
+  const PW_HASH = '830ec5c1efee9ed79fee45e2a1da3ebb881d97167febdb1b71a35a20229b9956';
+
+  async function hashPassword(pw) {
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(pw));
+    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+  }
+
   async function login() {
     const pw = document.getElementById('passwordInput').value;
     const btn = document.querySelector('.login-btn');
     btn.textContent = 'Проверка...';
     btn.disabled = true;
 
-    try {
-      const res = await fetch(SCRIPT_URL + '?action=checkAuth&pw=' + encodeURIComponent(pw));
-      const data = await res.json();
-
-      if (data.ok) {
-        sessionToken = data.token;
-        sessionStorage.setItem('zax_session', sessionToken);
-        document.getElementById('loginScreen').style.display = 'none';
-        document.getElementById('adminPanel').style.display = 'block';
-        document.getElementById('loginError').style.display = 'none';
-        loadData();
-      } else {
-        document.getElementById('loginError').style.display = 'block';
-        document.getElementById('passwordInput').value = '';
-      }
-    } catch (e) {
-      document.getElementById('loginError').textContent = 'Грешка при връзка със сървъра. Опитай отново.';
+    const hash = await hashPassword(pw);
+    if (hash === PW_HASH) {
+      sessionStorage.setItem('zax_session', '1');
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('adminPanel').style.display = 'block';
+      document.getElementById('loginError').style.display = 'none';
+      loadData();
+    } else {
       document.getElementById('loginError').style.display = 'block';
+      document.getElementById('passwordInput').value = '';
     }
     btn.textContent = 'Влез';
     btn.disabled = false;
   }
+
   function logout() {
     sessionStorage.removeItem('zax_session');
-    sessionToken = null;
     location.reload();
   }
-  if (sessionToken) {
+  if (sessionStorage.getItem('zax_session')) {
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('adminPanel').style.display = 'block';
   }
@@ -541,7 +539,7 @@
           action: 'toggleCategory',
           category: cat,
           active: newState,
-          token: sessionToken
+          
         })
       });
       toast(
@@ -582,7 +580,7 @@
     document.getElementById('inventoryLoading').style.display = 'block';
     document.getElementById('inventoryTable').style.display = 'none';
     try {
-      const res = await fetch(SCRIPT_URL + '?action=getProducts&admin=1&token=' + encodeURIComponent(sessionToken));
+      const res = await fetch(SCRIPT_URL + '?action=getProducts&admin=1);
       const data = await res.json();
       products = data.products || [];
     } catch(e) {
@@ -664,7 +662,7 @@
       await fetch(SCRIPT_URL, {
         method: 'POST', mode: 'no-cors',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'updateProduct', id: productId, active: newState, token: sessionToken })
+        body: JSON.stringify({ action: 'updateProduct', id: productId, active: newState })
       });
       toast(newState ? 'Продуктът е видим в сайта' : 'Продуктът е скрит от сайта', 'success');
     } catch(e) {
@@ -696,7 +694,7 @@
       sizes: updatedSizes,
       qty: updatedQty,
       active: p.active === true || p.active === 'TRUE' || p.active === 1 || p.active === '1',
-      token: sessionToken
+      
     };
 
     const btn = document.getElementById('save-' + productId);
@@ -729,7 +727,7 @@
     document.getElementById('ordersLoading').style.display = 'block';
     document.getElementById('ordersTable').style.display = 'none';
     try {
-      const res = await fetch(SCRIPT_URL + '?action=getOrders&admin=1&token=' + encodeURIComponent(sessionToken));
+      const res = await fetch(SCRIPT_URL + '?action=getOrders&admin=1);
       const data = await res.json();
       renderOrders(data.orders || []);
       document.getElementById('statOrders').textContent = (data.orders || []).filter(o => isToday(o.date)).length;
@@ -801,7 +799,7 @@
         qty: parseInt(document.getElementById('sz-'+s).value) || 0
       })) : [],
       qty: cat !== 'clothes' ? (parseInt(document.getElementById('np-qty').value) || 0) : undefined,
-      token: sessionToken
+      
     };
 
     try {
