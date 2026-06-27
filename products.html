@@ -632,15 +632,44 @@
 
   function setupImageGalleries() {
     allProducts.forEach(p => {
-      checkAvailableImages(p);
+      // Ако продуктът има предварително сканирани снимки в JSON — използваме ги директно
+      if (p.images && p.images.length > 0) {
+        initGallery(p, p.images);
+      } else {
+        // Fallback: сканираме (за стари продукти без images в JSON)
+        checkAvailableImages(p);
+      }
     });
   }
 
-  async function checkAvailableImages(p) {
-    const exts = ['jpg', 'jpeg', 'png', 'webp'];
-    const found = [];
+  function initGallery(p, found) {
+    const img = document.getElementById('photo-' + p.id);
+    if (!img) return;
+    img.dataset.foundPaths = JSON.stringify(found);
+    img.dataset.foundIdx = '0';
+    img.src = found[0];
+    img.style.opacity = '1';
+    if (img.previousElementSibling) img.previousElementSibling.style.display = 'none';
+    img.style.cursor = 'zoom-in';
+    img.onclick = function() { openLightbox(p.id); };
+    if (found.length > 1) {
+      const nav = document.getElementById('imgnav-' + p.id);
+      const dots = document.getElementById('imgdots-' + p.id);
+      if (!nav || !dots) return;
+      nav.style.display = 'flex';
+      nav.dataset.count = found.length;
+      dots.innerHTML = found.map((_, i) =>
+        '<span class="img-dot ' + (i === 0 ? 'active' : '') + '"></span>'
+      ).join('');
+    }
+  }
 
-    for (let i = 1; i <= 1000; i++) {
+  async function checkAvailableImages(p) {
+    const exts = ['jpg', 'png', 'webp'];
+    const found = [];
+    let emptyInARow = 0;
+
+    for (let i = 1; i <= 50; i++) {
       let foundThisNumber = false;
       for (const ext of exts) {
         const path = 'images/' + p.category + '/' + p.id + '/' + i + '.' + ext;
@@ -649,22 +678,11 @@
           if (res.ok) { found.push(path); foundThisNumber = true; break; }
         } catch(e) {}
       }
-      // Спираме само ако имаме поне 1 намерена снимка и следващите 5 номера са празни
-      if (!foundThisNumber && found.length > 0) {
-        let emptyCount = 0;
-        for (let j = i+1; j <= i+5; j++) {
-          let hasNext = false;
-          for (const ext of exts) {
-            try {
-              const r = await fetch('images/' + p.category + '/' + p.id + '/' + j + '.' + ext, { method: 'HEAD' });
-              if (r.ok) { hasNext = true; break; }
-            } catch(e) {}
-          }
-          if (!hasNext) emptyCount++;
-        }
-        if (emptyCount >= 5) break;
-      } else if (!foundThisNumber && found.length === 0 && i > 20) {
-        break;
+      if (foundThisNumber) {
+        emptyInARow = 0;
+      } else {
+        emptyInARow++;
+        if (emptyInARow >= 3) break;
       }
     }
 
