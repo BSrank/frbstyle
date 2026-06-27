@@ -569,7 +569,7 @@
 <section class="section">
   <p class="section-label">Категории</p>
   <h2 class="section-title">Намери своя стил</h2>
-  <div class="categories-grid" id="categoriesGrid">
+  <div class="categories-grid" id="categoriesGrid" style="visibility:hidden;">
     <p id="catLoading" style="color:var(--muted); font-size:0.85rem;">Зареждане...</p>
   </div>
 </section>
@@ -766,6 +766,7 @@
     const order = ['clothes', 'bracelets', 'speakers'];
     const grid = document.getElementById('categoriesGrid');
     grid.innerHTML = '';
+    grid.style.visibility = 'visible';
 
     const visibleCats = order.filter(cat =>
       products.some(p => p.category === cat && isVisible(p))
