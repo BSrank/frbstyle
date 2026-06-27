@@ -53,11 +53,11 @@
     .cat-pill.clothes { background: rgba(201,169,110,0.1); color: var(--accent); }
     .cat-pill.bracelets { background: rgba(82,153,224,0.1); color: var(--info); }
     .cat-pill.speakers { background: rgba(82,192,122,0.1); color: var(--success); }
+    .qty-input { width: 70px; padding: 6px 8px; background: var(--surface2); border: 1px solid var(--border); color: var(--text); font-size: 0.9rem; border-radius: 2px; text-align: center; outline: none; }
     .size-stocks { display: flex; gap: 0.4rem; flex-wrap: wrap; }
     .size-stock-input { display: flex; flex-direction: column; align-items: center; gap: 3px; }
     .size-stock-input label { font-size: 0.62rem; color: var(--muted); }
     .size-stock-input input[type=number] { width: 50px; padding: 5px 6px; background: var(--surface2); border: 1px solid var(--border); color: var(--text); font-size: 0.85rem; border-radius: 2px; text-align: center; outline: none; }
-    .qty-input { width: 70px; padding: 6px 8px; background: var(--surface2); border: 1px solid var(--border); color: var(--text); font-size: 0.9rem; border-radius: 2px; text-align: center; outline: none; }
     .cat-toggles-box { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 1.2rem 1.5rem; margin-bottom: 1.5rem; }
     .cat-toggles-label { font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent); margin-bottom: 1rem; }
     .cat-toggles-row { display: flex; gap: 1px; background: var(--border); border-radius: 2px; overflow: hidden; }
@@ -77,6 +77,8 @@
     .save-row-btn { padding: 6px 14px; border-radius: 2px; cursor: pointer; font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; font-family: 'DM Sans', sans-serif; background: none; border: 1px solid var(--border); color: var(--muted); transition: all 0.2s; }
     .save-row-btn:hover { border-color: var(--success); color: var(--success); }
     .save-row-btn.saved { border-color: var(--success); color: var(--success); background: rgba(82,192,122,0.08); }
+    .delete-btn { padding: 6px 10px; border-radius: 2px; cursor: pointer; font-size: 0.72rem; font-family: 'DM Sans', sans-serif; background: none; border: 1px solid rgba(224,82,82,0.3); color: var(--danger); transition: all 0.2s; }
+    .delete-btn:hover { background: rgba(224,82,82,0.1); }
     .add-product-section { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 1.5rem; margin-top: 2rem; }
     .add-product-section h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 400; margin-bottom: 1.2rem; }
     .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; }
@@ -98,7 +100,8 @@
     .toast.show { transform: translateY(0); opacity: 1; }
     .toast.success { border-color: var(--success); color: var(--success); }
     .toast.error { border-color: var(--danger); color: var(--danger); }
-    @media (max-width: 700px) { .stats { grid-template-columns: 1fr 1fr; } .product-table, .orders-table { font-size: 0.78rem; } }
+    .saving-indicator { font-size: 0.75rem; color: var(--muted); margin-left: 1rem; }
+    @media (max-width: 700px) { .stats { grid-template-columns: 1fr 1fr; } .product-table, .orders-table { font-size: 0.78rem; } .cat-toggles-row { flex-direction: column; } }
   </style>
 </head>
 <body>
@@ -107,7 +110,8 @@
   <div class="login-box">
     <h1><em style="font-style:italic;font-weight:300;font-size:0.85em;">the</em> forbidden<span> style</span></h1>
     <p>Admin панел — въведи парола</p>
-    <input type="password" id="passwordInput" placeholder="••••••••" onkeydown="if(event.key==='Enter')login()" />
+    <input type="password" id="passwordInput" placeholder="Парола" onkeydown="if(event.key==='Enter')login()" />
+    <input type="password" id="tokenInput" placeholder="GitHub Token (ghp_...)" style="margin-bottom:1rem;" />
     <button class="login-btn" onclick="login()">Влез</button>
     <p class="login-error" id="loginError">Грешна парола. Опитай отново.</p>
   </div>
@@ -122,6 +126,7 @@
   <div class="admin-content">
     <div class="toolbar">
       <h2 class="toolbar-title">Управление</h2>
+      <span class="saving-indicator" id="savingIndicator"></span>
       <button class="btn btn-ghost" onclick="loadData()">⟳ Обнови</button>
       <button class="btn btn-primary" onclick="showTab('add')">+ Нов продукт</button>
     </div>
@@ -153,13 +158,11 @@
 
     <div class="stats">
       <div class="stat-box"><div class="stat-label">Продукти</div><div class="stat-value" id="statProducts">—</div></div>
-      <div class="stat-box"><div class="stat-label">Поръчки днес</div><div class="stat-value" id="statOrders">—</div></div>
-      <div class="stat-box"><div class="stat-label">Общо поръчки</div><div class="stat-value" id="statTotal">—</div></div>
-      <div class="stat-box"><div class="stat-label">Активни в сайта</div><div class="stat-value" id="statOut">—</div></div>
+      <div class="stat-box"><div class="stat-label">Активни</div><div class="stat-value" id="statOut">—</div></div>
     </div>
 
     <div class="tabs">
-      <button class="tab active" id="tab-inventory" onclick="showTab('inventory')">📦 Наличности</button>
+      <button class="tab active" id="tab-inventory" onclick="showTab('inventory')">📦 Продукти</button>
       <button class="tab" id="tab-orders" onclick="showTab('orders')">🧾 Поръчки</button>
       <button class="tab" id="tab-add" onclick="showTab('add')">➕ Нов продукт</button>
     </div>
@@ -168,7 +171,7 @@
       <div id="inventoryLoading" style="text-align:center;padding:3rem;color:var(--muted);">Зареждане...</div>
       <div id="inventoryTable" style="display:none; overflow-x:auto;">
         <table class="product-table">
-          <thead><tr><th>Продукт</th><th>Покажи в сайта</th><th>Категория</th><th>Цена (лв)</th><th>Наличност</th><th>Запис</th></tr></thead>
+          <thead><tr><th>Продукт</th><th>Покажи в сайта</th><th>Категория</th><th>Цена (лв)</th><th>Наличност</th><th>Запис</th><th></th></tr></thead>
           <tbody id="inventoryBody"></tbody>
         </table>
       </div>
@@ -248,55 +251,124 @@
 <div class="toast" id="toast"></div>
 
 <script>
-  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby8bAlShom0fH7cIoA6xRvg5yVJLzO7cZzrS1_4qXCqLJ98jM5CN4yMjq5neQ-yPEqU/exec';
-  const PW_HASH = '830ec5c1efee9ed79fee45e2a1da3ebb881d97167febdb1b71a35a20229b9956';
+  // ─── CONFIG ───
+  const GITHUB_REPO   = 'BSrank/frbstyle';
+  const PRODUCTS_FILE = 'products.json';
+  const SCRIPT_URL    = 'https://script.google.com/macros/s/AKfycbwSbWXrNxhrTm68IvxZUmGmmUTjndFeQ4yGB3Ch0uewHexQ-LZwwd7dbh6dNXMdpDV7/exec';
+  const PW_HASH       = '830ec5c1efee9ed79fee45e2a1da3ebb881d97167febdb1b71a35a20229b9956';
 
+  var GITHUB_TOKEN = sessionStorage.getItem('zax_token') || '';
+
+  // ─── AUTH ───
   async function hashPassword(pw) {
     const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(pw));
-    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+    return Array.from(new Uint8Array(buf)).map(function(b) { return b.toString(16).padStart(2,'0'); }).join('');
   }
 
   async function login() {
-    const pw = document.getElementById('passwordInput').value;
-    const btn = document.querySelector('.login-btn');
-    btn.textContent = 'Проверка...';
-    btn.disabled = true;
-    const hash = await hashPassword(pw);
-    if (hash === PW_HASH) {
+    var pw    = document.getElementById('passwordInput').value;
+    var token = document.getElementById('tokenInput').value.trim();
+    var btn   = document.querySelector('.login-btn');
+    btn.textContent = 'Проверка...'; btn.disabled = true;
+    var hash = await hashPassword(pw);
+    if (hash === PW_HASH && token.startsWith('ghp_')) {
       sessionStorage.setItem('zax_session', '1');
+      sessionStorage.setItem('zax_token', token);
+      GITHUB_TOKEN = token;
       document.getElementById('loginScreen').style.display = 'none';
       document.getElementById('adminPanel').style.display = 'block';
       document.getElementById('loginError').style.display = 'none';
       loadData();
     } else {
+      document.getElementById('loginError').textContent = !token.startsWith('ghp_') ? 'Невалиден GitHub Token.' : 'Грешна парола.';
       document.getElementById('loginError').style.display = 'block';
       document.getElementById('passwordInput').value = '';
     }
-    btn.textContent = 'Влез';
-    btn.disabled = false;
+    btn.textContent = 'Влез'; btn.disabled = false;
   }
 
-  function logout() {
-    sessionStorage.removeItem('zax_session');
-    location.reload();
-  }
+  function logout() { sessionStorage.removeItem('zax_session'); sessionStorage.removeItem('zax_token'); location.reload(); }
 
-  if (sessionStorage.getItem('zax_session')) {
+  if (sessionStorage.getItem('zax_session') && sessionStorage.getItem('zax_token')) {
+    GITHUB_TOKEN = sessionStorage.getItem('zax_token');
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('adminPanel').style.display = 'block';
   }
 
-  let categoryStates = { clothes: false, bracelets: false, speakers: false };
+  // ─── GITHUB API ───
+  var fileSha = null;
+
+  async function loadProductsFromGitHub() {
+    var res = await fetch('https://api.github.com/repos/' + GITHUB_REPO + '/contents/' + PRODUCTS_FILE, {
+      headers: { 'Authorization': 'token ' + GITHUB_TOKEN, 'Accept': 'application/vnd.github.v3+json' }
+    });
+    var data = await res.json();
+    fileSha = data.sha;
+    var content = JSON.parse(atob(data.content.replace(/\n/g,'')));
+    return content.products || [];
+  }
+
+  async function saveProductsToGitHub(products) {
+    setSaving(true);
+    var content = btoa(unescape(encodeURIComponent(JSON.stringify({ products: products }, null, 2))));
+    var body = { message: 'Update products', content: content };
+    if (fileSha) body.sha = fileSha;
+    var res = await fetch('https://api.github.com/repos/' + GITHUB_REPO + '/contents/' + PRODUCTS_FILE, {
+      method: 'PUT',
+      headers: { 'Authorization': 'token ' + GITHUB_TOKEN, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    var data = await res.json();
+    if (data.content) fileSha = data.content.sha;
+    setSaving(false);
+    return res.ok;
+  }
+
+  function setSaving(on) {
+    document.getElementById('savingIndicator').textContent = on ? 'Запазване...' : '';
+  }
+
+  // ─── DATA ───
+  var products = [];
+
+  async function loadData() {
+    document.getElementById('inventoryLoading').style.display = 'block';
+    document.getElementById('inventoryTable').style.display = 'none';
+    try {
+      products = await loadProductsFromGitHub();
+    } catch(e) {
+      products = [];
+      toast('Грешка при зареждане', 'error');
+    }
+    renderInventory();
+    updateStats();
+    syncCategoryToggles();
+  }
+
+  function updateStats() {
+    document.getElementById('statProducts').textContent = products.length;
+    document.getElementById('statOut').textContent = products.filter(function(p) {
+      return p.active === true;
+    }).length;
+  }
+
+  // ─── CATEGORY TOGGLES ───
+  var categoryStates = { clothes: false, bracelets: false, speakers: false };
+
+  function syncCategoryToggles() {
+    ['clothes','bracelets','speakers'].forEach(function(cat) {
+      categoryStates[cat] = products.some(function(p) { return p.category === cat && p.active === true; });
+    });
+    renderCategoryToggles();
+  }
 
   function renderCategoryToggles() {
-    ['clothes', 'bracelets', 'speakers'].forEach(function(cat) {
+    ['clothes','bracelets','speakers'].forEach(function(cat) {
       var isOn = categoryStates[cat];
-      var toggle = document.getElementById('cattoggle-' + cat);
-      var state = document.getElementById('catstate-' + cat);
-      if (!toggle) return;
-      toggle.classList.toggle('on', isOn);
-      state.textContent = isOn ? 'Включена' : 'Изключена';
-      state.classList.toggle('on', isOn);
+      document.getElementById('cattoggle-' + cat).classList.toggle('on', isOn);
+      var st = document.getElementById('catstate-' + cat);
+      st.textContent = isOn ? 'Включена' : 'Изключена';
+      st.classList.toggle('on', isOn);
     });
   }
 
@@ -304,199 +376,102 @@
     return { clothes: 'Дрехи', bracelets: 'Смарт гривни', speakers: 'Тонколонки' }[cat] || cat;
   }
 
-  function toggleCategory(cat) {
+  async function toggleCategory(cat) {
     var newState = !categoryStates[cat];
     categoryStates[cat] = newState;
     renderCategoryToggles();
-    products.forEach(function(p, idx) {
-      if (p.category === cat) products[idx].active = newState;
+    products.forEach(function(p, i) {
+      if (p.category === cat) products[i].active = newState;
     });
     renderInventory();
     updateStats();
-    fetch(SCRIPT_URL, {
-      method: 'POST', mode: 'no-cors',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'toggleCategory', category: cat, active: newState })
-    });
-    toast(newState ? 'Категория "' + catName(cat) + '" е включена' : 'Категория "' + catName(cat) + '" е изключена', 'success');
+    var ok = await saveProductsToGitHub(products);
+    toast(ok
+      ? (newState ? 'Категория "' + catName(cat) + '" е включена' : 'Категория "' + catName(cat) + '" е изключена')
+      : 'Грешка при запис', ok ? 'success' : 'error');
   }
 
-  function syncCategoryTogglesFromProducts() {
-    ['clothes', 'bracelets', 'speakers'].forEach(function(cat) {
-      categoryStates[cat] = products.some(function(p) {
-        return p.category === cat && (p.active === true || p.active === 'TRUE' || p.active === 1 || p.active === '1');
-      });
-    });
-    renderCategoryToggles();
-  }
-
+  // ─── INVENTORY ───
   function showTab(name) {
     ['inventory','orders','add'].forEach(function(t) {
       document.getElementById('pane-' + t).style.display = t === name ? 'block' : 'none';
-      var tabEl = document.getElementById('tab-' + t);
-      if (tabEl) tabEl.classList.toggle('active', t === name);
+      var el = document.getElementById('tab-' + t);
+      if (el) el.classList.toggle('active', t === name);
     });
     if (name === 'orders') loadOrders();
-  }
-
-  var products = [];
-
-  function loadData() {
-    document.getElementById('inventoryLoading').style.display = 'block';
-    document.getElementById('inventoryTable').style.display = 'none';
-    fetch(SCRIPT_URL + '?action=getProducts&admin=1')
-      .then(function(r) { return r.json(); })
-      .then(function(data) {
-        products = data.products || [];
-        renderInventory();
-        updateStats();
-        syncCategoryTogglesFromProducts();
-      })
-      .catch(function() {
-        products = getDemoProducts();
-        renderInventory();
-        updateStats();
-        syncCategoryTogglesFromProducts();
-      });
-  }
-
-  function updateStats() {
-    document.getElementById('statProducts').textContent = products.length;
-    var activeCount = products.filter(function(p) {
-      return p.active === true || p.active === 'TRUE' || p.active === 1 || p.active === '1';
-    }).length;
-    document.getElementById('statOut').textContent = activeCount;
-  }
-
-  function getDemoProducts() {
-    return [
-      { id: 'b1', category: 'bracelets', name: 'SmartBand X1', desc: 'Фитнес трекер', price: 55, sizes: [], qty: 8, active: true },
-      { id: 's1', category: 'speakers', name: 'BoomPod Mini', desc: '10W Bluetooth', price: 65, sizes: [], qty: 12, active: false },
-    ];
   }
 
   function renderInventory() {
     document.getElementById('inventoryLoading').style.display = 'none';
     document.getElementById('inventoryTable').style.display = 'block';
-    var body = document.getElementById('inventoryBody');
-    var CAT_LABELS = { clothes: 'Дрехи', bracelets: 'Смарт гривни', speakers: 'Тонколонки' };
-    body.innerHTML = products.map(function(p, idx) {
+    var CAT = { clothes: 'Дрехи', bracelets: 'Смарт гривни', speakers: 'Тонколонки' };
+    document.getElementById('inventoryBody').innerHTML = products.map(function(p, idx) {
       var hasClothes = p.sizes && p.sizes.length > 0;
       var stockCell = hasClothes
         ? '<div class="size-stocks">' + p.sizes.map(function(s) {
             return '<div class="size-stock-input"><label>' + s.size + '</label><input type="number" min="0" value="' + s.qty + '" id="qty-' + p.id + '-' + s.size + '" /></div>';
           }).join('') + '</div>'
-        : '<input type="number" class="qty-input" min="0" value="' + (p.qty || 0) + '" id="qty-' + p.id + '" />';
-      var isActive = p.active === true || p.active === 'TRUE' || p.active === 1 || p.active === '1';
+        : '<input type="number" class="qty-input" min="0" value="' + (p.qty||0) + '" id="qty-' + p.id + '" />';
+      var isActive = p.active === true;
       return '<tr>' +
         '<td><strong>' + p.name + '</strong></td>' +
-        '<td><div class="visibility-toggle" onclick="toggleActive(\'' + p.id + '\', ' + idx + ')">' +
-          '<div class="toggle-switch ' + (isActive ? 'on' : '') + '" id="toggle-' + p.id + '"></div>' +
-          '<span class="toggle-label ' + (isActive ? 'on' : '') + '" id="togglelabel-' + p.id + '">' + (isActive ? 'Активен' : 'Скрит') + '</span>' +
+        '<td><div class="visibility-toggle" onclick="toggleActive(' + idx + ')">' +
+          '<div class="toggle-switch ' + (isActive?'on':'') + '" id="toggle-' + p.id + '"></div>' +
+          '<span class="toggle-label ' + (isActive?'on':'') + '" id="tlabel-' + p.id + '">' + (isActive?'Активен':'Скрит') + '</span>' +
         '</div></td>' +
-        '<td><span class="cat-pill ' + p.category + '">' + (CAT_LABELS[p.category] || p.category) + '</span></td>' +
+        '<td><span class="cat-pill ' + p.category + '">' + (CAT[p.category]||p.category) + '</span></td>' +
         '<td><input type="number" class="qty-input" min="0" value="' + p.price + '" id="price-' + p.id + '" style="width:80px;" /></td>' +
         '<td>' + stockCell + '</td>' +
-        '<td><button class="save-row-btn" id="save-' + p.id + '" onclick="saveProduct(\'' + p.id + '\', ' + idx + ')">Запази</button></td>' +
+        '<td><button class="save-row-btn" onclick="saveProduct(' + idx + ')">Запази</button></td>' +
+        '<td><button class="delete-btn" onclick="deleteProduct(' + idx + ')">✕</button></td>' +
       '</tr>';
     }).join('');
   }
 
-  function toggleActive(productId, idx) {
-    var isActive = products[idx].active === true || products[idx].active === 'TRUE' || products[idx].active === 1 || products[idx].active === '1';
-    var newState = !isActive;
-    products[idx].active = newState;
-    var toggle = document.getElementById('toggle-' + productId);
-    var label = document.getElementById('togglelabel-' + productId);
-    toggle.classList.toggle('on', newState);
-    label.classList.toggle('on', newState);
-    label.textContent = newState ? 'Активен' : 'Скрит';
-    fetch(SCRIPT_URL, {
-      method: 'POST', mode: 'no-cors',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'updateProduct', id: productId, active: newState })
-    });
-    toast(newState ? 'Продуктът е видим в сайта' : 'Продуктът е скрит', 'success');
+  async function toggleActive(idx) {
+    products[idx].active = !products[idx].active;
+    var isActive = products[idx].active;
+    var p = products[idx];
+    var toggle = document.getElementById('toggle-' + p.id);
+    var label  = document.getElementById('tlabel-' + p.id);
+    if (toggle) { toggle.classList.toggle('on', isActive); }
+    if (label)  { label.classList.toggle('on', isActive); label.textContent = isActive ? 'Активен' : 'Скрит'; }
+    syncCategoryToggles();
+    updateStats();
+    var ok = await saveProductsToGitHub(products);
+    toast(isActive ? 'Продуктът е видим' : 'Продуктът е скрит', ok ? 'success' : 'error');
   }
 
-  function saveProduct(productId, idx) {
+  async function saveProduct(idx) {
     var p = products[idx];
     var hasClothes = p.sizes && p.sizes.length > 0;
-    var newPrice = parseFloat(document.getElementById('price-' + productId).value) || p.price;
-    var updatedSizes = null;
-    var updatedQty = null;
+    products[idx].price = parseFloat(document.getElementById('price-' + p.id).value) || p.price;
     if (hasClothes) {
-      updatedSizes = p.sizes.map(function(s) {
-        return { size: s.size, qty: parseInt(document.getElementById('qty-' + productId + '-' + s.size).value) || 0 };
+      products[idx].sizes = p.sizes.map(function(s) {
+        return { size: s.size, qty: parseInt(document.getElementById('qty-' + p.id + '-' + s.size).value) || 0 };
       });
     } else {
-      updatedQty = parseInt(document.getElementById('qty-' + productId).value) || 0;
+      products[idx].qty = parseInt(document.getElementById('qty-' + p.id).value) || 0;
     }
-    var btn = document.getElementById('save-' + productId);
-    btn.textContent = '...';
-    fetch(SCRIPT_URL, {
-      method: 'POST', mode: 'no-cors',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'updateProduct', id: productId, price: newPrice, sizes: updatedSizes, qty: updatedQty, active: p.active === true || p.active === 'TRUE' })
-    }).then(function() {
-      btn.textContent = '✓ Запазено';
-      btn.classList.add('saved');
-      toast('Запазено успешно', 'success');
-      setTimeout(function() { btn.textContent = 'Запази'; btn.classList.remove('saved'); }, 2000);
-      products[idx].price = newPrice;
-      if (hasClothes) products[idx].sizes = updatedSizes;
-      else products[idx].qty = updatedQty;
-      updateStats();
-    }).catch(function() {
-      toast('Грешка при запис', 'error');
-      btn.textContent = 'Запази';
-    });
+    var ok = await saveProductsToGitHub(products);
+    toast(ok ? 'Запазено!' : 'Грешка при запис', ok ? 'success' : 'error');
   }
 
-  var ordersLoaded = false;
-  function loadOrders() {
-    if (ordersLoaded) return;
-    document.getElementById('ordersLoading').style.display = 'block';
-    document.getElementById('ordersTable').style.display = 'none';
-    fetch(SCRIPT_URL + '?action=getOrders&admin=1')
-      .then(function(r) { return r.json(); })
-      .then(function(data) {
-        renderOrders(data.orders || []);
-        var today = (data.orders || []).filter(function(o) { return isToday(o.date); }).length;
-        document.getElementById('statOrders').textContent = today;
-        document.getElementById('statTotal').textContent = (data.orders || []).length;
-        ordersLoaded = true;
-      })
-      .catch(function() {
-        renderOrders([]);
-        ordersLoaded = true;
-      });
+  async function deleteProduct(idx) {
+    if (!confirm('Изтрий продукта?')) return;
+    products.splice(idx, 1);
+    renderInventory();
+    updateStats();
+    syncCategoryToggles();
+    var ok = await saveProductsToGitHub(products);
+    toast(ok ? 'Продуктът е изтрит' : 'Грешка при изтриване', ok ? 'success' : 'error');
   }
 
-  function isToday(dateStr) {
-    if (!dateStr) return false;
-    return new Date(dateStr).toDateString() === new Date().toDateString();
-  }
-
-  function renderOrders(orders) {
-    document.getElementById('ordersLoading').style.display = 'none';
-    document.getElementById('ordersTable').style.display = 'block';
-    var body = document.getElementById('ordersBody');
-    if (!orders.length) {
-      body.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:2rem;">Няма поръчки</td></tr>';
-      return;
-    }
-    body.innerHTML = orders.slice().reverse().map(function(o) {
-      var d = o.date ? new Date(o.date).toLocaleString('bg-BG', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' }) : '—';
-      var items = (o.items || []).map(function(i) { return i.name + (i.size ? ' (' + i.size + ')' : '') + ' ×' + i.qty; }).join(', ');
-      return '<tr><td>' + d + '</td><td>' + (o.name||'—') + '</td><td>' + (o.phone||'—') + '</td><td>' + (o.courier||'—') + '<br><small style="color:var(--muted)">' + (o.city||'') + ' · ' + (o.office||'') + '</small></td><td><div class="order-items-list">' + items + '</div></td><td style="color:var(--accent)">лв ' + (o.total||'—') + '</td></tr>';
-    }).join('');
-  }
-
+  // ─── ADD PRODUCT ───
   function toggleSizesSection() {
     var cat = document.getElementById('np-cat').value;
     document.getElementById('sizesSection').style.display = cat === 'clothes' ? 'block' : 'none';
-    document.getElementById('qtySection').style.display = cat !== 'clothes' ? 'block' : 'none';
+    document.getElementById('qtySection').style.display   = cat !== 'clothes' ? 'block' : 'none';
   }
   toggleSizesSection();
 
@@ -509,45 +484,83 @@
     lbl.classList.toggle('on', cb.checked);
   }
 
-  function addProduct() {
-    var name = document.getElementById('np-name').value.trim();
-    var cat = document.getElementById('np-cat').value;
-    var price = parseFloat(document.getElementById('np-price').value);
-    var desc = document.getElementById('np-desc').value.trim();
+  async function addProduct() {
+    var name   = document.getElementById('np-name').value.trim();
+    var cat    = document.getElementById('np-cat').value;
+    var price  = parseFloat(document.getElementById('np-price').value);
+    var desc   = document.getElementById('np-desc').value.trim();
     var active = document.getElementById('np-active').checked;
     if (!name || !cat || !price) { toast('Попълни задължителните полета', 'error'); return; }
+
     var newProduct = {
-      action: 'addProduct',
       id: 'p_' + Date.now(),
       name: name, category: cat, price: price, desc: desc, active: active,
-      sizes: cat === 'clothes' ? ['XS','S','M','L','XL','XXL'].map(function(s) { return { size: s, qty: parseInt(document.getElementById('sz-'+s).value) || 0 }; }) : [],
+      sizes: cat === 'clothes' ? ['XS','S','M','L','XL','XXL'].map(function(s) {
+        return { size: s, qty: parseInt(document.getElementById('sz-'+s).value) || 0 };
+      }) : [],
       qty: cat !== 'clothes' ? (parseInt(document.getElementById('np-qty').value) || 0) : 0
     };
-    fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newProduct) });
+
     products.push(newProduct);
-    toast('Продуктът е добавен!' + (active ? ' Видим е.' : ' Скрит е.'), 'success');
-    ['np-name','np-price','np-desc','np-qty'].forEach(function(id) { var el = document.getElementById(id); if(el) el.value = ''; });
-    document.getElementById('np-cat').value = '';
-    document.getElementById('np-active').checked = false;
-    document.getElementById('np-active-toggle').classList.remove('on');
-    document.getElementById('np-active-label').textContent = 'Ще остане скрит';
-    document.getElementById('np-active-label').classList.remove('on');
-    ['XS','S','M','L','XL','XXL'].forEach(function(s) { var el = document.getElementById('sz-'+s); if(el) el.value='0'; });
-    showTab('inventory');
-    renderInventory();
-    updateStats();
+    var ok = await saveProductsToGitHub(products);
+    if (ok) {
+      toast('Продуктът е добавен!' + (active ? ' Видим е.' : ' Скрит е.'), 'success');
+      ['np-name','np-price','np-desc','np-qty'].forEach(function(id) { var el = document.getElementById(id); if(el) el.value=''; });
+      document.getElementById('np-cat').value = '';
+      document.getElementById('np-active').checked = false;
+      document.getElementById('np-active-toggle').classList.remove('on');
+      document.getElementById('np-active-label').textContent = 'Ще остане скрит';
+      document.getElementById('np-active-label').classList.remove('on');
+      ['XS','S','M','L','XL','XXL'].forEach(function(s) { var el = document.getElementById('sz-'+s); if(el) el.value='0'; });
+      showTab('inventory');
+      renderInventory();
+      updateStats();
+      syncCategoryToggles();
+    } else {
+      products.pop();
+      toast('Грешка при запис', 'error');
+    }
   }
 
+  // ─── ORDERS (от Google Script) ───
+  var ordersLoaded = false;
+  function loadOrders() {
+    if (ordersLoaded) return;
+    document.getElementById('ordersLoading').style.display = 'block';
+    fetch(SCRIPT_URL + '?action=getOrders')
+      .then(function(r) { return r.json(); })
+      .then(function(data) { renderOrders(data.orders || []); ordersLoaded = true; })
+      .catch(function() { renderOrders([]); ordersLoaded = true; });
+  }
+
+  function renderOrders(orders) {
+    document.getElementById('ordersLoading').style.display = 'none';
+    document.getElementById('ordersTable').style.display = 'block';
+    var body = document.getElementById('ordersBody');
+    if (!orders.length) {
+      body.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:2rem;">Няма поръчки</td></tr>';
+      return;
+    }
+    body.innerHTML = orders.slice().reverse().map(function(o) {
+      var d = o.date ? new Date(o.date).toLocaleString('bg-BG') : '—';
+      var items = (o.items||[]).map(function(i) { return i.name + (i.size?' ('+i.size+')':'') + ' ×' + i.qty; }).join(', ');
+      return '<tr><td>' + d + '</td><td>' + (o.name||'—') + '</td><td>' + (o.phone||'—') + '</td>' +
+        '<td>' + (o.courier||'—') + '<br><small style="color:var(--muted)">' + (o.city||'') + ' · ' + (o.office||'') + '</small></td>' +
+        '<td><div class="order-items-list">' + items + '</div></td>' +
+        '<td style="color:var(--accent)">лв ' + (o.total||'—') + '</td></tr>';
+    }).join('');
+  }
+
+  // ─── TOAST ───
   function toast(msg, type) {
     var t = document.getElementById('toast');
     t.textContent = msg;
-    t.className = 'toast show ' + (type || 'success');
+    t.className = 'toast show ' + (type||'success');
     setTimeout(function() { t.className = 'toast'; }, 2500);
   }
 
-  if (sessionStorage.getItem('zax_session')) {
-    loadData();
-  }
+  // ─── INIT ───
+  if (sessionStorage.getItem('zax_session')) loadData();
 </script>
 </body>
 </html>
