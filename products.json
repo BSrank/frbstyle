@@ -41,7 +41,7 @@
       "category": "bracelets",
       "price": 3,
       "desc": "т",
-      "active": false,
+      "active": true,
       "sizes": [],
       "qty": 0
     }
