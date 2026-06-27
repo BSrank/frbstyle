@@ -438,7 +438,8 @@
   let allProducts = [];
   let cart = [];
   let currentFilter = 'all';
-  let selectedSizes = {}; 
+  let selectedSizes = {};
+  let urgencySettings = { enabled: false, qty: 2 }; 
 
   
   async function loadProducts() {
@@ -446,6 +447,7 @@
       const res = await fetch('https://raw.githubusercontent.com/BSrank/frbstyle/main/products.json?t=' + Date.now());
       const data = await res.json();
       allProducts = data.products || [];
+      urgencySettings = data.urgency || { enabled: false, qty: 2 };
     } catch (e) {
       console.warn('Не може да зареди от Google Sheets, ползва demo данни.');
       allProducts = getDemoProducts();
@@ -549,7 +551,6 @@
         ${p.sizes.map(s => {
           const outOfStock = (s.qty ?? 0) === 0;
           const isSelected = selectedSizes[p.id] === s.size;
-          const lowStock = !outOfStock && s.qty <= 2;
           return `<button
             class="size-btn ${isSelected ? 'selected' : ''}"
             ${outOfStock ? 'disabled' : ''}
@@ -557,7 +558,6 @@
             title="${outOfStock ? 'Изчерпан' : 'Наличност: ' + s.qty + ' бр.'}">
             ${s.size}
             ${outOfStock ? '<small class="size-out-label">изчерпан</small>' : ''}
-            ${lowStock ? '<small class="size-out-label" style="color:var(--accent)">само ${s.qty}</small>' : ''}
           </button>`;
         }).join('')}
       </div>` : '';
@@ -591,6 +591,7 @@
           <h3 class="product-name">${p.name}</h3>
           <p class="product-desc">${p.desc}</p>
           <p class="product-price">${priceDisplay(p.price)}</p>
+          ${urgencySettings.enabled ? '<p style="font-size:0.72rem;color:var(--danger);letter-spacing:0.05em;margin-bottom:0.5rem;">🔥 Само ' + urgencySettings.qty + ' бройки налични</p>' : ''}
           ${sizesHTML}
           <button
             class="add-btn"
