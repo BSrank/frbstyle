@@ -156,6 +156,27 @@
       <p style="font-size:0.72rem; color:var(--muted); margin-top:0.8rem;">Включена категория → всичките ѝ продукти стават видими. Изключена → изчезват от сайта.</p>
     </div>
 
+    <!-- URGENCY BOX -->
+    <div class="cat-toggles-box">
+      <p class="cat-toggles-label">Маркетинг — Ограничено количество</p>
+      <div style="display:flex; align-items:center; gap:1.5rem; flex-wrap:wrap;">
+        <div class="visibility-toggle" onclick="toggleUrgency()">
+          <div class="toggle-switch" id="urgencyToggle"></div>
+          <span class="toggle-label" id="urgencyLabel">Изключено</span>
+        </div>
+        <div id="urgencyQtyWrap" style="display:none; align-items:center; gap:0.8rem;">
+          <span style="font-size:0.78rem; color:var(--muted);">Показвай "само</span>
+          <input type="number" id="urgencyQty" value="2" min="1" max="99"
+            style="width:60px; padding:6px; background:var(--surface2); border:1px solid var(--border); color:var(--text); font-size:0.9rem; border-radius:2px; text-align:center; outline:none;"
+            onchange="saveUrgencySettings()" />
+          <span style="font-size:0.78rem; color:var(--muted);">бройки налични"</span>
+        </div>
+      </div>
+      <p style="font-size:0.72rem; color:var(--muted); margin-top:0.8rem;">
+        Когато е включено — показва "само X бройки" на всички продукти. Не влияе на реалните наличности или поръчките.
+      </p>
+    </div>
+
     <div class="stats">
       <div class="stat-box"><div class="stat-label">Продукти</div><div class="stat-value" id="statProducts">—</div></div>
       <div class="stat-box"><div class="stat-label">Активни</div><div class="stat-value" id="statOut">—</div></div>
@@ -305,6 +326,7 @@
     var data = await res.json();
     fileSha = data.sha;
     var content = JSON.parse(atob(data.content.replace(/\n/g,'')));
+    loadUrgencySettings(content);
     return content.products || [];
   }
 
@@ -318,7 +340,7 @@
       var getData = await getRes.json();
       fileSha = getData.sha;
 
-      var content = btoa(unescape(encodeURIComponent(JSON.stringify({ products: products }, null, 2))));
+      var content = btoa(unescape(encodeURIComponent(JSON.stringify({ products: products, urgency: urgencyData }, null, 2))));
       var body = { message: 'Update products', content: content, sha: fileSha };
       var res = await fetch('https://api.github.com/repos/' + GITHUB_REPO + '/contents/' + PRODUCTS_FILE, {
         method: 'PUT',
@@ -365,6 +387,58 @@
 
   // ─── CATEGORY TOGGLES ───
   var categoryStates = { clothes: false, bracelets: false, speakers: false };
+
+  // ─── URGENCY ───
+  var urgencyData = { enabled: false, qty: 2 };
+
+  function loadUrgencySettings(data) {
+    urgencyData = data.urgency || { enabled: false, qty: 2 };
+    renderUrgencyUI();
+  }
+
+  function renderUrgencyUI() {
+    var tog = document.getElementById('urgencyToggle');
+    var lbl = document.getElementById('urgencyLabel');
+    var wrap = document.getElementById('urgencyQtyWrap');
+    var qty = document.getElementById('urgencyQty');
+    if (!tog) return;
+    tog.classList.toggle('on', urgencyData.enabled);
+    lbl.classList.toggle('on', urgencyData.enabled);
+    lbl.textContent = urgencyData.enabled ? 'Включено' : 'Изключено';
+    wrap.style.display = urgencyData.enabled ? 'flex' : 'none';
+    qty.value = urgencyData.qty || 2;
+  }
+
+  async function toggleUrgency() {
+    urgencyData.enabled = !urgencyData.enabled;
+    renderUrgencyUI();
+    await saveUrgencySettings();
+  }
+
+  async function saveUrgencySettings() {
+    urgencyData.qty = parseInt(document.getElementById('urgencyQty').value) || 2;
+    var currentData = { products: products, urgency: urgencyData };
+    setSaving(true);
+    try {
+      var getRes = await fetch('https://api.github.com/repos/' + GITHUB_REPO + '/contents/' + PRODUCTS_FILE, {
+        headers: { 'Authorization': 'token ' + GITHUB_TOKEN, 'Accept': 'application/vnd.github.v3+json' }
+      });
+      var getData = await getRes.json();
+      fileSha = getData.sha;
+      var content = btoa(unescape(encodeURIComponent(JSON.stringify(currentData, null, 2))));
+      var res = await fetch('https://api.github.com/repos/' + GITHUB_REPO + '/contents/' + PRODUCTS_FILE, {
+        method: 'PUT',
+        headers: { 'Authorization': 'token ' + GITHUB_TOKEN, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: 'Update urgency settings', content: content, sha: fileSha })
+      });
+      var d = await res.json();
+      if (d.content) fileSha = d.content.sha;
+      toast(urgencyData.enabled ? 'Urgency е включен — показва "само ' + urgencyData.qty + ' бройки"' : 'Urgency е изключен', 'success');
+    } catch(e) {
+      toast('Грешка при запис', 'error');
+    }
+    setSaving(false);
+  }
 
   function syncCategoryToggles() {
     ['clothes','bracelets','speakers'].forEach(function(cat) {
