@@ -685,6 +685,8 @@
   }
 
   // ─── SCAN IMAGES ───
+  var SITE_URL = 'https://BSrank.github.io/frbstyle';
+
   async function scanImages(idx) {
     var p = products[idx];
     var btn = document.getElementById('scan-' + p.id);
@@ -699,10 +701,11 @@
     for (var i = 1; i <= 50; i++) {
       var foundThis = false;
       for (var e = 0; e < exts.length; e++) {
-        var path = 'images/' + p.category + '/' + p.id + '/' + i + '.' + exts[e];
+        var relativePath = 'images/' + p.category + '/' + p.id + '/' + i + '.' + exts[e];
+        var fullUrl = SITE_URL + '/' + relativePath;
         try {
-          var res = await fetch('https://raw.githubusercontent.com/' + GITHUB_REPO + '/main/' + path, { method: 'HEAD' });
-          if (res.ok) { found.push(path); foundThis = true; break; }
+          var res = await fetch(fullUrl, { method: 'HEAD' });
+          if (res.ok) { found.push(relativePath); foundThis = true; break; }
         } catch(err) {}
       }
       if (foundThis) { emptyInARow = 0; }
