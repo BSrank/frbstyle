@@ -292,7 +292,7 @@
   <h1>Всички продукти</h1>
 </div>
 
-<div class="filter-bar">
+<div class="filter-bar" id="filterBar" style="visibility:hidden;">
   <button class="filter-btn active" data-cat="all" onclick="setFilter('all', this)">Всички</button>
   <button class="filter-btn" data-cat="clothes" onclick="setFilter('clothes', this)">👕 Дрехи</button>
   <button class="filter-btn" data-cat="bracelets" onclick="setFilter('bracelets', this)">⌚ Смарт гривни</button>
@@ -398,6 +398,7 @@
     }
     document.getElementById('loadingState').style.display = 'none';
     document.getElementById('productsGrid').style.display = 'grid';
+    document.getElementById('filterBar').style.visibility = 'visible';
 
     updateFilterVisibility();
 
