@@ -115,6 +115,15 @@
       position: absolute; inset: 0; z-index: 2;
       opacity: 0; transition: opacity 0.3s;
     }
+    .product-img:hover .product-photo { cursor: zoom-in; }
+    .zoom-hint {
+      position: absolute; top: 10px; left: 10px; z-index: 3;
+      background: rgba(0,0,0,0.55); border-radius: 50%;
+      width: 28px; height: 28px;
+      display: none; align-items: center; justify-content: center;
+      font-size: 0.85rem; pointer-events: none;
+    }
+    .product-img:hover .zoom-hint { display: flex; }
     .img-nav {
       position: absolute; bottom: 10px; left: 0; right: 0; z-index: 3;
       align-items: center; justify-content: center; gap: 10px;
@@ -180,6 +189,36 @@
     .size-btn.selected { background: var(--accent); border-color: var(--accent); color: #000; }
     .size-btn:disabled { opacity: 0.3; cursor: not-allowed; text-decoration: line-through; }
     .size-out-label { font-size: 0.58rem; display: block; color: var(--danger); }
+
+    /* LIGHTBOX */
+    .lightbox {
+      display: none; position: fixed; inset: 0; z-index: 1000;
+      background: rgba(0,0,0,0.95); align-items: center; justify-content: center;
+    }
+    .lightbox.open { display: flex; }
+    .lightbox-img { max-width: 90vw; max-height: 88vh; object-fit: contain; border-radius: 2px; }
+    .lightbox-close {
+      position: absolute; top: 20px; right: 24px;
+      background: none; border: none; color: #fff;
+      font-size: 2rem; cursor: pointer; opacity: 0.7; transition: opacity 0.2s;
+      line-height: 1;
+    }
+    .lightbox-close:hover { opacity: 1; }
+    .lightbox-nav-btn {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+      color: #fff; width: 44px; height: 44px; border-radius: 50%;
+      cursor: pointer; font-size: 1.4rem;
+      align-items: center; justify-content: center;
+      transition: background 0.2s; display: flex;
+    }
+    .lightbox-nav-btn:hover { background: rgba(255,255,255,0.25); }
+    .lightbox-nav-btn.prev { left: 20px; }
+    .lightbox-nav-btn.next { right: 20px; }
+    .lightbox-counter {
+      position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
+      color: rgba(255,255,255,0.5); font-size: 0.8rem; letter-spacing: 0.1em;
+    }
 
     .add-btn {
       width: 100%; padding: 11px;
@@ -513,6 +552,7 @@
       <div class="product-card" id="card-${p.id}">
         <div class="product-img ${meta.bg}" id="imgwrap-${p.id}">
           <span class="img-fallback-emoji">${meta.emoji}</span>
+          <div class="zoom-hint">🔍</div>
           <img
             src="${imagePaths[0]}"
             alt="${p.name}"
@@ -567,42 +607,58 @@
       imgEl.dataset.idx = idx;
       imgEl.src = paths[idx];
     } else {
-      
       imgEl.style.display = 'none';
       imgEl.dataset.maxReached = '1';
     }
   }
 
-  
-  
   function setupImageGalleries() {
     allProducts.forEach(p => {
-      const img = document.getElementById('photo-' + p.id);
-      if (!img) return;
-      
-      
       checkAvailableImages(p);
     });
   }
 
   async function checkAvailableImages(p) {
-    const paths = getImagePaths(p);
-    let count = 0;
-    for (const path of paths) {
-      try {
-        const res = await fetch(path, { method: 'HEAD' });
-        if (res.ok) count++; else break;
-      } catch (e) { break; }
+    const exts = ['jpg', 'jpeg', 'png', 'webp'];
+    const found = [];
+
+    for (let i = 1; i <= MAX_IMAGES_PER_PRODUCT; i++) {
+      let foundThisNumber = false;
+      for (const ext of exts) {
+        const path = 'images/' + p.category + '/' + p.id + '/' + i + '.' + ext;
+        try {
+          const res = await fetch(path, { method: 'HEAD' });
+          if (res.ok) { found.push(path); foundThisNumber = true; break; }
+        } catch(e) {}
+      }
+      if (!foundThisNumber) break;
     }
-    if (count > 1) {
+
+    if (found.length === 0) return;
+
+    const img = document.getElementById('photo-' + p.id);
+    if (!img) return;
+
+    // Store all found paths
+    img.dataset.foundPaths = JSON.stringify(found);
+    img.dataset.foundIdx = '0';
+    img.src = found[0];
+    img.style.opacity = '1';
+    if (img.previousElementSibling) img.previousElementSibling.style.display = 'none';
+
+    // Add lightbox click
+    img.style.cursor = 'zoom-in';
+    img.onclick = function() { openLightbox(p.id); };
+
+    if (found.length > 1) {
       const nav = document.getElementById('imgnav-' + p.id);
       const dots = document.getElementById('imgdots-' + p.id);
       if (!nav || !dots) return;
       nav.style.display = 'flex';
-      dots.innerHTML = Array.from({ length: count }).map((_, i) =>
-        `<span class="img-dot ${i === 0 ? 'active' : ''}" data-i="${i}"></span>`
+      nav.dataset.count = found.length;
+      dots.innerHTML = found.map((_, i) =>
+        '<span class="img-dot ' + (i === 0 ? 'active' : '') + '"></span>'
       ).join('');
-      nav.dataset.count = count;
     }
   }
 
@@ -611,14 +667,53 @@
     const nav = document.getElementById('imgnav-' + productId);
     const dots = document.getElementById('imgdots-' + productId);
     if (!img || !nav) return;
-    const count = parseInt(nav.dataset.count) || 1;
-    let idx = parseInt(img.dataset.idx);
-    idx = (idx + dir + count) % count;
-    img.dataset.idx = idx;
-    const p = allProducts.find(x => x.id === productId);
-    img.src = getImagePaths(p)[idx];
-    dots.querySelectorAll('.img-dot').forEach((d, i) => d.classList.toggle('active', i === idx));
+    const found = JSON.parse(img.dataset.foundPaths || '[]');
+    if (!found.length) return;
+    let idx = parseInt(img.dataset.foundIdx || '0');
+    idx = (idx + dir + found.length) % found.length;
+    img.dataset.foundIdx = idx;
+    img.src = found[idx];
+    if (dots) dots.querySelectorAll('.img-dot').forEach((d, i) => d.classList.toggle('active', i === idx));
+    // Sync lightbox if open
+    const lb = document.getElementById('lightbox');
+    if (lb && lb.classList.contains('open')) {
+      document.getElementById('lightboxImg').src = found[idx];
+      document.getElementById('lightboxCounter').textContent = (idx+1) + ' / ' + found.length;
+    }
   }
+
+  // ─── LIGHTBOX ───
+  function openLightbox(productId) {
+    const img = document.getElementById('photo-' + productId);
+    const found = JSON.parse(img.dataset.foundPaths || '[]');
+    if (!found.length) return;
+    const idx = parseInt(img.dataset.foundIdx || '0');
+    document.getElementById('lightboxImg').src = found[idx];
+    document.getElementById('lightboxCounter').textContent = found.length > 1 ? (idx+1) + ' / ' + found.length : '';
+    document.getElementById('lightboxPrev').style.display = found.length > 1 ? 'flex' : 'none';
+    document.getElementById('lightboxNext').style.display = found.length > 1 ? 'flex' : 'none';
+    document.getElementById('lightbox').dataset.productId = productId;
+    document.getElementById('lightbox').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeLightbox() {
+    document.getElementById('lightbox').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function lightboxNav(dir) {
+    const productId = document.getElementById('lightbox').dataset.productId;
+    changeImage(productId, dir);
+  }
+
+  document.addEventListener('keydown', function(e) {
+    const lb = document.getElementById('lightbox');
+    if (!lb.classList.contains('open')) return;
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowLeft') lightboxNav(-1);
+    if (e.key === 'ArrowRight') lightboxNav(1);
+  });
 
   function handleAdd(productId) {
     const p = allProducts.find(x => x.id === productId);
@@ -754,5 +849,13 @@
   
   loadProducts();
 </script>
+<div class="lightbox" id="lightbox" onclick="if(event.target===this)closeLightbox()">
+  <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+  <button class="lightbox-nav-btn prev" id="lightboxPrev" onclick="lightboxNav(-1)">‹</button>
+  <img class="lightbox-img" id="lightboxImg" src="" alt="" />
+  <button class="lightbox-nav-btn next" id="lightboxNext" onclick="lightboxNav(1)">›</button>
+  <span class="lightbox-counter" id="lightboxCounter"></span>
+</div>
+
 </body>
 </html>
