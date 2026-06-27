@@ -5,7 +5,7 @@
       "name": "LV 12",
       "category": "clothes",
       "price": 44,
-      "desc": "100% памук с уникална бродерия",
+      "desc": "100% Ð¿Ð°Ð¼ÑÐº Ñ ÑÐ½Ð¸ÐºÐ°Ð»Ð½Ð° Ð±ÑÐ¾Ð´ÐµÑÐ¸Ñ",
       "active": true,
       "sizes": [
         {
@@ -37,7 +37,7 @@
     }
   ],
   "urgency": {
-    "enabled": true,
+    "enabled": false,
     "qty": 2
   }
 }
