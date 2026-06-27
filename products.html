@@ -16,7 +16,7 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; font-weight: 300; }
 
-    /* NAV */
+    
     nav {
       position: sticky; top: 0; z-index: 100;
       display: flex; align-items: center; justify-content: space-between;
@@ -42,7 +42,7 @@
     .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; background: none; border: none; padding: 4px; }
     .hamburger span { display: block; width: 22px; height: 1.5px; background: var(--text); }
 
-    /* PAGE HEADER */
+    
     .page-header {
       padding: 60px 5% 40px;
       border-bottom: 1px solid var(--border);
@@ -50,7 +50,7 @@
     .page-header p { font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.5rem; }
     .page-header h1 { font-family: 'Cormorant Garamond', serif; font-size: clamp(2.2rem, 5vw, 4rem); font-weight: 300; }
 
-    /* FILTER BAR */
+    
     .filter-bar {
       display: flex; gap: 0.5rem; padding: 1.5rem 5%;
       border-bottom: 1px solid var(--border);
@@ -67,7 +67,7 @@
     .filter-btn.active { background: var(--accent); border-color: var(--accent); color: #000; }
     .filter-count { margin-left: auto; font-size: 0.78rem; color: var(--muted); }
 
-    /* LOADING */
+    
     .loading-state {
       display: flex; flex-direction: column; align-items: center;
       justify-content: center; padding: 80px 5%; gap: 1.5rem;
@@ -82,7 +82,7 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* PRODUCTS GRID */
+    
     .products-section { padding: 2.5rem 5% 5rem; }
     .products-grid {
       display: grid;
@@ -148,7 +148,7 @@
     .product-desc { font-size: 0.78rem; color: var(--muted); line-height: 1.6; margin-bottom: 1rem; flex: 1; }
     .product-price { font-size: 1.1rem; color: var(--accent); font-family: 'Cormorant Garamond', serif; margin-bottom: 1rem; }
 
-    /* SIZE SELECTOR */
+    
     .size-label { font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.5rem; }
     .size-options { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 1rem; }
     .size-btn {
@@ -166,7 +166,7 @@
     }
     .size-stock { font-size: 0.6rem; display: block; color: var(--muted); }
 
-    /* SIZE SELECTOR (само за дрехи) */
+    
     .size-label { font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.4rem; }
     .size-options { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 0.8rem; }
     .size-btn {
@@ -193,7 +193,7 @@
     .add-btn:disabled { opacity: 0.4; cursor: not-allowed; }
     .add-btn.added { background: rgba(82,192,122,0.1); border-color: var(--success); color: var(--success); }
 
-    /* MODALS (same as index) */
+    
     .modal-bg { display: none; position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); }
     .modal-bg.open { display: block; }
     .modal { position: fixed; right: 0; top: 0; bottom: 0; z-index: 201; width: min(420px, 100vw); background: var(--surface); border-left: 1px solid var(--border); display: flex; flex-direction: column; transform: translateX(100%); transition: transform 0.35s cubic-bezier(0.25,0.46,0.45,0.94); }
@@ -220,7 +220,7 @@
     .checkout-btn:hover { background: var(--accent2); }
     .checkout-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
-    /* ORDER FORM */
+    
     .order-modal { position: fixed; inset: 0; z-index: 300; background: rgba(0,0,0,0.85); backdrop-filter: blur(6px); display: none; align-items: center; justify-content: center; padding: 1rem; }
     .order-modal.open { display: flex; }
     .order-form-box { background: var(--surface); border: 1px solid var(--border); width: min(520px, 100%); max-height: 90vh; overflow-y: auto; border-radius: 4px; padding: 2rem; }
@@ -314,7 +314,6 @@
   <p><a href="index.html">Начало</a> · <a href="index.html#contact">Контакт</a></p>
 </footer>
 
-<!-- CART DRAWER -->
 <div class="modal-bg" id="cartBg" onclick="closeCart()"></div>
 <div class="modal" id="cartModal">
   <div class="modal-header">
@@ -330,7 +329,6 @@
   </div>
 </div>
 
-<!-- ORDER MODAL -->
 <div class="order-modal" id="orderModal">
   <div class="order-form-box">
     <div id="formContent">
@@ -368,11 +366,11 @@
 </div>
 
 <script>
-  // ─── CONFIG ───
-  // Замени с URL-а на твоя Google Apps Script Web App
-  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxbYgSvylmMyUbG476x2gnN8htqlQLMFD9hlHzrrWtXG_OzBUHdgOMPB5heF47gLbJv/exec';
+  
+  
+  const SCRIPT_URL = atob('aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J4LTcyQ1lzVGpRRzdSS1hxbXNzcHV2czRnODRrR1RyTGl2WVhUd2swQkp5Y2ZrWjY3REk4Ujhia2MxaVdjRHJxUW4vZXhlYw==');
 
-  // ─── CATEGORY EMOJIS & LABELS ───
+  
   const CAT_META = {
     clothes:   { emoji: '👕', label: 'Дрехи',        bg: 'clothes-bg' },
     bracelets: { emoji: '⌚', label: 'Смарт гривни', bg: 'bracelets-bg' },
@@ -380,13 +378,13 @@
   };
   const CAT_ORDER = ['clothes', 'bracelets', 'speakers'];
 
-  // ─── STATE ───
+  
   let allProducts = [];
   let cart = [];
   let currentFilter = 'all';
-  let selectedSizes = {}; // { productId: 'M' } — само за дрехи
+  let selectedSizes = {}; 
 
-  // ─── LOAD PRODUCTS FROM GOOGLE SHEETS ───
+  
   async function loadProducts() {
     try {
       const res = await fetch('https://raw.githubusercontent.com/BSrank/frbstyle/main/products.json?t=' + Date.now());
@@ -416,7 +414,7 @@
     return [];
   }
 
-  // ─── RENDER ───
+  
   function setFilter(cat, btn) {
     currentFilter = cat;
     document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
@@ -429,7 +427,7 @@
   }
 
   function updateFilterVisibility() {
-    // Show a category filter button only if it has at least one active product
+    
     document.querySelectorAll('.filter-btn[data-cat]').forEach(btn => {
       const cat = btn.dataset.cat;
       if (cat === 'all') return;
@@ -441,7 +439,7 @@
   function renderProducts() {
     const grid = document.getElementById('productsGrid');
 
-    // Only ever show products marked active in admin
+    
     const active = allProducts.filter(isVisible);
 
     const filtered = currentFilter === 'all'
@@ -463,11 +461,13 @@
     setupImageGalleries();
   }
 
-  // ─── IMAGES ───
-  // Снимките се очакват в: images/{category}/{productId}/1.jpg, 2.jpg, 3.jpg ...
-  // Пример: images/speakers/s1/1.jpg, images/speakers/s1/2.jpg
-  // Ако папката/снимката я няма, автоматично пада обратно на емоджи placeholder.
-  const MAX_IMAGES_PER_PRODUCT = 8; // до колко снимки да пробва да зареди
+  const EUR_RATE = 1.95583;
+  function toEUR(bgn) { return (parseFloat(bgn) / EUR_RATE).toFixed(2); }
+  function priceDisplay(bgn) { return '€' + toEUR(bgn) + ' <span style="color:var(--muted);font-size:0.8em;">(' + parseFloat(bgn).toFixed(2) + ' лв)</span>'; }
+  
+  
+  
+  const MAX_IMAGES_PER_PRODUCT = 8; 
 
   function getImagePaths(p) {
     const paths = [];
@@ -530,7 +530,7 @@
           <p class="product-cat">${meta.label}</p>
           <h3 class="product-name">${p.name}</h3>
           <p class="product-desc">${p.desc}</p>
-          <p class="product-price">лв ${p.price.toFixed(2)}</p>
+          <p class="product-price">${priceDisplay(p.price)}</p>
           ${sizesHTML}
           <button
             class="add-btn"
@@ -554,8 +554,8 @@
     addBtn.classList.remove('added');
   }
 
-  // Когато снимка липсва (404), пробва следващата по ред; ако всички липсват,
-  // показва само емоджи placeholder-а.
+  
+  
   function handleImgError(imgEl) {
     const paths = JSON.parse(imgEl.dataset.paths);
     let idx = parseInt(imgEl.dataset.idx);
@@ -564,20 +564,20 @@
       imgEl.dataset.idx = idx;
       imgEl.src = paths[idx];
     } else {
-      // Изчерпахме всички опити — оставяме само емоджито
+      
       imgEl.style.display = 'none';
       imgEl.dataset.maxReached = '1';
     }
   }
 
-  // Извиква се след зареждане на всички карти — проверява кои продукти имат
-  // повече от 1 реална снимка и показва навигация (стрелки + точки) за тях.
+  
+  
   function setupImageGalleries() {
     allProducts.forEach(p => {
       const img = document.getElementById('photo-' + p.id);
       if (!img) return;
-      // Изчакваме кратко за да приключат onerror опитите, после преброяваме
-      // реално заредените снимки чрез пробен fetch HEAD (леко, само за брой).
+      
+      
       checkAvailableImages(p);
     });
   }
@@ -622,7 +622,7 @@
     if (!p) return;
     const isClothes = p.category === 'clothes' && p.sizes && p.sizes.length > 0;
     const size = isClothes ? selectedSizes[productId] : null;
-    if (isClothes && !size) return; // бутонът е disabled, но за всеки случай
+    if (isClothes && !size) return; 
     const meta = CAT_META[p.category] || { emoji: '📦' };
     addToCart({ id: p.id, name: p.name, price: p.price, size, emoji: meta.emoji });
 
@@ -635,7 +635,7 @@
     }, 1500);
   }
 
-  // ─── CART ───
+  
   let cart_local = [];
 
   function addToCart(product) {
@@ -675,11 +675,11 @@
             <div class="cart-item-name">${item.name}</div>
             <div class="cart-item-meta">${item.size ? 'Размер: ' + item.size + ' · ' : ''}Бр: ${item.qty}</div>
           </div>
-          <div class="cart-item-price">лв ${(item.price * item.qty).toFixed(2)}</div>
+          <div class="cart-item-price">€${toEUR(item.price * item.qty)} <small style="color:var(--muted)">(${(item.price * item.qty).toFixed(2)} лв)</small></div>
           <button class="cart-item-remove" onclick="removeFromCart(${i})">✕</button>
         </div>`).join('');
     }
-    document.getElementById('cartTotal').textContent = 'лв ' + cartTotalBGN().toFixed(2);
+    document.getElementById('cartTotal').textContent = '€' + toEUR(cartTotalBGN()) + ' (' + cartTotalBGN().toFixed(2) + ' лв)';
   }
 
   function openCart() {
@@ -712,12 +712,12 @@
     document.getElementById('orderSummaryItems').innerHTML = cart_local.map(item => `
       <div class="order-summary-item">
         <span>${item.name}${item.size ? ' ('+item.size+')' : ''} ×${item.qty}</span>
-        <span>лв ${(item.price * item.qty).toFixed(2)}</span>
+        <span>€${toEUR(item.price * item.qty)} (${(item.price * item.qty).toFixed(2)} лв)</span>
       </div>`).join('');
-    document.getElementById('orderSummaryTotal').textContent = 'лв ' + cartTotalBGN().toFixed(2);
+    document.getElementById('orderSummaryTotal').textContent = '€' + toEUR(cartTotalBGN()) + ' (' + cartTotalBGN().toFixed(2) + ' лв)';
   }
 
-  // ─── SUBMIT ───
+  
   async function submitOrder() {
     const courier = document.getElementById('courier').value;
     const fullName = document.getElementById('fullName').value.trim();
@@ -748,7 +748,7 @@
 
   function toggleNav() { document.getElementById('navLinks').classList.toggle('open'); }
 
-  // ─── INIT ───
+  
   loadProducts();
 </script>
 </body>

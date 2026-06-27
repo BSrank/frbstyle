@@ -30,7 +30,7 @@
       overflow-x: hidden;
     }
 
-    /* NAV */
+    
     nav {
       position: fixed; top: 0; left: 0; right: 0; z-index: 100;
       display: flex; align-items: center; justify-content: space-between;
@@ -80,7 +80,7 @@
       display: flex; align-items: center; justify-content: center;
     }
 
-    /* HERO */
+    
     .hero {
       min-height: 100vh;
       display: flex; flex-direction: column;
@@ -158,7 +158,7 @@
       animation: scrollPulse 2s infinite;
     }
 
-    /* CATEGORIES */
+    
     .section { padding: 80px 5%; }
     .section-label {
       font-size: 0.7rem;
@@ -236,7 +236,7 @@
       transition: transform 0.3s;
     }
 
-    /* FEATURES */
+    
     .features {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -257,7 +257,7 @@
     }
     .feature-text { font-size: 0.8rem; color: var(--muted); line-height: 1.6; }
 
-    /* FOOTER */
+    
     footer {
       padding: 3rem 5%;
       border-top: 1px solid var(--border);
@@ -273,7 +273,7 @@
     footer a { color: var(--muted); text-decoration: none; }
     footer a:hover { color: var(--accent); }
 
-    /* CART MODAL */
+    
     .modal-bg {
       display: none; position: fixed; inset: 0; z-index: 200;
       background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
@@ -357,7 +357,7 @@
     .checkout-btn:hover { background: var(--accent2); }
     .checkout-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
-    /* ORDER MODAL */
+    
     .order-modal {
       position: fixed; inset: 0; z-index: 300;
       background: rgba(0,0,0,0.85); backdrop-filter: blur(6px);
@@ -447,7 +447,7 @@
     }
     .btn-back:hover { border-color: var(--text); color: var(--text); }
 
-    /* SUCCESS */
+    
     .success-screen {
       display: none; flex-direction: column;
       align-items: center; text-align: center; gap: 1rem;
@@ -476,7 +476,7 @@
       border-radius: 2px; margin-top: 0.5rem;
     }
 
-    /* COOKIE */
+    
     .cookie-bar {
       position: fixed; bottom: 0; left: 0; right: 0; z-index: 400;
       background: var(--surface);
@@ -497,11 +497,11 @@
       border-radius: 2px; white-space: nowrap;
     }
 
-    /* HAMBURGER */
+    
     .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; background: none; border: none; padding: 4px; }
     .hamburger span { display: block; width: 22px; height: 1.5px; background: var(--text); transition: all 0.3s; }
 
-    /* ANIMATIONS */
+    
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(24px); }
       to   { opacity: 1; transform: translateY(0); }
@@ -515,7 +515,7 @@
       50% { opacity: 1; }
     }
 
-    /* MOBILE */
+    
     @media (max-width: 768px) {
       .nav-links { display: none; }
       .hamburger { display: flex; }
@@ -553,7 +553,6 @@
   </div>
 </nav>
 
-<!-- HERO -->
 <section class="hero">
   <p class="hero-eyebrow">Нова колекция 2026</p>
   <h1>Живей<br>с <em>Аура</em></h1>
@@ -565,7 +564,6 @@
   </div>
 </section>
 
-<!-- CATEGORIES -->
 <section class="section">
   <p class="section-label">Категории</p>
   <h2 class="section-title">Намери своя стил</h2>
@@ -611,7 +609,6 @@
   </a>
 </template>
 
-<!-- FEATURES -->
 <div class="features">
   <div class="feature">
     <div class="feature-icon">⚡</div>
@@ -635,7 +632,6 @@
   </div>
 </div>
 
-<!-- CONTACT -->
 <section class="section" id="contact">
   <p class="section-label">Контакт</p>
   <h2 class="section-title">Свържи се с нас</h2>
@@ -651,13 +647,11 @@
   <p><a href="products.html">Продукти</a> · <a href="#contact">Контакт</a></p>
 </footer>
 
-<!-- COOKIE BAR -->
 <div class="cookie-bar" id="cookieBar">
   <span>Използваме cookies за статистика и подобряване на изживяването.</span>
   <button class="cookie-accept" onclick="acceptCookies()">Приемам</button>
 </div>
 
-<!-- CART DRAWER -->
 <div class="modal-bg" id="cartBg" onclick="closeCart()"></div>
 <div class="modal" id="cartModal">
   <div class="modal-header">
@@ -673,7 +667,7 @@
   <div class="cart-footer">
     <div class="cart-total">
       <span>Общо</span>
-      <span class="cart-total-price" id="cartTotal">лв 0.00</span>
+      <span class="cart-total-price" id="cartTotal">€0.00</span>
     </div>
     <button class="checkout-btn" id="checkoutBtn" onclick="openOrderForm()" disabled>
       Продължи към поръчка
@@ -681,7 +675,6 @@
   </div>
 </div>
 
-<!-- ORDER MODAL -->
 <div class="order-modal" id="orderModal">
   <div class="order-form-box">
     <div id="formContent">
@@ -693,7 +686,7 @@
         <div id="orderSummaryItems"></div>
         <div class="order-total-row">
           <span>Общо:</span>
-          <span id="orderSummaryTotal">лв 0.00</span>
+          <span id="orderSummaryTotal">€0.00</span>
         </div>
       </div>
 
@@ -748,10 +741,10 @@
 </div>
 
 <script>
-  // ─── CONFIG ───
-  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxbYgSvylmMyUbG476x2gnN8htqlQLMFD9hlHzrrWtXG_OzBUHdgOMPB5heF47gLbJv/exec';
+  
+  const SCRIPT_URL = atob('aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J4LTcyQ1lzVGpRRzdSS1hxbXNzcHV2czRnODRrR1RyTGl2WVhUd2swQkp5Y2ZrWjY3REk4Ujhia2MxaVdjRHJxUW4vZXhlYw==');
 
-  // ─── LOAD CATEGORIES (only show categories that have in-stock products) ───
+  
   async function loadCategories() {
     let products = [];
     try {
@@ -789,7 +782,10 @@
 
   loadCategories();
 
-  // ─── CART STATE ───
+  const EUR_RATE = 1.95583;
+  function toEUR(bgn) { return (parseFloat(bgn) / EUR_RATE).toFixed(2); }
+
+  
   let cart = [];
 
   function openCart() {
@@ -829,7 +825,7 @@
       cart.push({ ...product, qty: 1 });
     }
     updateCartCount();
-    // Flash cart button
+    
     const btn = document.querySelector('.cart-btn');
     btn.style.borderColor = 'var(--accent)';
     btn.style.color = 'var(--accent)';
@@ -867,12 +863,12 @@
             <div class="cart-item-name">${item.name}</div>
             <div class="cart-item-meta">${item.size ? 'Размер: ' + item.size + ' · ' : ''}Бр: ${item.qty}</div>
           </div>
-          <div class="cart-item-price">лв ${(item.price * item.qty).toFixed(2)}</div>
+          <div class="cart-item-price">€${toEUR(item.price * item.qty)} <small style='color:var(--muted)'>(${(item.price * item.qty).toFixed(2)} лв)</small></div>
           <button class="cart-item-remove" onclick="removeFromCart(${i})">✕</button>
         </div>
       `).join('');
     }
-    document.getElementById('cartTotal').textContent = 'лв ' + cartTotalBGN().toFixed(2);
+    document.getElementById('cartTotal').textContent = '€' + toEUR(cartTotalBGN()) + ' (' + cartTotalBGN().toFixed(2) + ' лв)';
   }
 
   function renderOrderSummary() {
@@ -880,14 +876,14 @@
     box.innerHTML = cart.map(item => `
       <div class="order-summary-item">
         <span>${item.name}${item.size ? ' ('+item.size+')' : ''} ×${item.qty}</span>
-        <span>лв ${(item.price * item.qty).toFixed(2)}</span>
+        <span>€${toEUR(item.price * item.qty)} (${(item.price * item.qty).toFixed(2)} лв)</span>
       </div>
     `).join('');
-    document.getElementById('orderSummaryTotal').textContent = 'лв ' + cartTotalBGN().toFixed(2);
+    document.getElementById('orderSummaryTotal').textContent = '€' + toEUR(cartTotalBGN()) + ' (' + cartTotalBGN().toFixed(2) + ' лв)';
   }
 
-  // ─── SUBMIT ORDER ───
-  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwSbWXrNxhrTm68IvxZUmGmmUTjndFeQ4yGB3Ch0uewHexQ-LZwwd7dbh6dNXMdpDV7/exec';
+  
+  const SCRIPT_URL = atob('aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J4LTcyQ1lzVGpRRzdSS1hxbXNzcHV2czRnODRrR1RyTGl2WVhUd2swQkp5Y2ZrWjY3REk4Ujhia2MxaVdjRHJxUW4vZXhlYw==');
 
   async function submitOrder() {
     const courier = document.getElementById('courier').value;
@@ -933,12 +929,12 @@
     }
   }
 
-  // ─── NAV ───
+  
   function toggleNav() {
     document.getElementById('navLinks').classList.toggle('open');
   }
 
-  // ─── COOKIES ───
+  
   if (localStorage.getItem('cookieAccepted')) {
     document.getElementById('cookieBar').classList.add('hidden');
   }
