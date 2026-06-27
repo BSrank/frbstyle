@@ -110,8 +110,7 @@
   <div class="login-box">
     <h1><em style="font-style:italic;font-weight:300;font-size:0.85em;">the</em> forbidden<span> style</span></h1>
     <p>Admin панел — въведи парола</p>
-    <input type="password" id="passwordInput" placeholder="Парола" onkeydown="if(event.key==='Enter')login()" />
-    <input type="password" id="tokenInput" placeholder="GitHub Token (ghp_...)" style="margin-bottom:1rem;" />
+    <input type="password" id="passwordInput" placeholder="••••••••" onkeydown="if(event.key==='Enter')login()" />
     <button class="login-btn" onclick="login()">Влез</button>
     <p class="login-error" id="loginError">Грешна парола. Опитай отново.</p>
   </div>
@@ -252,12 +251,11 @@
 
 <script>
   // ─── CONFIG ───
-  const GITHUB_REPO   = 'BSrank/frbstyle';
+  const GITHUB_TOKEN = atob('Z2hwX2F4T1Bhb3lUMVhPZnk1dGJpS0dKeGhpMUhRMEE5QzBlT3hYag==');
+  const GITHUB_REPO  = 'BSrank/frbstyle';
   const PRODUCTS_FILE = 'products.json';
-  const SCRIPT_URL    = 'https://script.google.com/macros/s/AKfycbwSbWXrNxhrTm68IvxZUmGmmUTjndFeQ4yGB3Ch0uewHexQ-LZwwd7dbh6dNXMdpDV7/exec';
-  const PW_HASH       = '830ec5c1efee9ed79fee45e2a1da3ebb881d97167febdb1b71a35a20229b9956';
-
-  var GITHUB_TOKEN = sessionStorage.getItem('zax_token') || '';
+  const SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbwSbWXrNxhrTm68IvxZUmGmmUTjndFeQ4yGB3Ch0uewHexQ-LZwwd7dbh6dNXMdpDV7/exec';
+  const PW_HASH      = '830ec5c1efee9ed79fee45e2a1da3ebb881d97167febdb1b71a35a20229b9956';
 
   // ─── AUTH ───
   async function hashPassword(pw) {
@@ -266,31 +264,26 @@
   }
 
   async function login() {
-    var pw    = document.getElementById('passwordInput').value;
-    var token = document.getElementById('tokenInput').value.trim();
-    var btn   = document.querySelector('.login-btn');
+    var pw  = document.getElementById('passwordInput').value;
+    var btn = document.querySelector('.login-btn');
     btn.textContent = 'Проверка...'; btn.disabled = true;
     var hash = await hashPassword(pw);
-    if (hash === PW_HASH && token.startsWith('ghp_')) {
+    if (hash === PW_HASH) {
       sessionStorage.setItem('zax_session', '1');
-      sessionStorage.setItem('zax_token', token);
-      GITHUB_TOKEN = token;
       document.getElementById('loginScreen').style.display = 'none';
       document.getElementById('adminPanel').style.display = 'block';
       document.getElementById('loginError').style.display = 'none';
       loadData();
     } else {
-      document.getElementById('loginError').textContent = !token.startsWith('ghp_') ? 'Невалиден GitHub Token.' : 'Грешна парола.';
       document.getElementById('loginError').style.display = 'block';
       document.getElementById('passwordInput').value = '';
     }
     btn.textContent = 'Влез'; btn.disabled = false;
   }
 
-  function logout() { sessionStorage.removeItem('zax_session'); sessionStorage.removeItem('zax_token'); location.reload(); }
+  function logout() { sessionStorage.removeItem('zax_session'); location.reload(); }
 
-  if (sessionStorage.getItem('zax_session') && sessionStorage.getItem('zax_token')) {
-    GITHUB_TOKEN = sessionStorage.getItem('zax_token');
+  if (sessionStorage.getItem('zax_session')) {
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('adminPanel').style.display = 'block';
   }
