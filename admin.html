@@ -77,8 +77,21 @@
     .save-row-btn { padding: 6px 14px; border-radius: 2px; cursor: pointer; font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; font-family: 'DM Sans', sans-serif; background: none; border: 1px solid var(--border); color: var(--muted); transition: all 0.2s; }
     .save-row-btn:hover { border-color: var(--success); color: var(--success); }
     .save-row-btn.saved { border-color: var(--success); color: var(--success); background: rgba(82,192,122,0.08); }
+    .edit-btn { padding: 6px 10px; border-radius: 2px; cursor: pointer; font-size: 0.72rem; font-family: 'DM Sans', sans-serif; background: none; border: 1px solid rgba(82,153,224,0.3); color: var(--info); transition: all 0.2s; }
+    .edit-btn:hover { background: rgba(82,153,224,0.1); }
     .delete-btn { padding: 6px 10px; border-radius: 2px; cursor: pointer; font-size: 0.72rem; font-family: 'DM Sans', sans-serif; background: none; border: 1px solid rgba(224,82,82,0.3); color: var(--danger); transition: all 0.2s; }
     .delete-btn:hover { background: rgba(224,82,82,0.1); }
+
+    /* EDIT MODAL */
+    .edit-modal { display:none; position:fixed; inset:0; z-index:300; background:rgba(0,0,0,0.85); backdrop-filter:blur(4px); align-items:center; justify-content:center; padding:1rem; }
+    .edit-modal.open { display:flex; }
+    .edit-box { background:var(--surface); border:1px solid var(--border); border-radius:4px; padding:2rem; width:min(520px,100%); max-height:90vh; overflow-y:auto; }
+    .edit-box h3 { font-family:'Cormorant Garamond',serif; font-size:1.4rem; font-weight:400; margin-bottom:1.5rem; }
+    .edit-form-group { display:flex; flex-direction:column; gap:0.35rem; margin-bottom:1rem; }
+    .edit-form-group label { font-size:0.68rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); }
+    .edit-form-group input, .edit-form-group textarea, .edit-form-group select { padding:9px 11px; background:var(--surface2); border:1px solid var(--border); color:var(--text); font-family:'DM Sans',sans-serif; font-size:0.88rem; border-radius:2px; outline:none; appearance:none; }
+    .edit-form-group textarea { resize:vertical; min-height:80px; }
+    .edit-actions { display:flex; gap:1rem; margin-top:1.5rem; }
     .add-product-section { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 1.5rem; margin-top: 2rem; }
     .add-product-section h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 400; margin-bottom: 1.2rem; }
     .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; }
@@ -265,6 +278,41 @@
           <button class="btn btn-ghost" onclick="showTab('inventory')">Отказ</button>
         </div>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="edit-modal" id="editModal">
+  <div class="edit-box">
+    <h3>Редактирай продукт</h3>
+    <input type="hidden" id="edit-idx" />
+    <div class="edit-form-group">
+      <label>Наименование *</label>
+      <input type="text" id="edit-name" placeholder="Име на продукта" />
+    </div>
+    <div class="edit-form-group">
+      <label>Описание</label>
+      <textarea id="edit-desc" placeholder="Материал, характеристики, грижа..."></textarea>
+    </div>
+    <div class="edit-form-group">
+      <label>Цена (лв) *</label>
+      <input type="number" id="edit-price" min="1" />
+    </div>
+    <div class="edit-form-group">
+      <label>Категория</label>
+      <select id="edit-cat">
+        <option value="clothes">👕 Дрехи</option>
+        <option value="bracelets">⌚ Смарт гривни</option>
+        <option value="speakers">🔊 Тонколонки</option>
+      </select>
+    </div>
+    <p style="font-size:0.72rem;color:var(--muted);margin-top:0.5rem;">
+      💡 ID и снимките остават непроменени.
+    </p>
+    <div class="edit-actions">
+      <button class="btn btn-primary" onclick="saveEdit()">Запази промените</button>
+      <button class="btn btn-ghost" onclick="closeEdit()">Отказ</button>
     </div>
   </div>
 </div>
@@ -510,7 +558,10 @@
         '<td><input type="number" class="qty-input" min="0" value="' + p.price + '" id="price-' + p.id + '" style="width:80px;" /></td>' +
         '<td>' + stockCell + '</td>' +
         '<td><button class="save-row-btn" onclick="saveProduct(' + idx + ')">Запази</button></td>' +
-        '<td><button class="delete-btn" onclick="deleteProduct(' + idx + ')">✕</button></td>' +
+        '<td style="display:flex;gap:6px;">' +
+          '<button class="edit-btn" onclick="openEdit(' + idx + ')">✎ Edit</button>' +
+          '<button class="delete-btn" onclick="deleteProduct(' + idx + ')">✕</button>' +
+        '</td>' +
       '</tr>';
     }).join('');
   }
@@ -626,6 +677,46 @@
       syncCategoryToggles();
     } else {
       products.pop();
+      toast('Грешка при запис', 'error');
+    }
+  }
+
+  // ─── EDIT PRODUCT ───
+  function openEdit(idx) {
+    var p = products[idx];
+    document.getElementById('edit-idx').value = idx;
+    document.getElementById('edit-name').value = p.name || '';
+    document.getElementById('edit-desc').value = p.desc || '';
+    document.getElementById('edit-price').value = p.price || '';
+    document.getElementById('edit-cat').value = p.category || 'clothes';
+    document.getElementById('editModal').classList.add('open');
+  }
+
+  function closeEdit() {
+    document.getElementById('editModal').classList.remove('open');
+  }
+
+  async function saveEdit() {
+    var idx = parseInt(document.getElementById('edit-idx').value);
+    var name  = document.getElementById('edit-name').value.trim();
+    var desc  = document.getElementById('edit-desc').value.trim();
+    var price = parseFloat(document.getElementById('edit-price').value);
+    var cat   = document.getElementById('edit-cat').value;
+    if (!name || !price) { toast('Попълни задължителните полета', 'error'); return; }
+
+    products[idx].name  = name;
+    products[idx].desc  = desc;
+    products[idx].price = price;
+    products[idx].category = cat;
+
+    var ok = await saveProductsToGitHub(products);
+    if (ok) {
+      toast('Продуктът е обновен!', 'success');
+      closeEdit();
+      renderInventory();
+      updateStats();
+      syncCategoryToggles();
+    } else {
       toast('Грешка при запис', 'error');
     }
   }
