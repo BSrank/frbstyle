@@ -79,8 +79,9 @@
     .save-row-btn.saved { border-color: var(--success); color: var(--success); background: rgba(82,192,122,0.08); }
     .edit-btn { padding: 6px 10px; border-radius: 2px; cursor: pointer; font-size: 0.72rem; font-family: 'DM Sans', sans-serif; background: none; border: 1px solid rgba(82,153,224,0.3); color: var(--info); transition: all 0.2s; }
     .edit-btn:hover { background: rgba(82,153,224,0.1); }
-    .delete-btn { padding: 6px 10px; border-radius: 2px; cursor: pointer; font-size: 0.72rem; font-family: 'DM Sans', sans-serif; background: none; border: 1px solid rgba(224,82,82,0.3); color: var(--danger); transition: all 0.2s; }
-    .delete-btn:hover { background: rgba(224,82,82,0.1); }
+    .scan-btn { padding: 6px 10px; border-radius: 2px; cursor: pointer; font-size: 0.72rem; font-family: 'DM Sans', sans-serif; background: none; border: 1px solid rgba(201,169,110,0.3); color: var(--accent); transition: all 0.2s; white-space: nowrap; }
+    .scan-btn:hover { background: rgba(201,169,110,0.1); }
+    .scan-btn.scanning { opacity: 0.6; cursor: wait; }
 
     /* EDIT MODAL */
     .edit-modal { display:none; position:fixed; inset:0; z-index:300; background:rgba(0,0,0,0.85); backdrop-filter:blur(4px); align-items:center; justify-content:center; padding:1rem; }
@@ -559,7 +560,8 @@
         '<td><input type="number" class="qty-input" min="0" value="' + p.price + '" id="price-' + p.id + '" style="width:80px;" /></td>' +
         '<td>' + stockCell + '</td>' +
         '<td><button class="save-row-btn" onclick="saveProduct(' + idx + ')">Запази</button></td>' +
-        '<td style="display:flex;gap:6px;">' +
+        '<td style="display:flex;gap:6px;flex-wrap:wrap;">' +
+          '<button class="scan-btn" id="scan-' + p.id + '" onclick="scanImages(' + idx + ')">📷 ' + (p.images && p.images.length ? p.images.length + ' сн.' : 'Сканирай') + '</button>' +
           '<button class="edit-btn" onclick="openEdit(' + idx + ')">✎ Edit</button>' +
           '<button class="delete-btn" onclick="deleteProduct(' + idx + ')">✕</button>' +
         '</td>' +
@@ -678,6 +680,46 @@
       syncCategoryToggles();
     } else {
       products.pop();
+      toast('Грешка при запис', 'error');
+    }
+  }
+
+  // ─── SCAN IMAGES ───
+  async function scanImages(idx) {
+    var p = products[idx];
+    var btn = document.getElementById('scan-' + p.id);
+    btn.textContent = '⏳ Сканира...';
+    btn.classList.add('scanning');
+    btn.disabled = true;
+
+    var exts = ['jpg', 'jpeg', 'png', 'webp'];
+    var found = [];
+    var emptyInARow = 0;
+
+    for (var i = 1; i <= 50; i++) {
+      var foundThis = false;
+      for (var e = 0; e < exts.length; e++) {
+        var path = 'images/' + p.category + '/' + p.id + '/' + i + '.' + exts[e];
+        try {
+          var res = await fetch('https://raw.githubusercontent.com/' + GITHUB_REPO + '/main/' + path, { method: 'HEAD' });
+          if (res.ok) { found.push(path); foundThis = true; break; }
+        } catch(err) {}
+      }
+      if (foundThis) { emptyInARow = 0; }
+      else { emptyInARow++; if (emptyInARow >= 3) break; }
+    }
+
+    products[idx].images = found;
+    var ok = await saveProductsToGitHub(products);
+
+    btn.classList.remove('scanning');
+    btn.disabled = false;
+
+    if (ok) {
+      btn.textContent = '📷 ' + found.length + ' сн.';
+      toast(found.length > 0 ? 'Намерени ' + found.length + ' снимки!' : 'Няма снимки в папката', found.length > 0 ? 'success' : 'error');
+    } else {
+      btn.textContent = '📷 Сканирай';
       toast('Грешка при запис', 'error');
     }
   }
