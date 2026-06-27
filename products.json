@@ -37,7 +37,7 @@
     }
   ],
   "urgency": {
-    "enabled": true,
+    "enabled": false,
     "qty": 2
   }
 }
