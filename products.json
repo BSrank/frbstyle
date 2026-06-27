@@ -34,6 +34,16 @@
         }
       ],
       "qty": 0
+    },
+    {
+      "id": "p_1782546941605",
+      "name": "т",
+      "category": "bracelets",
+      "price": 3,
+      "desc": "т",
+      "active": false,
+      "sizes": [],
+      "qty": 0
     }
   ]
 }
