@@ -111,7 +111,7 @@
     <h1><em style="font-style:italic;font-weight:300;font-size:0.85em;">the</em> forbidden<span> style</span></h1>
     <p>Admin панел — въведи парола</p>
     <input type="password" id="passwordInput" placeholder="Парола" onkeydown="if(event.key==='Enter')login()" />
-    <input type="password" id="tokenInput" placeholder="Key (key_...)" style="margin-bottom:1rem;" />
+    <input type="password" id="tokenInput" placeholder="GitHub Token (ghp_...)" style="margin-bottom:1rem;" />
     <button class="login-btn" onclick="login()">Влез</button>
     <p class="login-error" id="loginError">Грешна парола. Опитай отново.</p>
   </div>
@@ -171,7 +171,7 @@
       <div id="inventoryLoading" style="text-align:center;padding:3rem;color:var(--muted);">Зареждане...</div>
       <div id="inventoryTable" style="display:none; overflow-x:auto;">
         <table class="product-table">
-          <thead><tr><th>Продукт</th><th>Покажи в сайта</th><th>Категория</th><th>Цена (лв)</th><th>Наличност</th><th>Запис</th><th></th></tr></thead>
+          <thead><tr><th>ID (за снимки)</th><th>Продукт</th><th>Покажи в сайта</th><th>Категория</th><th>Цена (лв)</th><th>Наличност</th><th>Запис</th><th></th></tr></thead>
           <tbody id="inventoryBody"></tbody>
         </table>
       </div>
@@ -425,6 +425,7 @@
         : '<input type="number" class="qty-input" min="0" value="' + (p.qty||0) + '" id="qty-' + p.id + '" />';
       var isActive = p.active === true;
       return '<tr>' +
+        '<td><code style="font-size:0.65rem;color:var(--muted);background:var(--surface2);padding:3px 6px;border-radius:2px;user-select:all;">' + p.id + '</code></td>' +
         '<td><strong>' + p.name + '</strong></td>' +
         '<td><div class="visibility-toggle" onclick="toggleActive(' + idx + ')">' +
           '<div class="toggle-switch ' + (isActive?'on':'') + '" id="toggle-' + p.id + '"></div>' +
