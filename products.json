@@ -1,46 +1,11 @@
 {
   "products": [
     {
-      "id": "p_1782546217375",
-      "name": "t",
-      "category": "clothes",
-      "price": 4,
-      "desc": "t",
-      "active": true,
-      "sizes": [
-        {
-          "size": "XS",
-          "qty": 0
-        },
-        {
-          "size": "S",
-          "qty": 1
-        },
-        {
-          "size": "M",
-          "qty": 0
-        },
-        {
-          "size": "L",
-          "qty": 0
-        },
-        {
-          "size": "XL",
-          "qty": 0
-        },
-        {
-          "size": "XXL",
-          "qty": 0
-        }
-      ],
-      "qty": 0
-    },
-    {
       "id": "p_1782546941605",
-      "name": "ÃÂ",
+      "name": "ÃÂÃÂ",
       "category": "bracelets",
       "price": 3,
-      "desc": "ÃÂ",
+      "desc": "ÃÂÃÂ",
       "active": false,
       "sizes": [],
       "qty": 0
