@@ -640,7 +640,7 @@
     const exts = ['jpg', 'jpeg', 'png', 'webp'];
     const found = [];
 
-    for (let i = 1; i <= MAX_IMAGES_PER_PRODUCT; i++) {
+    for (let i = 1; i <= 1000; i++) {
       let foundThisNumber = false;
       for (const ext of exts) {
         const path = 'images/' + p.category + '/' + p.id + '/' + i + '.' + ext;
@@ -649,7 +649,23 @@
           if (res.ok) { found.push(path); foundThisNumber = true; break; }
         } catch(e) {}
       }
-      if (!foundThisNumber) break;
+      // Спираме само ако имаме поне 1 намерена снимка и следващите 5 номера са празни
+      if (!foundThisNumber && found.length > 0) {
+        let emptyCount = 0;
+        for (let j = i+1; j <= i+5; j++) {
+          let hasNext = false;
+          for (const ext of exts) {
+            try {
+              const r = await fetch('images/' + p.category + '/' + p.id + '/' + j + '.' + ext, { method: 'HEAD' });
+              if (r.ok) { hasNext = true; break; }
+            } catch(e) {}
+          }
+          if (!hasNext) emptyCount++;
+        }
+        if (emptyCount >= 5) break;
+      } else if (!foundThisNumber && found.length === 0 && i > 20) {
+        break;
+      }
     }
 
     if (found.length === 0) return;
