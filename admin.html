@@ -425,7 +425,8 @@
         : '<input type="number" class="qty-input" min="0" value="' + (p.qty||0) + '" id="qty-' + p.id + '" />';
       var isActive = p.active === true;
       return '<tr>' +
-        '<td><code style="font-size:0.65rem;color:var(--muted);background:var(--surface2);padding:3px 6px;border-radius:2px;user-select:all;">' + p.id + '</code></td>' +
+        '<td><code style="font-size:0.65rem;color:var(--muted);background:var(--surface2);padding:3px 6px;border-radius:2px;user-select:all;">' + p.id + '</code>' +
+        '<br><small style="color:#555;font-size:0.6rem;">images/' + p.category + '/' + p.id + '/</small></td>' +
         '<td><strong>' + p.name + '</strong></td>' +
         '<td><div class="visibility-toggle" onclick="toggleActive(' + idx + ')">' +
           '<div class="toggle-switch ' + (isActive?'on':'') + '" id="toggle-' + p.id + '"></div>' +
@@ -496,6 +497,22 @@
     lbl.classList.toggle('on', cb.checked);
   }
 
+  async function createImageFolder(productId, category) {
+    var folderPath = 'images/' + category + '/' + productId + '/.gitkeep';
+    try {
+      await fetch('https://api.github.com/repos/' + GITHUB_REPO + '/contents/' + folderPath, {
+        method: 'PUT',
+        headers: { 'Authorization': 'token ' + GITHUB_TOKEN, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: 'Create image folder for ' + productId,
+          content: btoa('')
+        })
+      });
+    } catch(e) {
+      console.warn('Папката не можа да се създаде:', e);
+    }
+  }
+
   async function addProduct() {
     var name   = document.getElementById('np-name').value.trim();
     var cat    = document.getElementById('np-cat').value;
@@ -516,7 +533,12 @@
     products.push(newProduct);
     var ok = await saveProductsToGitHub(products);
     if (ok) {
-      toast('Продуктът е добавен!' + (active ? ' Видим е.' : ' Скрит е.'), 'success');
+      // Създай папката за снимки автоматично
+      await createImageFolder(newProduct.id, newProduct.category);
+
+      var imagePath = 'images/' + newProduct.category + '/' + newProduct.id + '/';
+      toast('Продуктът е добавен! Папка създадена: ' + imagePath, 'success');
+
       ['np-name','np-price','np-desc','np-qty'].forEach(function(id) { var el = document.getElementById(id); if(el) el.value=''; });
       document.getElementById('np-cat').value = '';
       document.getElementById('np-active').checked = false;
