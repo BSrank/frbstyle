@@ -294,6 +294,7 @@
 
 <div class="filter-bar">
   <button class="filter-btn active" data-cat="all" onclick="setFilter('all', this)">Всички</button>
+  <button class="filter-btn" data-cat="clothes" onclick="setFilter('clothes', this)">👕 Дрехи</button>
   <button class="filter-btn" data-cat="bracelets" onclick="setFilter('bracelets', this)">⌚ Смарт гривни</button>
   <button class="filter-btn" data-cat="speakers" onclick="setFilter('speakers', this)">🔊 Тонколонки</button>
   <span class="filter-count" id="filterCount"></span>
@@ -377,7 +378,7 @@
     bracelets: { emoji: '⌚', label: 'Смарт гривни', bg: 'bracelets-bg' },
     speakers:  { emoji: '🔊', label: 'Тонколонки',   bg: 'speakers-bg' },
   };
-  const CAT_ORDER = ['bracelets', 'speakers']; // дрехите изчакват
+  const CAT_ORDER = ['clothes', 'bracelets', 'speakers'];
 
   // ─── STATE ───
   let allProducts = [];
@@ -388,7 +389,7 @@
   // ─── LOAD PRODUCTS FROM GOOGLE SHEETS ───
   async function loadProducts() {
     try {
-      const res = await fetch('products.json?t=' + Date.now());
+      const res = await fetch('https://raw.githubusercontent.com/BSrank/frbstyle/main/products.json?t=' + Date.now());
       const data = await res.json();
       allProducts = data.products || [];
     } catch (e) {
@@ -401,7 +402,7 @@
     updateFilterVisibility();
 
     const urlCat = new URLSearchParams(window.location.search).get('cat');
-    if (urlCat && ['bracelets','speakers'].includes(urlCat)) {
+    if (urlCat && ['clothes','bracelets','speakers'].includes(urlCat)) {
       currentFilter = urlCat;
       document.querySelectorAll('.filter-btn').forEach(b => {
         b.classList.toggle('active', b.dataset.cat === urlCat);

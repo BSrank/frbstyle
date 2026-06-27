@@ -755,7 +755,7 @@
   async function loadCategories() {
     let products = [];
     try {
-      const res = await fetch('products.json?t=' + Date.now());
+      const res = await fetch('https://raw.githubusercontent.com/BSrank/frbstyle/main/products.json?t=' + Date.now());
       const data = await res.json();
       products = data.products || [];
     } catch (e) {
