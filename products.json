@@ -9,6 +9,41 @@
       "active": false,
       "sizes": [],
       "qty": 0
+    },
+    {
+      "id": "p_1782550424989",
+      "name": "LV 1",
+      "category": "clothes",
+      "price": 44,
+      "desc": "t",
+      "active": true,
+      "sizes": [
+        {
+          "size": "XS",
+          "qty": 0
+        },
+        {
+          "size": "S",
+          "qty": 0
+        },
+        {
+          "size": "M",
+          "qty": 1
+        },
+        {
+          "size": "L",
+          "qty": 0
+        },
+        {
+          "size": "XL",
+          "qty": 0
+        },
+        {
+          "size": "XXL",
+          "qty": 0
+        }
+      ],
+      "qty": 0
     }
   ]
 }
