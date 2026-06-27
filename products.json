@@ -6,7 +6,7 @@
       "category": "clothes",
       "price": 4,
       "desc": "t",
-      "active": false,
+      "active": true,
       "sizes": [
         {
           "size": "XS",
