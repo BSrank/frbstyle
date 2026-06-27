@@ -709,7 +709,7 @@
         } catch(err) {}
       }
       if (foundThis) { emptyInARow = 0; }
-      else { emptyInARow++; if (emptyInARow >= 3) break; }
+      else { emptyInARow++; if (emptyInARow >= 100) break; }
     }
 
     products[idx].images = found;
