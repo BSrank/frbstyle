@@ -470,9 +470,12 @@
   const MAX_IMAGES_PER_PRODUCT = 8; 
 
   function getImagePaths(p) {
-    const paths = [];
-    for (let i = 1; i <= MAX_IMAGES_PER_PRODUCT; i++) {
-      paths.push(`images/${p.category}/${p.id}/${i}.jpg`);
+    var paths = [];
+    var exts = ['jpg', 'jpeg', 'png', 'webp'];
+    for (var i = 1; i <= MAX_IMAGES_PER_PRODUCT; i++) {
+      exts.forEach(function(ext) {
+        paths.push('images/' + p.category + '/' + p.id + '/' + i + '.' + ext);
+      });
     }
     return paths;
   }
