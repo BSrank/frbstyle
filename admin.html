@@ -310,18 +310,29 @@
 
   async function saveProductsToGitHub(products) {
     setSaving(true);
-    var content = btoa(unescape(encodeURIComponent(JSON.stringify({ products: products }, null, 2))));
-    var body = { message: 'Update products', content: content };
-    if (fileSha) body.sha = fileSha;
-    var res = await fetch('https://api.github.com/repos/' + GITHUB_REPO + '/contents/' + PRODUCTS_FILE, {
-      method: 'PUT',
-      headers: { 'Authorization': 'token ' + GITHUB_TOKEN, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
-    });
-    var data = await res.json();
-    if (data.content) fileSha = data.content.sha;
-    setSaving(false);
-    return res.ok;
+    try {
+      // Вземи свежото SHA преди всеки запис за да избегнем 409 Conflict
+      var getRes = await fetch('https://api.github.com/repos/' + GITHUB_REPO + '/contents/' + PRODUCTS_FILE, {
+        headers: { 'Authorization': 'token ' + GITHUB_TOKEN, 'Accept': 'application/vnd.github.v3+json' }
+      });
+      var getData = await getRes.json();
+      fileSha = getData.sha;
+
+      var content = btoa(unescape(encodeURIComponent(JSON.stringify({ products: products }, null, 2))));
+      var body = { message: 'Update products', content: content, sha: fileSha };
+      var res = await fetch('https://api.github.com/repos/' + GITHUB_REPO + '/contents/' + PRODUCTS_FILE, {
+        method: 'PUT',
+        headers: { 'Authorization': 'token ' + GITHUB_TOKEN, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      var data = await res.json();
+      if (data.content) fileSha = data.content.sha;
+      setSaving(false);
+      return res.ok;
+    } catch(e) {
+      setSaving(false);
+      return false;
+    }
   }
 
   function setSaving(on) {

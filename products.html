@@ -369,7 +369,7 @@
 <script>
   // ─── CONFIG ───
   // Замени с URL-а на твоя Google Apps Script Web App
-  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby8bAlShom0fH7cIoA6xRvg5yVJLzO7cZzrS1_4qXCqLJ98jM5CN4yMjq5neQ-yPEqU/exec';
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwSbWXrNxhrTm68IvxZUmGmmUTjndFeQ4yGB3Ch0uewHexQ-LZwwd7dbh6dNXMdpDV7/exec';
 
   // ─── CATEGORY EMOJIS & LABELS ───
   const CAT_META = {
@@ -388,7 +388,7 @@
   // ─── LOAD PRODUCTS FROM GOOGLE SHEETS ───
   async function loadProducts() {
     try {
-      const res = await fetch(SCRIPT_URL + '?action=getProducts');
+      const res = await fetch('products.json?t=' + Date.now());
       const data = await res.json();
       allProducts = data.products || [];
     } catch (e) {
@@ -411,12 +411,7 @@
   }
 
   function getDemoProducts() {
-    return [
-      { id: 'b1', category: 'bracelets', name: 'SmartBand X1', desc: 'Фитнес трекер, пулс, крачки, нотификации, 7 дни батерия', price: 55, sizes: [], qty: 8, active: true },
-      { id: 'b2', category: 'bracelets', name: 'SmartBand Pro', desc: 'AMOLED дисплей, SpO2, GPS, водоустойчивост 5ATM', price: 89, sizes: [], qty: 3, active: true },
-      { id: 's1', category: 'speakers', name: 'BoomPod Mini', desc: '10W, Bluetooth 5.3, IPX7, 12ч батерия', price: 65, sizes: [], qty: 12, active: true },
-      { id: 's2', category: 'speakers', name: 'BoomPod Max', desc: '20W stereo, LED ринг, Bluetooth 5.3, 18ч батерия', price: 95, sizes: [], qty: 0, active: false },
-    ];
+    return [];
   }
 
   // ─── RENDER ───

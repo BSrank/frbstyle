@@ -749,21 +749,18 @@
 
 <script>
   // ─── CONFIG ───
-  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby8bAlShom0fH7cIoA6xRvg5yVJLzO7cZzrS1_4qXCqLJ98jM5CN4yMjq5neQ-yPEqU/exec';
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwSbWXrNxhrTm68IvxZUmGmmUTjndFeQ4yGB3Ch0uewHexQ-LZwwd7dbh6dNXMdpDV7/exec';
 
   // ─── LOAD CATEGORIES (only show categories that have in-stock products) ───
   async function loadCategories() {
     let products = [];
     try {
-      const res = await fetch(SCRIPT_URL + '?action=getProducts');
+      const res = await fetch('products.json?t=' + Date.now());
       const data = await res.json();
       products = data.products || [];
     } catch (e) {
-      console.warn('Demo данни (Google Script не е свързан още).');
-      products = [
-        { category: 'bracelets', active: true },
-        { category: 'speakers', active: true },
-      ];
+      console.warn('Не може да зареди products.json.');
+      products = [];
     }
 
     const order = ['clothes', 'bracelets', 'speakers'];
@@ -889,7 +886,7 @@
   }
 
   // ─── SUBMIT ORDER ───
-  const SCRIPT_URL = 'YOUR_GOOGLE_SCRIPT_URL_HERE';
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwSbWXrNxhrTm68IvxZUmGmmUTjndFeQ4yGB3Ch0uewHexQ-LZwwd7dbh6dNXMdpDV7/exec';
 
   async function submitOrder() {
     const courier = document.getElementById('courier').value;
