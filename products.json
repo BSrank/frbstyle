@@ -2,10 +2,10 @@
   "products": [
     {
       "id": "p_1782550424989",
-      "name": "LV 1",
+      "name": "LV 12",
       "category": "clothes",
       "price": 44,
-      "desc": "t",
+      "desc": "100% памук с уникална бродерия",
       "active": true,
       "sizes": [
         {
