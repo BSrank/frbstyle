@@ -225,7 +225,10 @@
           "qty": 0
         }
       ],
-      "qty": 0
+      "qty": 0,
+      "images": [
+        "images/clothes/p_1782556023927/8.png"
+      ]
     }
   ],
   "urgency": {
