@@ -33,7 +33,11 @@
           "qty": 0
         }
       ],
-      "qty": 0
+      "qty": 0,
+      "images": [
+        "images/clothes/p_1782550424989/1.png",
+        "images/clothes/p_1782550424989/2.png"
+      ]
     },
     {
       "id": "p_1782555319880",
