@@ -4,8 +4,8 @@
       "id": "p_1782550424989",
       "name": "LV 12",
       "category": "clothes",
-      "price": 44,
-      "desc": "100% памук бродерия",
+      "price": 40,
+      "desc": "100% Ð¿Ð°Ð¼ÑÐº Ð±ÑÐ¾Ð´ÐµÑÐ¸Ñ",
       "active": true,
       "sizes": [
         {
@@ -37,10 +37,10 @@
     },
     {
       "id": "p_1782555319880",
-      "name": "лв3",
+      "name": "Ð»Ð²3",
       "category": "clothes",
       "price": 4,
-      "desc": "топ",
+      "desc": "ÑÐ¾Ð¿",
       "active": true,
       "sizes": [
         {
@@ -72,7 +72,7 @@
     },
     {
       "id": "p_1782555608517",
-      "name": "лв4",
+      "name": "Ð»Ð²4",
       "category": "clothes",
       "price": 40,
       "desc": "",
