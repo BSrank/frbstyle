@@ -246,7 +246,7 @@
       "category": "cat__5887",
       "price": 14,
       "desc": "14",
-      "active": false,
+      "active": true,
       "sizes": [],
       "qty": 14
     }
@@ -260,8 +260,6 @@
     "contactMode": "email",
     "phone": "0876 127 997",
     "hours": "Всеки ден",
-    "eyebrow": "Нова колекция 2026",
-    "hero": "Живей с Аура",
     "showCategories": false,
     "customCategories": [
       {
@@ -270,6 +268,8 @@
         "name": "тест",
         "active": false
       }
-    ]
+    ],
+    "eyebrow": "Нова колекция 2026",
+    "hero": "Живей с Аура"
   }
 }
