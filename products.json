@@ -259,6 +259,16 @@
       "active": true,
       "sizes": [],
       "qty": 2
+    },
+    {
+      "id": "p_1782655459676",
+      "name": "Подс 3 про",
+      "category": "cat__3010",
+      "price": 45,
+      "desc": "",
+      "active": true,
+      "sizes": [],
+      "qty": 2
     }
   ],
   "urgency": {
