@@ -263,7 +263,14 @@
     "eyebrow": "Нова колекция 2026",
     "hero": "Живей с Аура",
     "showCategories": false,
-    "customCategories": [],
+    "customCategories": [
+      {
+        "id": "cat__3010",
+        "emoji": "🎧",
+        "name": "Слушалки",
+        "active": false
+      }
+    ],
     "theme": "solar-flare"
   }
 }
