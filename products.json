@@ -249,6 +249,16 @@
       "active": false,
       "sizes": [],
       "qty": 14
+    },
+    {
+      "id": "p_1782655438359",
+      "name": "Подс 4",
+      "category": "cat__3010",
+      "price": 44,
+      "desc": "Т",
+      "active": true,
+      "sizes": [],
+      "qty": 2
     }
   ],
   "urgency": {
