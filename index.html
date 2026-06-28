@@ -192,6 +192,7 @@
     .category-card:hover .cat-arrow { transform: translateX(6px); }
     .cat-img-wrap {
       width: 100%; height: 100%;
+      position: absolute; inset: 0;
       transition: transform 0.6s cubic-bezier(0.25,0.46,0.45,0.94);
     }
     .cat-placeholder {
@@ -625,10 +626,10 @@
     <h4 class="feature-title">Лесна замяна</h4>
     <p class="feature-text">Свържи се с нас<br>при проблем</p>
   </div>
-  <div class="feature">
-    <div class="feature-icon">📞</div>
-    <h4 class="feature-title">Поддръжка</h4>
-    <p class="feature-text">0876 127 997<br>Всеки ден</p>
+  <div class="feature" id="support-box">
+    <div class="feature-icon" id="support-icon">📞</div>
+    <h4 class="feature-title" id="support-title">Поддръжка</h4>
+    <p class="feature-text" id="support-text">0876 127 997<br>Всеки ден</p>
   </div>
 </div>
 
@@ -782,32 +783,47 @@
 
   function applySettings(s) {
     const name = s.siteName || 'The Forbidden Style';
+
     document.title = name + ' — Curated Drops';
+
     document.querySelectorAll('.nav-logo').forEach(el => {
-      el.innerHTML = '<em style="font-style:italic;font-weight:300;font-size:0.85em;">the</em> ' + name.toLowerCase().replace('the ', '');
+      const parts = name.toLowerCase().split(' ');
+      const last = parts.pop();
+      el.innerHTML = '<em style="font-style:italic;font-weight:300;font-size:0.85em;">the</em> ' + parts.join(' ').replace(/^the\s*/i,'') + (parts.length > 1 || parts[0] !== 'the' ? ' ' : '') + '<span>' + last + '</span>';
     });
+
     document.querySelectorAll('.footer-logo').forEach(el => {
-      el.innerHTML = name;
+      el.textContent = name;
     });
+
+    const supportTitle = document.getElementById('support-title');
+    const supportText = document.getElementById('support-text');
+    const supportIcon = document.getElementById('support-icon');
 
     const contactSection = document.getElementById('contact-info');
-    if (!contactSection) return;
 
     if (s.contactMode === 'email') {
-      contactSection.innerHTML = `
+      if (supportIcon) supportIcon.textContent = '✉️';
+      if (supportTitle) supportTitle.textContent = 'Пишете ни';
+      if (supportText) supportText.innerHTML = '<a href="#contact" style="color:var(--accent);text-decoration:none;">Изпратете съобщение →</a>';
+
+      if (contactSection) contactSection.innerHTML = `
         <form id="contactForm" style="max-width:480px;">
-          <div style="margin-bottom:0.8rem;">
-            <input type="text" id="cf-name" placeholder="Твоето име" style="width:100%;padding:10px 12px;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.9rem;border-radius:2px;outline:none;margin-bottom:0.6rem;" />
-            <input type="email" id="cf-email" placeholder="Имейл за отговор" style="width:100%;padding:10px 12px;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.9rem;border-radius:2px;outline:none;margin-bottom:0.6rem;" />
-            <textarea id="cf-msg" placeholder="Съобщение..." rows="4" style="width:100%;padding:10px 12px;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.9rem;border-radius:2px;outline:none;resize:vertical;margin-bottom:0.6rem;"></textarea>
-          </div>
+          <input type="text" id="cf-name" placeholder="Твоето име" style="width:100%;padding:10px 12px;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.9rem;border-radius:2px;outline:none;margin-bottom:0.6rem;display:block;" />
+          <input type="email" id="cf-email" placeholder="Имейл за отговор" style="width:100%;padding:10px 12px;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.9rem;border-radius:2px;outline:none;margin-bottom:0.6rem;display:block;" />
+          <textarea id="cf-msg" placeholder="Съобщение..." rows="4" style="width:100%;padding:10px 12px;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.9rem;border-radius:2px;outline:none;resize:vertical;margin-bottom:0.8rem;display:block;"></textarea>
           <button type="button" onclick="submitContactForm()" style="padding:12px 28px;background:var(--accent);color:#000;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.82rem;letter-spacing:0.1em;text-transform:uppercase;border-radius:2px;">Изпрати</button>
           <p id="cf-status" style="margin-top:0.8rem;font-size:0.82rem;color:var(--success);display:none;">✓ Съобщението е изпратено!</p>
         </form>`;
     } else {
       const phone = s.phone || '0876 127 997';
       const hours = s.hours || 'Всеки ден';
-      contactSection.innerHTML = `<a href="tel:${phone.replace(/\s/g,'')}" style="display:inline-flex;align-items:center;gap:10px;font-size:1.3rem;color:var(--accent);text-decoration:none;font-family:'Cormorant Garamond',serif;">📞 ${phone}</a><p style="font-size:0.82rem;color:var(--muted);margin-top:0.5rem;">${hours}</p>`;
+      if (supportIcon) supportIcon.textContent = '📞';
+      if (supportTitle) supportTitle.textContent = 'Поддръжка';
+      if (supportText) supportText.innerHTML = phone + '<br>' + hours;
+      if (contactSection) contactSection.innerHTML = `
+        <a href="tel:${phone.replace(/\s/g,'')}" style="display:inline-flex;align-items:center;gap:10px;font-size:1.3rem;color:var(--accent);text-decoration:none;font-family:'Cormorant Garamond',serif;">📞 ${phone}</a>
+        <p style="font-size:0.82rem;color:var(--muted);margin-top:0.5rem;">${hours}</p>`;
     }
   }
 
