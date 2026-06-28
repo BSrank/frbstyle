@@ -250,16 +250,9 @@
     "contactMode": "phone",
     "phone": "0876 127 997",
     "hours": "Всеки ден",
-    "showCategories": false,
-    "customCategories": [
-      {
-        "id": "cat__9925",
-        "emoji": "👗",
-        "name": "т",
-        "active": true
-      }
-    ],
     "eyebrow": "Нова колекция 2026",
-    "hero": "Живей с Аура"
+    "hero": "Живей с Аура",
+    "showCategories": false,
+    "customCategories": []
   }
 }
