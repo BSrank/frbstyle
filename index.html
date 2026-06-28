@@ -830,6 +830,19 @@
         <a href="tel:${phone.replace(/\s/g,'')}" style="display:inline-flex;align-items:center;gap:10px;font-size:1.3rem;color:var(--accent);text-decoration:none;font-family:'Cormorant Garamond',serif;">📞 ${phone}</a>
         <p style="font-size:0.82rem;color:var(--muted);margin-top:0.5rem;">${hours}</p>`;
     }
+
+    const eyebrow = document.querySelector('.hero-eyebrow');
+    if (eyebrow && s.eyebrow) eyebrow.textContent = s.eyebrow;
+
+    const heroH1 = document.querySelector('.hero h1');
+    if (heroH1 && s.hero) {
+      const words = s.hero.split(' ');
+      const last = words.pop();
+      heroH1.innerHTML = words.join(' ') + '<br>с <em>' + last + '</em>';
+    }
+
+    const catSection = document.getElementById('categoriesSection');
+    if (catSection) catSection.style.display = s.showCategories === false ? 'none' : '';
   }
 
   async function submitContactForm() {
