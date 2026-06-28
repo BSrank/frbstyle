@@ -448,6 +448,7 @@
       const data = await res.json();
       allProducts = data.products || [];
       urgencySettings = data.urgency || { enabled: false, qty: 2 };
+      loadCustomCategories(data.settings || {});
     } catch (e) {
       console.warn('Не може да зареди от Google Sheets, ползва demo данни.');
       allProducts = getDemoProducts();
@@ -459,13 +460,32 @@
     updateFilterVisibility();
 
     const urlCat = new URLSearchParams(window.location.search).get('cat');
-    if (urlCat && ['clothes','bracelets','speakers'].includes(urlCat)) {
+    const allCatIds = Object.keys(CAT_META);
+    if (urlCat && allCatIds.includes(urlCat)) {
       currentFilter = urlCat;
       document.querySelectorAll('.filter-btn').forEach(b => {
         b.classList.toggle('active', b.dataset.cat === urlCat);
       });
     }
     renderProducts();
+  }
+
+  function loadCustomCategories(settings) {
+    const customCats = settings.customCategories || [];
+    customCats.forEach(c => {
+      if (!CAT_META[c.id]) {
+        CAT_META[c.id] = { emoji: c.emoji, label: c.name, bg: 'custom-bg' };
+        const filterBar = document.getElementById('filterBar');
+        if (filterBar) {
+          const btn = document.createElement('button');
+          btn.className = 'filter-btn';
+          btn.dataset.cat = c.id;
+          btn.textContent = c.emoji + ' ' + c.name;
+          btn.onclick = function() { setFilter(c.id, btn); };
+          filterBar.insertBefore(btn, document.getElementById('filterCount'));
+        }
+      }
+    });
   }
 
   function getDemoProducts() {
