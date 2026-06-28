@@ -229,6 +229,16 @@
       "images": [
         "images/clothes/p_1782556023927/8.png"
       ]
+    },
+    {
+      "id": "p_1782633743894",
+      "name": "1",
+      "category": "bracelets",
+      "price": 1,
+      "desc": "1",
+      "active": true,
+      "sizes": [],
+      "qty": 1
     }
   ],
   "urgency": {
