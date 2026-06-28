@@ -246,7 +246,7 @@
       "category": "cat__5887",
       "price": 14,
       "desc": "14",
-      "active": true,
+      "active": false,
       "sizes": [],
       "qty": 14
     }
@@ -263,13 +263,6 @@
     "eyebrow": "Нова колекция 2026",
     "hero": "Живей с Аура",
     "showCategories": false,
-    "customCategories": [
-      {
-        "id": "cat__5887",
-        "emoji": "🔊",
-        "name": "тест",
-        "active": false
-      }
-    ]
+    "customCategories": []
   }
 }
