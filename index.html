@@ -636,9 +636,12 @@
   <p class="section-label">Контакт</p>
   <h2 class="section-title">Свържи се с нас</h2>
   <p style="color:var(--muted); font-size:0.95rem; margin-bottom:1.5rem;">Имаш въпрос за продукт или поръчка? Обади се или изпрати съобщение.</p>
-  <a href="tel:0876127997" style="display:inline-flex; align-items:center; gap:10px; font-size:1.3rem; color:var(--accent); text-decoration:none; font-family:'Cormorant Garamond',serif;">
-    📞 0876 127 997
-  </a>
+  <div id="contact-info">
+    <a href="tel:0876127997" style="display:inline-flex; align-items:center; gap:10px; font-size:1.3rem; color:var(--accent); text-decoration:none; font-family:'Cormorant Garamond',serif;">
+      📞 0876 127 997
+    </a>
+    <p style="font-size:0.82rem;color:var(--muted);margin-top:0.5rem;">Всеки ден</p>
+  </div>
 </section>
 
 <footer>
@@ -751,6 +754,7 @@
       const res = await fetch('https://raw.githubusercontent.com/BSrank/frbstyle/main/products.json?t=' + Date.now());
       const data = await res.json();
       products = data.products || [];
+      applySettings(data.settings || {});
     } catch (e) {
       console.warn('Не може да зареди products.json.');
       products = [];
@@ -774,6 +778,50 @@
       const tpl = document.getElementById('tpl-' + cat);
       if (tpl) grid.appendChild(tpl.content.cloneNode(true));
     });
+  }
+
+  function applySettings(s) {
+    const name = s.siteName || 'The Forbidden Style';
+    document.title = name + ' — Curated Drops';
+    document.querySelectorAll('.nav-logo').forEach(el => {
+      el.innerHTML = '<em style="font-style:italic;font-weight:300;font-size:0.85em;">the</em> ' + name.toLowerCase().replace('the ', '');
+    });
+    document.querySelectorAll('.footer-logo').forEach(el => {
+      el.innerHTML = name;
+    });
+
+    const contactSection = document.getElementById('contact-info');
+    if (!contactSection) return;
+
+    if (s.contactMode === 'email') {
+      contactSection.innerHTML = `
+        <form id="contactForm" style="max-width:480px;">
+          <div style="margin-bottom:0.8rem;">
+            <input type="text" id="cf-name" placeholder="Твоето име" style="width:100%;padding:10px 12px;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.9rem;border-radius:2px;outline:none;margin-bottom:0.6rem;" />
+            <input type="email" id="cf-email" placeholder="Имейл за отговор" style="width:100%;padding:10px 12px;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.9rem;border-radius:2px;outline:none;margin-bottom:0.6rem;" />
+            <textarea id="cf-msg" placeholder="Съобщение..." rows="4" style="width:100%;padding:10px 12px;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.9rem;border-radius:2px;outline:none;resize:vertical;margin-bottom:0.6rem;"></textarea>
+          </div>
+          <button type="button" onclick="submitContactForm()" style="padding:12px 28px;background:var(--accent);color:#000;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.82rem;letter-spacing:0.1em;text-transform:uppercase;border-radius:2px;">Изпрати</button>
+          <p id="cf-status" style="margin-top:0.8rem;font-size:0.82rem;color:var(--success);display:none;">✓ Съобщението е изпратено!</p>
+        </form>`;
+    } else {
+      const phone = s.phone || '0876 127 997';
+      const hours = s.hours || 'Всеки ден';
+      contactSection.innerHTML = `<a href="tel:${phone.replace(/\s/g,'')}" style="display:inline-flex;align-items:center;gap:10px;font-size:1.3rem;color:var(--accent);text-decoration:none;font-family:'Cormorant Garamond',serif;">📞 ${phone}</a><p style="font-size:0.82rem;color:var(--muted);margin-top:0.5rem;">${hours}</p>`;
+    }
+  }
+
+  async function submitContactForm() {
+    const name = document.getElementById('cf-name').value.trim();
+    const email = document.getElementById('cf-email').value.trim();
+    const msg = document.getElementById('cf-msg').value.trim();
+    if (!name || !email || !msg) { alert('Моля попълни всички полета.'); return; }
+    const cfUrl = atob('aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J4M0FkTDBGWjB0Nm9maWp4NlZXNFczSlpDVndYcWVXOGQzMnBwMllMMkFDaVkxRERCenV2bGk0TDB6bnZ0bkplemovZXhlYw==');
+    await fetch(cfUrl, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'contactForm', name, email, msg }) });
+    document.getElementById('cf-status').style.display = 'block';
+    document.getElementById('cf-name').value = '';
+    document.getElementById('cf-email').value = '';
+    document.getElementById('cf-msg').value = '';
   }
 
   function isVisible(p) {
@@ -883,7 +931,7 @@
   }
 
   
-  const SCRIPT_URL = atob('aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J4M0FkTDBGWjB0Nm9maWp4NlZXNFczSlpDVndYcWVXOGQzMnBwMllMMkFDaVkxRERCenV2bGk0TDB6bnZ0bkplemovZXhlYw==');
+  const SCRIPT_URL2 = atob('aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J4M0FkTDBGWjB0Nm9maWp4NlZXNFczSlpDVndYcWVXOGQzMnBwMllMMkFDaVkxRERCenV2bGk0TDB6bnZ0bkplemovZXhlYw==');
 
   async function submitOrder() {
     const courier = document.getElementById('courier').value;
@@ -914,7 +962,7 @@
     };
 
     try {
-      await fetch(SCRIPT_URL, {
+      await fetch(SCRIPT_URL2, {
         method: 'POST',
         mode: 'no-cors',
         headers: { 'Content-Type': 'application/json' },

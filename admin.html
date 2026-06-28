@@ -200,6 +200,7 @@
       <button class="tab active" id="tab-inventory" onclick="showTab('inventory')">📦 Продукти</button>
       <button class="tab" id="tab-orders" onclick="showTab('orders')">🧾 Поръчки</button>
       <button class="tab" id="tab-add" onclick="showTab('add')">➕ Нов продукт</button>
+      <button class="tab" id="tab-settings" onclick="showTab('settings')">⚙ Настройки</button>
     </div>
 
     <div id="pane-inventory">
@@ -278,6 +279,53 @@
           <button class="btn btn-primary" onclick="addProduct()">Добави продукт</button>
           <button class="btn btn-ghost" onclick="showTab('inventory')">Отказ</button>
         </div>
+      </div>
+    </div>
+
+    <!-- SETTINGS PANE -->
+    <div id="pane-settings" style="display:none;">
+      <div class="add-product-section">
+        <h3>Настройки на сайта</h3>
+
+        <!-- SITE NAME -->
+        <div style="margin-bottom:2rem; padding-bottom:2rem; border-bottom:1px solid var(--border);">
+          <p class="cat-toggles-label" style="margin-bottom:1rem;">Име на сайта</p>
+          <div class="form-group" style="max-width:360px;">
+            <label>Показвано име (nav лого + заглавие)</label>
+            <input type="text" id="settings-sitename" placeholder="The Forbidden Style" />
+          </div>
+          <p style="font-size:0.72rem;color:var(--muted);margin-top:0.5rem;">Промяната се вижда в nav логото и заглавието на браузъра.</p>
+        </div>
+
+        <!-- CONTACT MODE -->
+        <div style="margin-bottom:2rem;">
+          <p class="cat-toggles-label" style="margin-bottom:1rem;">Контакт секция</p>
+          <div style="display:flex; gap:1rem; flex-wrap:wrap; margin-bottom:1rem;">
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+              <input type="radio" name="contactMode" value="phone" id="contact-phone" style="accent-color:var(--accent);" />
+              <span style="font-size:0.85rem;">📞 Телефонен номер</span>
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+              <input type="radio" name="contactMode" value="email" id="contact-email" style="accent-color:var(--accent);" />
+              <span style="font-size:0.85rem;">✉️ Мейл форма</span>
+            </label>
+          </div>
+          <div id="settings-phone-fields">
+            <div class="form-group" style="max-width:280px;">
+              <label>Телефонен номер</label>
+              <input type="text" id="settings-phone" placeholder="0876 127 997" />
+            </div>
+            <div class="form-group" style="max-width:280px; margin-top:0.8rem;">
+              <label>Работно време</label>
+              <input type="text" id="settings-hours" placeholder="Всеки ден" />
+            </div>
+          </div>
+          <div id="settings-email-fields" style="display:none;">
+            <p style="font-size:0.82rem;color:var(--muted);">Клиентите ще виждат форма с Име, Имейл и Съобщение. Мейлът ще дойде при теб.</p>
+          </div>
+        </div>
+
+        <button class="btn btn-primary" onclick="saveSettings()">Запази настройките</button>
       </div>
     </div>
   </div>
@@ -377,6 +425,7 @@
     var raw = data.content.replace(/\n/g,'');
     var content = JSON.parse(decodeURIComponent(escape(atob(raw))));
     loadUrgencySettings(content);
+    loadSettings(content);
     return content.products || [];
   }
 
@@ -390,7 +439,7 @@
       var getData = await getRes.json();
       fileSha = getData.sha;
 
-      var content = btoa(unescape(encodeURIComponent(JSON.stringify({ products: products, urgency: urgencyData }, null, 2))));
+      var content = btoa(unescape(encodeURIComponent(JSON.stringify({ products: products, urgency: urgencyData, settings: siteSettings }, null, 2))));
       var body = { message: 'Update products', content: content, sha: fileSha };
       var res = await fetch('https://api.github.com/repos/' + GITHUB_REPO + '/contents/' + PRODUCTS_FILE, {
         method: 'PUT',
@@ -528,12 +577,13 @@
 
   // ─── INVENTORY ───
   function showTab(name) {
-    ['inventory','orders','add'].forEach(function(t) {
+    ['inventory','orders','add','settings'].forEach(function(t) {
       document.getElementById('pane-' + t).style.display = t === name ? 'block' : 'none';
       var el = document.getElementById('tab-' + t);
       if (el) el.classList.toggle('active', t === name);
     });
     if (name === 'orders') loadOrders();
+    if (name === 'settings') renderSettingsUI();
   }
 
   function renderInventory() {
@@ -682,6 +732,78 @@
       products.pop();
       toast('Грешка при запис', 'error');
     }
+  }
+
+  // ─── SETTINGS ───
+  var siteSettings = {
+    siteName: 'The Forbidden Style',
+    contactMode: 'phone',
+    phone: '0876 127 997',
+    hours: 'Всеки ден'
+  };
+
+  function loadSettings(data) {
+    siteSettings = Object.assign({ siteName: 'The Forbidden Style', contactMode: 'phone', phone: '0876 127 997', hours: 'Всеки ден' }, data.settings || {});
+  }
+
+  function renderSettingsUI() {
+    var nameEl = document.getElementById('settings-sitename');
+    var phoneEl = document.getElementById('settings-phone');
+    var hoursEl = document.getElementById('settings-hours');
+    if (nameEl) nameEl.value = siteSettings.siteName || '';
+    if (phoneEl) phoneEl.value = siteSettings.phone || '';
+    if (hoursEl) hoursEl.value = siteSettings.hours || '';
+    var mode = siteSettings.contactMode || 'phone';
+    var radioPhone = document.getElementById('contact-phone');
+    var radioEmail = document.getElementById('contact-email');
+    if (radioPhone) radioPhone.checked = mode === 'phone';
+    if (radioEmail) radioEmail.checked = mode === 'email';
+    updateContactFields();
+  }
+
+  function updateContactFields() {
+    var mode = document.querySelector('input[name="contactMode"]:checked');
+    var phoneFields = document.getElementById('settings-phone-fields');
+    var emailFields = document.getElementById('settings-email-fields');
+    if (!phoneFields) return;
+    var isPhone = !mode || mode.value === 'phone';
+    phoneFields.style.display = isPhone ? 'block' : 'none';
+    emailFields.style.display = isPhone ? 'none' : 'block';
+  }
+
+  document.addEventListener('change', function(e) {
+    if (e.target.name === 'contactMode') updateContactFields();
+  });
+
+  async function saveSettings() {
+    var mode = document.querySelector('input[name="contactMode"]:checked');
+    siteSettings = {
+      siteName: document.getElementById('settings-sitename').value.trim() || 'The Forbidden Style',
+      contactMode: mode ? mode.value : 'phone',
+      phone: document.getElementById('settings-phone').value.trim() || '0876 127 997',
+      hours: document.getElementById('settings-hours').value.trim() || 'Всеки ден'
+    };
+    var currentData = { products: products, urgency: urgencyData, settings: siteSettings };
+    setSaving(true);
+    try {
+      var getRes = await fetch('https://api.github.com/repos/' + GITHUB_REPO + '/contents/' + PRODUCTS_FILE, {
+        headers: { 'Authorization': 'token ' + GITHUB_TOKEN, 'Accept': 'application/vnd.github.v3+json' }
+      });
+      var getData = await getRes.json();
+      fileSha = getData.sha;
+      var content = btoa(unescape(encodeURIComponent(JSON.stringify(currentData, null, 2))));
+      var res = await fetch('https://api.github.com/repos/' + GITHUB_REPO + '/contents/' + PRODUCTS_FILE, {
+        method: 'PUT',
+        headers: { 'Authorization': 'token ' + GITHUB_TOKEN, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: 'Update site settings', content: content, sha: fileSha })
+      });
+      var d = await res.json();
+      if (d.content) fileSha = d.content.sha;
+      toast('Настройките са запазени!', 'success');
+    } catch(e) {
+      toast('Грешка при запис', 'error');
+    }
+    setSaving(false);
   }
 
   // ─── SCAN IMAGES ───
