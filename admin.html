@@ -287,6 +287,30 @@
       <div class="add-product-section">
         <h3>Настройки на сайта</h3>
 
+        <!-- CATEGORIES VISIBILITY -->
+        <div style="margin-bottom:2rem; padding-bottom:2rem; border-bottom:1px solid var(--border);">
+          <p class="cat-toggles-label" style="margin-bottom:1rem;">Категории на началната страница</p>
+          <div class="visibility-toggle" onclick="toggleSettingToggle('showCategories')">
+            <div class="toggle-switch" id="toggle-showCategories"></div>
+            <span class="toggle-label" id="label-showCategories">Показани</span>
+          </div>
+          <p style="font-size:0.72rem;color:var(--muted);margin-top:0.5rem;">Изключи за да скриеш картите с категории. "Намери своя стил" заглавието остава.</p>
+        </div>
+
+        <!-- HERO TEXT -->
+        <div style="margin-bottom:2rem; padding-bottom:2rem; border-bottom:1px solid var(--border);">
+          <p class="cat-toggles-label" style="margin-bottom:1rem;">Hero текст</p>
+          <div class="form-group" style="max-width:360px; margin-bottom:0.8rem;">
+            <label>Горен малък текст (eyebrow)</label>
+            <input type="text" id="settings-eyebrow" placeholder="Нова колекция 2026" />
+          </div>
+          <div class="form-group" style="max-width:360px;">
+            <label>Главно заглавие</label>
+            <input type="text" id="settings-hero" placeholder="Живей с Аура" />
+          </div>
+          <p style="font-size:0.72rem;color:var(--muted);margin-top:0.5rem;">Стилът остава непроменен — само текстът се сменя.</p>
+        </div>
+
         <!-- SITE NAME -->
         <div style="margin-bottom:2rem; padding-bottom:2rem; border-bottom:1px solid var(--border);">
           <p class="cat-toggles-label" style="margin-bottom:1rem;">Име на сайта</p>
@@ -746,19 +770,37 @@
     siteSettings = Object.assign({ siteName: 'The Forbidden Style', contactMode: 'phone', phone: '0876 127 997', hours: 'Всеки ден' }, data.settings || {});
   }
 
+  function toggleSettingToggle(key) {
+    siteSettings[key] = siteSettings[key] === false ? true : false;
+    var tog = document.getElementById('toggle-' + key);
+    var lbl = document.getElementById('label-' + key);
+    var isOn = siteSettings[key] !== false;
+    if (tog) tog.classList.toggle('on', isOn);
+    if (lbl) { lbl.classList.toggle('on', isOn); lbl.textContent = key === 'showCategories' ? (isOn ? 'Показани' : 'Скрити') : (isOn ? 'Включено' : 'Изключено'); }
+  }
+
   function renderSettingsUI() {
     var nameEl = document.getElementById('settings-sitename');
     var phoneEl = document.getElementById('settings-phone');
     var hoursEl = document.getElementById('settings-hours');
+    var eyebrowEl = document.getElementById('settings-eyebrow');
+    var heroEl = document.getElementById('settings-hero');
     if (nameEl) nameEl.value = siteSettings.siteName || '';
     if (phoneEl) phoneEl.value = siteSettings.phone || '';
     if (hoursEl) hoursEl.value = siteSettings.hours || '';
+    if (eyebrowEl) eyebrowEl.value = siteSettings.eyebrow || 'Нова колекция 2026';
+    if (heroEl) heroEl.value = siteSettings.hero || 'Живей с Аура';
     var mode = siteSettings.contactMode || 'phone';
     var radioPhone = document.getElementById('contact-phone');
     var radioEmail = document.getElementById('contact-email');
     if (radioPhone) radioPhone.checked = mode === 'phone';
     if (radioEmail) radioEmail.checked = mode === 'email';
     updateContactFields();
+    var showCat = siteSettings.showCategories !== false;
+    var tog = document.getElementById('toggle-showCategories');
+    var lbl = document.getElementById('label-showCategories');
+    if (tog) tog.classList.toggle('on', showCat);
+    if (lbl) { lbl.classList.toggle('on', showCat); lbl.textContent = showCat ? 'Показани' : 'Скрити'; }
   }
 
   function updateContactFields() {
@@ -781,7 +823,10 @@
       siteName: document.getElementById('settings-sitename').value.trim() || 'The Forbidden Style',
       contactMode: mode ? mode.value : 'phone',
       phone: document.getElementById('settings-phone').value.trim() || '0876 127 997',
-      hours: document.getElementById('settings-hours').value.trim() || 'Всеки ден'
+      hours: document.getElementById('settings-hours').value.trim() || 'Всеки ден',
+      eyebrow: document.getElementById('settings-eyebrow').value.trim() || 'Нова колекция 2026',
+      hero: document.getElementById('settings-hero').value.trim() || 'Живей с Аура',
+      showCategories: siteSettings.showCategories !== false
     };
     var currentData = { products: products, urgency: urgencyData, settings: siteSettings };
     setSaving(true);
