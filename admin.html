@@ -904,6 +904,7 @@
     var isOn = siteSettings[key] !== false;
     if (tog) tog.classList.toggle('on', isOn);
     if (lbl) { lbl.classList.toggle('on', isOn); lbl.textContent = key === 'showCategories' ? (isOn ? 'Показани' : 'Скрити') : (isOn ? 'Включено' : 'Изключено'); }
+    saveSettings();
   }
 
   function renderSettingsUI() {
