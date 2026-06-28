@@ -758,27 +758,27 @@
     } catch (e) {
       console.warn('Не може да зареди products.json.');
       products = [];
+      document.getElementById('categoriesSection').style.opacity = '1';
     }
 
     const order = ['clothes', 'bracelets', 'speakers'];
     const grid = document.getElementById('categoriesGrid');
     grid.innerHTML = '';
-    grid.style.opacity = '1';
-    document.getElementById('categoriesSection').style.opacity = '1';
 
     const visibleCats = order.filter(cat =>
       products.some(p => p.category === cat && isVisible(p))
     );
 
-    if (visibleCats.length === 0) {
-      grid.innerHTML = `<p style="color:var(--muted); font-size:0.9rem;">Очаквайте скоро нови продукти.</p>`;
-      return;
+    if (visibleCats.length > 0) {
+      visibleCats.forEach(cat => {
+        const tpl = document.getElementById('tpl-' + cat);
+        if (tpl) grid.appendChild(tpl.content.cloneNode(true));
+      });
+    } else {
+      grid.innerHTML = '<p style="color:var(--muted); font-size:0.9rem;">Очаквайте скоро нови продукти.</p>';
     }
 
-    visibleCats.forEach(cat => {
-      const tpl = document.getElementById('tpl-' + cat);
-      if (tpl) grid.appendChild(tpl.content.cloneNode(true));
-    });
+    document.getElementById('categoriesSection').style.opacity = '1';
   }
 
   function applySettings(s) {
