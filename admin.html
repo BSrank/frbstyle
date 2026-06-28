@@ -167,6 +167,7 @@
           <div class="toggle-switch" id="cattoggle-speakers"></div>
           <div class="cat-toggle-status" id="catstate-speakers">Изключена</div>
         </div>
+        <div id="customCatToggles"></div>
       </div>
       <p style="font-size:0.72rem; color:var(--muted); margin-top:0.8rem;">Включена категория → всичките ѝ продукти стават видими. Изключена → изчезват от сайта.</p>
     </div>
@@ -595,11 +596,27 @@
     setSaving(false);
   }
 
+  function renderCustomCatToggles() {
+    var cats = siteSettings.customCategories || [];
+    var container = document.getElementById('customCatToggles');
+    if (!container) return;
+    container.innerHTML = cats.map(function(c) {
+      var isOn = products.some(function(p) { return p.category === c.id && p.active === true; });
+      return '<div class="cat-toggle-item" onclick="toggleCategory(\'' + c.id + '\')" style="min-width:100px;">' +
+        '<div class="cat-toggle-icon">' + c.emoji + '</div>' +
+        '<div class="cat-toggle-name">' + c.name + '</div>' +
+        '<div class="toggle-switch ' + (isOn ? 'on' : '') + '" id="cattoggle-' + c.id + '"></div>' +
+        '<div class="cat-toggle-status ' + (isOn ? 'on' : '') + '" id="catstate-' + c.id + '">' + (isOn ? 'Включена' : 'Изключена') + '</div>' +
+      '</div>';
+    }).join('');
+  }
+
   function syncCategoryToggles() {
     ['clothes','bracelets','speakers'].forEach(function(cat) {
       categoryStates[cat] = products.some(function(p) { return p.category === cat && p.active === true; });
     });
     renderCategoryToggles();
+    renderCustomCatToggles();
   }
 
   function renderCategoryToggles() {
@@ -613,22 +630,26 @@
   }
 
   function catName(cat) {
-    return { clothes: 'Дрехи', bracelets: 'Смарт гривни', speakers: 'Тонколонки' }[cat] || cat;
+    var builtin = { clothes: 'Дрехи', bracelets: 'Смарт гривни', speakers: 'Тонколонки' };
+    if (builtin[cat]) return builtin[cat];
+    var custom = (siteSettings.customCategories || []).find(function(c) { return c.id === cat; });
+    return custom ? custom.name : cat;
   }
 
   async function toggleCategory(cat) {
-    var newState = !categoryStates[cat];
-    categoryStates[cat] = newState;
-    renderCategoryToggles();
+    var isBuiltin = ['clothes','bracelets','speakers'].includes(cat);
+    var newState = isBuiltin ? !categoryStates[cat] : !products.some(function(p) { return p.category === cat && p.active === true; });
+    if (isBuiltin) categoryStates[cat] = newState;
     products.forEach(function(p, i) {
       if (p.category === cat) products[i].active = newState;
     });
+    renderCategoryToggles();
+    renderCustomCatToggles();
     renderInventory();
     updateStats();
     var ok = await saveProductsToGitHub(products);
-    toast(ok
-      ? (newState ? 'Категория "' + catName(cat) + '" е включена' : 'Категория "' + catName(cat) + '" е изключена')
-      : 'Грешка при запис', ok ? 'success' : 'error');
+    var label = catName(cat);
+    toast(ok ? 'Категория "' + label + '" е ' + (newState ? 'включена' : 'изключена') : 'Грешка при запис', ok ? 'success' : 'error');
   }
 
   // ─── INVENTORY ───
@@ -853,11 +874,13 @@
     if (!emoji || !name) { toast('Избери емоджи и въведи име', 'error'); return; }
     if (!siteSettings.customCategories) siteSettings.customCategories = [];
     var id = 'cat_' + name.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '') + '_' + Date.now().toString().slice(-4);
-    siteSettings.customCategories.push({ id: id, emoji: emoji, name: name, active: true });
+    siteSettings.customCategories.push({ id: id, emoji: emoji, name: name, active: false });
     document.getElementById('newcat-emoji').value = '';
     document.getElementById('newcat-name').value = '';
     renderCustomCatList();
+    renderCustomCatToggles();
     updateCategoryDropdowns();
+    createImageFolder(id, id);
     toast('Категорията е добавена! Запази настройките.', 'success');
   }
 
