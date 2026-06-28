@@ -289,6 +289,13 @@
       <div class="add-product-section">
         <h3>Настройки на сайта</h3>
 
+        <!-- THEME SELECTOR -->
+        <div style="margin-bottom:2rem; padding-bottom:2rem; border-bottom:1px solid var(--border);">
+          <p class="cat-toggles-label" style="margin-bottom:1rem;">Тема на сайта</p>
+          <div id="themeGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;"></div>
+          <p style="font-size:0.72rem;color:var(--muted);margin-top:0.5rem;">Цветове, шрифтове и стил на бутоните се сменят. Всички настройки и продукти остават.</p>
+        </div>
+
         <!-- CATEGORIES VISIBILITY -->
         <div style="margin-bottom:2rem; padding-bottom:2rem; border-bottom:1px solid var(--border);">
           <p class="cat-toggles-label" style="margin-bottom:1rem;">Категории на началната страница</p>
@@ -811,6 +818,43 @@
     }
   }
 
+  // ─── THEMES ───
+  var THEMES = {
+    'noir-luxe':      { name:'Noir Luxe',       dark:true,  accent:'#c9a96e', bg:'#0a0a0a' },
+    'blanc-eclat':    { name:'Blanc Éclat',      dark:false, accent:'#8b6914', bg:'#fafaf8' },
+    'chrome-wave':    { name:'Chrome Wave',      dark:true,  accent:'#a78bfa', bg:'#0d0d14' },
+    'rose-atelier':   { name:'Rosé Atelier',     dark:false, accent:'#c4614a', bg:'#fdf6f0' },
+    'concrete-edge':  { name:'Concrete Edge',    dark:false, accent:'#e8d44d', bg:'#1c1c1c' },
+    'ink-editorial':  { name:'Ink Editorial',    dark:false, accent:'#111111', bg:'#f7f5f0' },
+    'solar-flare':    { name:'Solar Flare',      dark:false, accent:'#ff4d00', bg:'#111111' },
+    'pearl-minimal':  { name:'Pearl Minimal',    dark:false, accent:'#1a1a1a', bg:'#ffffff' },
+    'voltage':        { name:'Voltage',          dark:true,  accent:'#00ff88', bg:'#0a0a0a' },
+    'sand-dune':      { name:'Sand Dune',        dark:false, accent:'#c9a96e', bg:'#f0ead8' }
+  };
+
+  function renderThemeGrid() {
+    var current = siteSettings.theme || 'noir-luxe';
+    var grid = document.getElementById('themeGrid');
+    if (!grid) return;
+    grid.innerHTML = Object.keys(THEMES).map(function(id) {
+      var t = THEMES[id];
+      var isActive = id === current;
+      return '<div onclick="selectTheme(\'' + id + '\')" style="cursor:pointer;border-radius:4px;overflow:hidden;border:2px solid ' + (isActive ? 'var(--accent)' : 'transparent') + ';transition:border-color 0.2s;" id="theme-opt-' + id + '">' +
+        '<div style="height:50px;background:' + t.bg + ';display:flex;align-items:center;justify-content:center;gap:6px;">' +
+          '<div style="width:16px;height:16px;border-radius:50%;background:' + t.accent + ';"></div>' +
+          '<div style="width:24px;height:6px;border-radius:2px;background:' + t.accent + ';opacity:0.4;"></div>' +
+        '</div>' +
+        '<div style="padding:6px 8px;background:var(--surface2);font-size:0.62rem;letter-spacing:0.06em;color:' + (isActive ? 'var(--accent)' : 'var(--muted)') + ';text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + t.name + '</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  function selectTheme(id) {
+    siteSettings.theme = id;
+    renderThemeGrid();
+    toast('Тема "' + THEMES[id].name + '" избрана — натисни Запази', 'success');
+  }
+
   // ─── EMOJI PICKER ───
   var EMOJIS = [
     '👕','👗','👔','🧥','🧣','🧤','🧢','👟','👠','👜',
@@ -954,6 +998,7 @@
     if (lbl) { lbl.classList.toggle('on', showCat); lbl.textContent = showCat ? 'Показани' : 'Скрити'; }
     renderCustomCatList();
     updateCategoryDropdowns();
+    renderThemeGrid();
   }
 
   function updateContactFields() {
@@ -980,7 +1025,8 @@
       eyebrow: document.getElementById('settings-eyebrow').value.trim() || 'Нова колекция 2026',
       hero: document.getElementById('settings-hero').value.trim() || 'Живей с Аура',
       showCategories: siteSettings.showCategories !== false,
-      customCategories: siteSettings.customCategories || []
+      customCategories: siteSettings.customCategories || [],
+      theme: siteSettings.theme || 'noir-luxe'
     };
     var currentData = { products: products, urgency: urgencyData, settings: siteSettings };
     setSaving(true);
