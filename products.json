@@ -6,7 +6,7 @@
       "category": "clothes",
       "price": 80,
       "desc": "100% памук бродерия",
-      "active": true,
+      "active": false,
       "sizes": [
         {
           "size": "XS",
@@ -45,7 +45,7 @@
       "category": "clothes",
       "price": 80,
       "desc": "бродерия 100% памук",
-      "active": true,
+      "active": false,
       "sizes": [
         {
           "size": "XS",
@@ -84,7 +84,7 @@
       "category": "clothes",
       "price": 80,
       "desc": "100% бродерия - памук",
-      "active": true,
+      "active": false,
       "sizes": [
         {
           "size": "XS",
@@ -122,7 +122,7 @@
       "category": "clothes",
       "price": 80,
       "desc": "",
-      "active": true,
+      "active": false,
       "sizes": [
         {
           "size": "XS",
@@ -160,7 +160,7 @@
       "category": "clothes",
       "price": 80,
       "desc": "",
-      "active": true,
+      "active": false,
       "sizes": [
         {
           "size": "XS",
@@ -198,7 +198,7 @@
       "category": "clothes",
       "price": 80,
       "desc": "",
-      "active": true,
+      "active": false,
       "sizes": [
         {
           "size": "XS",
