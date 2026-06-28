@@ -234,5 +234,11 @@
   "urgency": {
     "enabled": false,
     "qty": 2
+  },
+  "settings": {
+    "siteName": "The Forbidden Style",
+    "contactMode": "email",
+    "phone": "0876 127 997",
+    "hours": "Всеки ден"
   }
 }
