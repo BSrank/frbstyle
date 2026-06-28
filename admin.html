@@ -114,7 +114,8 @@
     .toast.show { transform: translateY(0); opacity: 1; }
     .toast.success { border-color: var(--success); color: var(--success); }
     .toast.error { border-color: var(--danger); color: var(--danger); }
-    .saving-indicator { font-size: 0.75rem; color: var(--muted); margin-left: 1rem; }
+    .emoji-opt { font-size:1.4rem; cursor:pointer; padding:4px; border-radius:4px; transition:background 0.15s; line-height:1; }
+    .emoji-opt:hover { background:var(--surface2); }
     @media (max-width: 700px) { .stats { grid-template-columns: 1fr 1fr; } .product-table, .orders-table { font-size: 0.78rem; } .cat-toggles-row { flex-direction: column; } }
   </style>
 </head>
@@ -347,6 +348,37 @@
           <div id="settings-email-fields" style="display:none;">
             <p style="font-size:0.82rem;color:var(--muted);">Клиентите ще виждат форма с Име, Имейл и Съобщение. Мейлът ще дойде при теб.</p>
           </div>
+        </div>
+
+        <!-- CUSTOM CATEGORIES -->
+        <div style="margin-bottom:2rem; padding-bottom:2rem; border-bottom:1px solid var(--border);">
+          <p class="cat-toggles-label" style="margin-bottom:1rem;">Персонализирани категории</p>
+          <div id="customCatList" style="margin-bottom:1rem;"></div>
+          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:1rem;">
+            <p style="font-size:0.72rem;color:var(--accent);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:0.8rem;">Добави нова категория</p>
+            <div style="display:flex;gap:0.8rem;align-items:flex-start;flex-wrap:wrap;">
+              <div>
+                <div style="font-size:0.68rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.4rem;">Емоджи</div>
+                <div style="position:relative;">
+                  <input type="text" id="newcat-emoji" readonly placeholder="🎧" onclick="toggleEmojiPicker()"
+                    style="width:60px;padding:9px;background:var(--surface);border:1px solid var(--border);color:var(--text);font-size:1.4rem;border-radius:2px;outline:none;text-align:center;cursor:pointer;" />
+                  <div id="emojiPicker" style="display:none;position:absolute;top:44px;left:0;z-index:100;background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:0.8rem;width:280px;box-shadow:0 8px 24px rgba(0,0,0,0.5);">
+                    <div style="font-size:0.62rem;color:var(--muted);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:0.6rem;">Избери емоджи</div>
+                    <div style="display:flex;flex-wrap:wrap;gap:4px;" id="emojiGrid"></div>
+                  </div>
+                </div>
+              </div>
+              <div style="flex:1;min-width:160px;">
+                <div style="font-size:0.68rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.4rem;">Име на категорията *</div>
+                <input type="text" id="newcat-name" placeholder="Слушалки"
+                  style="width:100%;padding:9px 11px;background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.88rem;border-radius:2px;outline:none;" />
+              </div>
+              <div style="padding-top:24px;">
+                <button class="btn btn-primary" onclick="addCustomCategory()" style="white-space:nowrap;">+ Добави</button>
+              </div>
+            </div>
+          </div>
+          <p style="font-size:0.72rem;color:var(--muted);margin-top:0.5rem;">Категориите се появяват в dropdown-а при добавяне на продукт и на началната страница.</p>
         </div>
 
         <button class="btn btn-primary" onclick="saveSettings()">Запази настройките</button>
@@ -758,6 +790,101 @@
     }
   }
 
+  // ─── EMOJI PICKER ───
+  var EMOJIS = [
+    '👕','👗','👔','🧥','🧣','🧤','🧢','👟','👠','👜',
+    '👒','🕶️','💍','⌚','📱','🎧','🔊','💻','🖥️','⌨️',
+    '🎮','📷','📸','🎒','🧳','💄','💅','🪞','🛍️','🏋️',
+    '⚽','🏀','🎾','🏊','🚴','🧘','🏃','🤸','⛹️','🥊',
+    '🎵','🎸','🎹','🎺','🥁','🎻','🎤','🎬','🎯','🎲',
+    '🌸','🌿','🍃','🌙','⭐','🔥','💎','👑','🦋','🐉'
+  ];
+
+  function toggleEmojiPicker() {
+    var picker = document.getElementById('emojiPicker');
+    if (picker.style.display === 'none') {
+      var grid = document.getElementById('emojiGrid');
+      if (!grid.children.length) {
+        grid.innerHTML = EMOJIS.map(function(e) {
+          return '<span class="emoji-opt" onclick="selectEmoji(\'' + e + '\')" title="' + e + '">' + e + '</span>';
+        }).join('');
+      }
+      picker.style.display = 'block';
+    } else {
+      picker.style.display = 'none';
+    }
+  }
+
+  function selectEmoji(e) {
+    document.getElementById('newcat-emoji').value = e;
+    document.getElementById('emojiPicker').style.display = 'none';
+  }
+
+  document.addEventListener('click', function(e) {
+    var picker = document.getElementById('emojiPicker');
+    var input = document.getElementById('newcat-emoji');
+    if (picker && !picker.contains(e.target) && e.target !== input) {
+      picker.style.display = 'none';
+    }
+  });
+
+  // ─── CUSTOM CATEGORIES ───
+  function renderCustomCatList() {
+    var cats = siteSettings.customCategories || [];
+    var list = document.getElementById('customCatList');
+    if (!list) return;
+    if (!cats.length) {
+      list.innerHTML = '<p style="font-size:0.8rem;color:var(--muted);">Няма добавени категории.</p>';
+      return;
+    }
+    list.innerHTML = cats.map(function(c, i) {
+      return '<div style="display:flex;align-items:center;gap:0.8rem;padding:0.6rem 0.8rem;background:var(--surface2);border-radius:2px;margin-bottom:4px;">' +
+        '<span style="font-size:1.3rem;">' + c.emoji + '</span>' +
+        '<span style="flex:1;font-size:0.88rem;">' + c.name + '</span>' +
+        '<span style="font-size:0.65rem;color:var(--muted);letter-spacing:0.08em;">ID: ' + c.id + '</span>' +
+        '<button onclick="removeCustomCategory(' + i + ')" style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:0.9rem;padding:2px 6px;">✕</button>' +
+      '</div>';
+    }).join('');
+  }
+
+  function addCustomCategory() {
+    var emoji = document.getElementById('newcat-emoji').value.trim();
+    var name = document.getElementById('newcat-name').value.trim();
+    if (!emoji || !name) { toast('Избери емоджи и въведи име', 'error'); return; }
+    if (!siteSettings.customCategories) siteSettings.customCategories = [];
+    var id = 'cat_' + name.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '') + '_' + Date.now().toString().slice(-4);
+    siteSettings.customCategories.push({ id: id, emoji: emoji, name: name, active: true });
+    document.getElementById('newcat-emoji').value = '';
+    document.getElementById('newcat-name').value = '';
+    renderCustomCatList();
+    updateCategoryDropdowns();
+    toast('Категорията е добавена! Запази настройките.', 'success');
+  }
+
+  function removeCustomCategory(idx) {
+    if (!confirm('Изтрий категорията?')) return;
+    siteSettings.customCategories.splice(idx, 1);
+    renderCustomCatList();
+    updateCategoryDropdowns();
+  }
+
+  function updateCategoryDropdowns() {
+    var cats = siteSettings.customCategories || [];
+    var selects = ['np-cat', 'edit-cat'];
+    selects.forEach(function(id) {
+      var sel = document.getElementById(id);
+      if (!sel) return;
+      var builtin = ['<option value="">Избери</option>',
+        '<option value="clothes">👕 Дрехи</option>',
+        '<option value="bracelets">⌚ Смарт гривни</option>',
+        '<option value="speakers">🔊 Тонколонки</option>'];
+      var custom = cats.map(function(c) {
+        return '<option value="' + c.id + '">' + c.emoji + ' ' + c.name + '</option>';
+      });
+      sel.innerHTML = builtin.concat(custom).join('');
+    });
+  }
+
   // ─── SETTINGS ───
   var siteSettings = {
     siteName: 'The Forbidden Style',
@@ -767,7 +894,7 @@
   };
 
   function loadSettings(data) {
-    siteSettings = Object.assign({ siteName: 'The Forbidden Style', contactMode: 'phone', phone: '0876 127 997', hours: 'Всеки ден' }, data.settings || {});
+    siteSettings = Object.assign({ siteName: 'The Forbidden Style', contactMode: 'phone', phone: '0876 127 997', hours: 'Всеки ден', showCategories: true, customCategories: [] }, data.settings || {});
   }
 
   function toggleSettingToggle(key) {
@@ -801,6 +928,8 @@
     var lbl = document.getElementById('label-showCategories');
     if (tog) tog.classList.toggle('on', showCat);
     if (lbl) { lbl.classList.toggle('on', showCat); lbl.textContent = showCat ? 'Показани' : 'Скрити'; }
+    renderCustomCatList();
+    updateCategoryDropdowns();
   }
 
   function updateContactFields() {
@@ -826,7 +955,8 @@
       hours: document.getElementById('settings-hours').value.trim() || 'Всеки ден',
       eyebrow: document.getElementById('settings-eyebrow').value.trim() || 'Нова колекция 2026',
       hero: document.getElementById('settings-hero').value.trim() || 'Живей с Аура',
-      showCategories: siteSettings.showCategories !== false
+      showCategories: siteSettings.showCategories !== false,
+      customCategories: siteSettings.customCategories || []
     };
     var currentData = { products: products, urgency: urgencyData, settings: siteSettings };
     setSaving(true);
