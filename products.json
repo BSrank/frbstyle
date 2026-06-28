@@ -260,7 +260,9 @@
     "contactMode": "email",
     "phone": "0876 127 997",
     "hours": "Всеки ден",
-    "showCategories": false,
+    "eyebrow": "Нова колекция 2026",
+    "hero": "Живей с Аура",
+    "showCategories": true,
     "customCategories": [
       {
         "id": "cat__5887",
@@ -268,8 +270,6 @@
         "name": "тест",
         "active": false
       }
-    ],
-    "eyebrow": "Нова колекция 2026",
-    "hero": "Живей с Аура"
+    ]
   }
 }
