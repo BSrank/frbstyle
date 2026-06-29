@@ -330,6 +330,17 @@
           <p style="font-size:0.72rem;color:var(--muted);margin-top:0.5rem;">Промяната се вижда в nav логото и заглавието на браузъра.</p>
         </div>
 
+        <!-- GOOGLE SCRIPT URL -->
+        <div style="margin-bottom:2rem; padding-bottom:2rem; border-bottom:1px solid var(--border);">
+          <p class="cat-toggles-label" style="margin-bottom:1rem;">Google Script URL (за поръчки)</p>
+          <div class="form-group" style="max-width:100%;">
+            <label>Постави новия URL от Google Apps Script</label>
+            <input type="text" id="settings-scripturl" placeholder="https://script.google.com/macros/s/..." style="font-size:0.78rem;letter-spacing:0;" />
+          </div>
+          <div id="scripturl-status" style="font-size:0.72rem;margin-top:0.5rem;color:var(--muted);"></div>
+          <p style="font-size:0.72rem;color:var(--muted);margin-top:0.5rem;">URL-ът се кодира автоматично — никой не може да го види в сорс кода.</p>
+        </div>
+
         <!-- CONTACT MODE -->
         <div style="margin-bottom:2rem;">
           <p class="cat-toggles-label" style="margin-bottom:1rem;">Контакт секция</p>
@@ -1009,6 +1020,15 @@
     var lbl = document.getElementById('label-showCategories');
     if (tog) tog.classList.toggle('on', showCat);
     if (lbl) { lbl.classList.toggle('on', showCat); lbl.textContent = showCat ? 'Показани' : 'Скрити'; }
+    var scriptEl = document.getElementById('settings-scripturl');
+    if (scriptEl) {
+      if (siteSettings.scriptUrlEncoded) {
+        scriptEl.placeholder = '(запазен — постави нов за да смениш)';
+        scriptEl.value = '';
+        document.getElementById('scripturl-status').textContent = '✓ URL е запазен и кодиран';
+        document.getElementById('scripturl-status').style.color = 'var(--success)';
+      }
+    }
     renderCustomCatList();
     updateCategoryDropdowns();
     renderThemeGrid();
@@ -1039,7 +1059,14 @@
       hero: document.getElementById('settings-hero').value.trim() || 'Живей с Аура',
       showCategories: siteSettings.showCategories !== false,
       customCategories: siteSettings.customCategories || [],
-      theme: siteSettings.theme || 'noir-luxe'
+      theme: siteSettings.theme || 'noir-luxe',
+      scriptUrlEncoded: (function() {
+        var newUrl = document.getElementById('settings-scripturl').value.trim();
+        if (newUrl && newUrl.startsWith('https://script.google.com')) {
+          return btoa(newUrl);
+        }
+        return siteSettings.scriptUrlEncoded || '';
+      })()
     };
     var currentData = { products: products, urgency: urgencyData, settings: siteSettings };
     setSaving(true);
