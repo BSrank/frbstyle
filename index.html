@@ -746,7 +746,7 @@
 
 <script>
   
-  const SCRIPT_URL = atob('aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J4M0FkTDBGWjB0Nm9maWp4NlZXNFczSlpDVndYcWVXOGQzMnBwMllMMkFDaVkxRERCenV2bGk0TDB6bnZ0bkplemovZXhlYw==');
+  var SCRIPT_URL = atob('aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J4M0FkTDBGWjB0Nm9maWp4NlZXNFczSlpDVndYcWVXOGQzMnBwMllMMkFDaVkxRERCenV2bGk0TDB6bnZ0bkplemovZXhlYw==');
 
   
   async function loadCategories() {
@@ -809,6 +809,7 @@
 
   function applySettings(s) {
     applyTheme(s.theme || 'noir-luxe');
+    if (s.scriptUrlEncoded) { try { SCRIPT_URL = atob(s.scriptUrlEncoded); SCRIPT_URL2 = SCRIPT_URL; } catch(e) {} }
     const name = s.siteName || 'The Forbidden Style';
 
     document.title = name + ' — Curated Drops';
@@ -1015,7 +1016,7 @@
   }
 
   
-  const SCRIPT_URL2 = atob('aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J4M0FkTDBGWjB0Nm9maWp4NlZXNFczSlpDVndYcWVXOGQzMnBwMllMMkFDaVkxRERCenV2bGk0TDB6bnZ0bkplemovZXhlYw==');
+  var SCRIPT_URL2 = SCRIPT_URL;
 
   async function submitOrder() {
     const courier = document.getElementById('courier').value;
