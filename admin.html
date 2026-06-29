@@ -832,14 +832,27 @@
   'sand-dune': {fonts:'https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap',css:' :root{--bg:#f0ead8;--surface:#ffffff;--surface2:#e8dcc8;--border:#d4c4a0;--text:#3d2e1e;--muted:#7a6040;--accent:#c9a96e;--accent2:#e8d4a0;--danger:#e05252;--success:#52c07a;} body{background:var(--bg);color:var(--text);font-family:\'DM Sans\',sans-serif;} nav{background:#f0ead8;border-bottom:2px solid #3d2e1e;} .nav-logo{font-family:\'Fraunces\',serif;color:#3d2e1e;font-style:italic;font-weight:400;} .nav-logo span{color:#c9a96e;-webkit-text-fill-color:#c9a96e;} .nav a{color:#3d2e1e;} .hero-eyebrow{color:#c9a96e;font-family:\'DM Sans\',sans-serif;} .hero h1{font-family:\'Fraunces\',serif;font-weight:400;color:#f0ead8;font-style:italic;} .hero h1 em{color:#c9a96e;font-style:italic;} .hero{background:#3d2e1e !important;} .hero-cta{background:#c9a96e;color:#3d2e1e;border-radius:4px;border:none;font-family:\'DM Sans\',sans-serif;font-weight:500;} .hero-cta:hover{background:#e8d4a0;} .section-title{font-family:\'Fraunces\',serif;color:#3d2e1e;font-weight:400;font-style:italic;} .cat-name{font-family:\'Fraunces\',serif;color:#f0ead8;font-weight:400;font-style:italic;} .product-name{font-family:\'Fraunces\',serif;color:#3d2e1e;font-weight:400;font-style:italic;} .product-price{color:#c9a96e;} .footer-logo{font-family:\'Fraunces\',serif;color:#3d2e1e;font-style:italic;} .footer-logo span{color:#c9a96e;-webkit-text-fill-color:#c9a96e;} .page-header h1{font-family:\'Fraunces\',serif;color:#3d2e1e;font-style:italic;} .add-to-cart{background:#3d2e1e;color:#f0ead8;border-radius:4px;} .product-card{border-radius:4px;box-shadow:0 4px 20px rgba(61,46,30,0.1);} '}
 };
 
+  var THEME_META = {
+    'noir-luxe':     {name:'Noir Luxe',      accent:'#c9a96e', bg:'#0a0a0a'},
+    'blanc-eclat':   {name:'Blanc Éclat',     accent:'#8b6914', bg:'#fafaf8'},
+    'chrome-wave':   {name:'Chrome Wave',     accent:'#a78bfa', bg:'#0d0d14'},
+    'rose-atelier':  {name:'Rosé Atelier',    accent:'#c4614a', bg:'#fdf6f0'},
+    'concrete-edge': {name:'Concrete Edge',   accent:'#e8d44d', bg:'#1c1c1c'},
+    'ink-editorial': {name:'Ink Editorial',   accent:'#111111', bg:'#f7f5f0'},
+    'solar-flare':   {name:'Solar Flare',     accent:'#ff4d00', bg:'#fff8f0'},
+    'pearl-minimal': {name:'Pearl Minimal',   accent:'#1a1a1a', bg:'#ffffff'},
+    'voltage':       {name:'Voltage',         accent:'#00ff88', bg:'#0a0a0a'},
+    'sand-dune':     {name:'Sand Dune',       accent:'#c9a96e', bg:'#f0ead8'}
+  };
+
   function renderThemeGrid() {
     var current = siteSettings.theme || 'noir-luxe';
     var grid = document.getElementById('themeGrid');
     if (!grid) return;
-    grid.innerHTML = Object.keys(THEMES).map(function(id) {
-      var t = THEMES[id];
+    grid.innerHTML = Object.keys(THEME_META).map(function(id) {
+      var t = THEME_META[id];
       var isActive = id === current;
-      return '<div onclick="selectTheme(\'' + id + '\')" style="cursor:pointer;border-radius:4px;overflow:hidden;border:2px solid ' + (isActive ? 'var(--accent)' : 'transparent') + ';transition:border-color 0.2s;" id="theme-opt-' + id + '">' +
+      return '<div onclick="selectTheme(\'' + id + '\')" style="cursor:pointer;border-radius:4px;overflow:hidden;border:2px solid ' + (isActive ? 'var(--accent)' : 'transparent') + ';transition:border-color 0.2s;">' +
         '<div style="height:50px;background:' + t.bg + ';display:flex;align-items:center;justify-content:center;gap:6px;">' +
           '<div style="width:16px;height:16px;border-radius:50%;background:' + t.accent + ';"></div>' +
           '<div style="width:24px;height:6px;border-radius:2px;background:' + t.accent + ';opacity:0.4;"></div>' +
@@ -852,7 +865,7 @@
   function selectTheme(id) {
     siteSettings.theme = id;
     renderThemeGrid();
-    toast('Тема "' + THEMES[id].name + '" избрана — натисни Запази', 'success');
+    toast('Тема "' + THEME_META[id].name + '" избрана — натисни Запази', 'success');
   }
 
   // ─── EMOJI PICKER ───
