@@ -424,7 +424,7 @@
 <script>
   
   
-  const SCRIPT_URL = atob('aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J4M0FkTDBGWjB0Nm9maWp4NlZXNFczSlpDVndYcWVXOGQzMnBwMllMMkFDaVkxRERCenV2bGk0TDB6bnZ0bkplemovZXhlYw==');
+  var SCRIPT_URL = atob('aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J4M0FkTDBGWjB0Nm9maWp4NlZXNFczSlpDVndYcWVXOGQzMnBwMllMMkFDaVkxRERCenV2bGk0TDB6bnZ0bkplemovZXhlYw==');
 
   
   const CAT_META = {
@@ -450,6 +450,7 @@
       urgencySettings = data.urgency || { enabled: false, qty: 2 };
       loadCustomCategories(data.settings || {});
       applyTheme((data.settings || {}).theme || 'noir-luxe');
+      if (data.settings && data.settings.scriptUrlEncoded) { try { SCRIPT_URL = atob(data.settings.scriptUrlEncoded); } catch(e) {} }
     } catch (e) {
       console.warn('Не може да зареди от Google Sheets, ползва demo данни.');
       allProducts = getDemoProducts();
