@@ -870,8 +870,7 @@
     const email = document.getElementById('cf-email').value.trim();
     const msg = document.getElementById('cf-msg').value.trim();
     if (!name || !email || !msg) { alert('Моля попълни всички полета.'); return; }
-    const cfUrl = atob('aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J4M0FkTDBGWjB0Nm9maWp4NlZXNFczSlpDVndYcWVXOGQzMnBwMllMMkFDaVkxRERCenV2bGk0TDB6bnZ0bkplemovZXhlYw==');
-    await fetch(cfUrl, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'contactForm', name, email, msg }) });
+    await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'contactForm', name, email, msg }) });
     document.getElementById('cf-status').style.display = 'block';
     document.getElementById('cf-name').value = '';
     document.getElementById('cf-email').value = '';
