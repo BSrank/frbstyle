@@ -269,7 +269,8 @@
       "desc": "t",
       "active": true,
       "sizes": [],
-      "qty": 2
+      "qty": 2,
+      "images": []
     }
   ],
   "urgency": {
