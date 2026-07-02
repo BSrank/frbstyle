@@ -38,7 +38,7 @@
       display: flex; align-items: center; gap: 8px; transition: border-color 0.2s, color 0.2s;
     }
     .cart-btn:hover { border-color: var(--accent); color: var(--accent); }
-    .cart-count { background: var(--accent); color: #000; border-radius: 50%; width: 18px; height: 18px; font-size: 0.7rem; font-weight: 500; display: flex; align-items: center; justify-content: center; }
+    .cart-count { background: var(--accent); color: var(--btn-text, #000); border-radius: 50%; width: 18px; height: 18px; font-size: 0.7rem; font-weight: 500; display: flex; align-items: center; justify-content: center; }
     .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; background: none; border: none; padding: 4px; }
     .hamburger span { display: block; width: 22px; height: 1.5px; background: var(--text); }
 
@@ -245,7 +245,7 @@
       letter-spacing: 0.1em; text-transform: uppercase;
       border-radius: 2px; transition: all 0.2s; margin-top: auto;
     }
-    .add-btn:hover:not(:disabled) { background: var(--accent); border-color: var(--accent); color: #000; }
+    .add-btn:hover:not(:disabled) { background: var(--accent); border-color: var(--accent); color: var(--btn-text, #000); }
     .add-btn:disabled { opacity: 0.4; cursor: not-allowed; }
     .add-btn.added { background: rgba(82,192,122,0.1); border-color: var(--success); color: var(--success); }
 
@@ -272,7 +272,7 @@
     .cart-footer { padding: 1rem 1.5rem 1.5rem; border-top: 1px solid var(--border); }
     .cart-total { display: flex; justify-content: space-between; font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; margin-bottom: 1rem; }
     .cart-total-price { color: var(--accent); }
-    .checkout-btn { width: 100%; padding: 14px; background: var(--accent); color: #000; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 0.82rem; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 500; border-radius: 2px; transition: background 0.2s; }
+    .checkout-btn { width: 100%; padding: 14px; background: var(--accent); color: var(--btn-text, #000); border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 0.82rem; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 500; border-radius: 2px; transition: background 0.2s; }
     .checkout-btn:hover { background: var(--accent2); }
     .checkout-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
@@ -295,7 +295,7 @@
     .order-total-row { display: flex; justify-content: space-between; font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; margin-top: 0.6rem; }
     .order-total-row span:last-child { color: var(--accent); }
     .form-actions { display: flex; gap: 1rem; }
-    .btn-submit { flex: 1; padding: 13px; background: var(--accent); color: #000; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 0.82rem; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 500; border-radius: 2px; transition: background 0.2s; }
+    .btn-submit { flex: 1; padding: 13px; background: var(--accent); color: var(--btn-text, #000); border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 0.82rem; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 500; border-radius: 2px; transition: background 0.2s; }
     .btn-submit:hover { background: var(--accent2); }
     .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
     .btn-back { padding: 13px 20px; background: none; border: 1px solid var(--border); color: var(--muted); cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 0.82rem; border-radius: 2px; transition: border-color 0.2s, color 0.2s; }
@@ -305,7 +305,7 @@
     .success-icon { width: 64px; height: 64px; background: rgba(82,192,122,0.1); border: 1px solid var(--success); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; }
     .success-screen h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; font-weight: 400; }
     .success-screen p { font-size: 0.85rem; color: var(--muted); max-width: 320px; }
-    .btn-close-success { padding: 12px 30px; background: var(--accent); color: #000; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 0.82rem; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 500; border-radius: 2px; margin-top: 0.5rem; }
+    .btn-close-success { padding: 12px 30px; background: var(--accent); color: var(--btn-text, #000); border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 0.82rem; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 500; border-radius: 2px; margin-top: 0.5rem; }
 
     .empty-cat { padding: 4rem 0; text-align: center; color: var(--muted); }
     .empty-cat p { font-size: 0.9rem; margin-top: 0.5rem; }
