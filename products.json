@@ -278,7 +278,16 @@
       "active": true,
       "sizes": [],
       "qty": 2,
-      "images": []
+      "images": [
+        "images/cat__3010/p_1782655459676/1.jpg",
+        "images/cat__3010/p_1782655459676/2.jpg",
+        "images/cat__3010/p_1782655459676/3.jpg",
+        "images/cat__3010/p_1782655459676/4.jpg",
+        "images/cat__3010/p_1782655459676/5.jpg",
+        "images/cat__3010/p_1782655459676/6.jpg",
+        "images/cat__3010/p_1782655459676/7.jpg",
+        "images/cat__3010/p_1782655459676/8.jpg"
+      ]
     }
   ],
   "urgency": {
