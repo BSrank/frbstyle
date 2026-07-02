@@ -261,7 +261,13 @@
       "active": true,
       "sizes": [],
       "qty": 2,
-      "images": []
+      "images": [
+        "images/cat__3010/p_1782655438359/1.png",
+        "images/cat__3010/p_1782655438359/2.jpg",
+        "images/cat__3010/p_1782655438359/3.jpg",
+        "images/cat__3010/p_1782655438359/4.jpg",
+        "images/cat__3010/p_1782655438359/5.jpg"
+      ]
     },
     {
       "id": "p_1782655459676",
