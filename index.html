@@ -74,7 +74,7 @@
     .cart-btn:hover { border-color: var(--accent); color: var(--accent); }
     .cart-count {
       background: var(--accent);
-      color: #000;
+      color: var(--btn-text, #000);
       border-radius: 50%;
       width: 18px; height: 18px;
       font-size: 0.7rem; font-weight: 500;
@@ -134,7 +134,7 @@
       display: inline-block;
       padding: 14px 36px;
       background: var(--accent);
-      color: #000;
+      color: var(--btn-text, #000);
       text-decoration: none;
       font-size: 0.82rem;
       letter-spacing: 0.12em;
@@ -349,7 +349,7 @@
     .cart-total-price { color: var(--accent); }
     .checkout-btn {
       width: 100%; padding: 14px;
-      background: var(--accent); color: #000;
+      background: var(--accent); color: var(--btn-text, #000);
       border: none; cursor: pointer;
       font-family: 'DM Sans', sans-serif;
       font-size: 0.82rem; letter-spacing: 0.12em;
@@ -357,7 +357,7 @@
       border-radius: 2px;
       transition: background 0.2s;
     }
-    .checkout-btn:hover { background: var(--accent2); }
+    .checkout-btn:hover { background: var(--accent2); color: var(--btn-text, #000); }
     .checkout-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
     
@@ -431,7 +431,7 @@
     .form-actions { display: flex; gap: 1rem; }
     .btn-submit {
       flex: 1; padding: 13px;
-      background: var(--accent); color: #000;
+      background: var(--accent); color: var(--btn-text, #000);
       border: none; cursor: pointer;
       font-family: 'DM Sans', sans-serif;
       font-size: 0.82rem; letter-spacing: 0.12em;
@@ -471,7 +471,7 @@
     .success-screen p { font-size: 0.85rem; color: var(--muted); max-width: 320px; }
     .btn-close-success {
       padding: 12px 30px;
-      background: var(--accent); color: #000;
+      background: var(--accent); color: var(--btn-text, #000);
       border: none; cursor: pointer;
       font-family: 'DM Sans', sans-serif;
       font-size: 0.82rem; letter-spacing: 0.1em;
@@ -493,7 +493,7 @@
     .cookie-bar.hidden { display: none; }
     .cookie-accept {
       padding: 8px 20px;
-      background: var(--accent); color: #000;
+      background: var(--accent); color: var(--btn-text, #000);
       border: none; cursor: pointer;
       font-size: 0.75rem; letter-spacing: 0.1em;
       text-transform: uppercase;
