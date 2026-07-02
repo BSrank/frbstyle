@@ -282,8 +282,6 @@
     "contactMode": "email",
     "phone": "0876 127 997",
     "hours": "Всеки ден",
-    "eyebrow": "Нова колекция 2026",
-    "hero": "Живей с Аура",
     "showCategories": false,
     "customCategories": [
       {
@@ -293,6 +291,8 @@
         "active": false
       }
     ],
+    "eyebrow": "Нова колекция 2026",
+    "hero": "Живей с Аура",
     "theme": "ink-editorial",
     "scriptUrlEncoded": "aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J5NjBHWkJtc0xRaGx6UW9QWlFQYzk3Y2hqaERhUnpveE5PZkxJUUlDckVqZzJFM0RYNC10VGFkeTh4X0owZUw3MXIvZXhlYw=="
   }
