@@ -334,7 +334,7 @@
 <body>
 
 <nav>
-  <a class="nav-logo" href="index.html"><em style="font-style:italic;font-weight:300;font-size:0.85em;">the</em> forbidden<span> style</span></a>
+  <a class="nav-logo" href="index.html" style="visibility:hidden;"><em style="font-style:italic;font-weight:300;font-size:0.85em;">the</em> forbidden<span> style</span></a>
   <ul class="nav-links" id="navLinks">
     <li><a href="index.html">Начало</a></li>
     <li><a href="products.html" class="active">Продукти</a></li>
@@ -470,6 +470,7 @@
           html = (words.join(' ') ? words.join(' ') + ' ' : '') + '<span>' + last + '</span>';
         }
         el.innerHTML = html;
+        el.style.visibility = 'visible';
       });
       document.querySelectorAll('.footer-logo').forEach(function(el) { el.textContent = sName; });
       const subtitle = document.getElementById('products-subtitle');
