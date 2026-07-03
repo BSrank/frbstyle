@@ -248,7 +248,16 @@
           </div>
           <div class="form-group" style="grid-column: span 2;">
             <label>Описание</label>
-            <textarea id="np-desc" placeholder="Кратко описание"></textarea>
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+              <div class="visibility-toggle" onclick="toggleFormatDesc('np')">
+                <div class="toggle-switch" id="np-format-toggle"></div>
+                <span class="toggle-label" id="np-format-label">Обикновен текст</span>
+              </div>
+            </div>
+            <textarea id="np-desc" placeholder="Кратко описание" style="min-height:80px;"></textarea>
+            <div id="np-format-hint" style="display:none;font-size:0.68rem;color:var(--muted);margin-top:4px;line-height:1.6;">
+              Формат: ред с <code style="background:var(--surface2);padding:1px 4px;">:</code> накрая = хедър &nbsp;|&nbsp; ред с <code style="background:var(--surface2);padding:1px 4px;">→</code> или <code style="background:var(--surface2);padding:1px 4px;">-</code> = точка &nbsp;|&nbsp; <code style="background:var(--surface2);padding:1px 4px;">**текст**</code> = bold &nbsp;|&nbsp; празен ред = разделител
+            </div>
           </div>
         </div>
         <div id="sizesSection" style="display:none; margin-top:1.2rem;">
@@ -417,7 +426,16 @@
     </div>
     <div class="edit-form-group">
       <label>Описание</label>
-      <textarea id="edit-desc" placeholder="Материал, характеристики, грижа..."></textarea>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+        <div class="visibility-toggle" onclick="toggleFormatDesc('edit')">
+          <div class="toggle-switch" id="edit-format-toggle"></div>
+          <span class="toggle-label" id="edit-format-label">Обикновен текст</span>
+        </div>
+      </div>
+      <textarea id="edit-desc" placeholder="Материал, характеристики, грижа..." style="min-height:120px;"></textarea>
+      <div id="edit-format-hint" style="display:none;font-size:0.68rem;color:var(--muted);margin-top:4px;line-height:1.6;">
+        Формат: ред с <code style="background:var(--surface2);padding:1px 4px;">:</code> накрая = хедър &nbsp;|&nbsp; ред с <code style="background:var(--surface2);padding:1px 4px;">→</code> или <code style="background:var(--surface2);padding:1px 4px;">-</code> = точка &nbsp;|&nbsp; <code style="background:var(--surface2);padding:1px 4px;">**текст**</code> = bold &nbsp;|&nbsp; празен ред = разделител
+      </div>
     </div>
     <div class="edit-form-group">
       <label>Цена (лв) *</label>
@@ -796,7 +814,9 @@
 
     var newProduct = {
       id: 'p_' + Date.now(),
-      name: name, category: cat, price: price, desc: desc, active: active,
+      name: name, category: cat, price: price, desc: desc,
+      descFormatted: document.getElementById('np-format-toggle').classList.contains('on'),
+      active: active,
       sizes: cat === 'clothes' ? ['XS','S','M','L','XL','XXL'].map(function(s) {
         return { size: s, qty: parseInt(document.getElementById('sz-'+s).value) || 0 };
       }) : [],
@@ -1142,6 +1162,15 @@
     document.getElementById('edit-desc').value = p.desc || '';
     document.getElementById('edit-price').value = p.price || '';
     document.getElementById('edit-cat').value = p.category || 'clothes';
+    var isFormatted = p.descFormatted === true;
+    var tog = document.getElementById('edit-format-toggle');
+    var lbl = document.getElementById('edit-format-label');
+    var hint = document.getElementById('edit-format-hint');
+    tog.classList.toggle('on', isFormatted);
+    lbl.classList.toggle('on', isFormatted);
+    lbl.textContent = isFormatted ? 'Форматиран текст' : 'Обикновен текст';
+    hint.style.display = isFormatted ? 'block' : 'none';
+    document.getElementById('edit-desc').style.minHeight = isFormatted ? '220px' : '120px';
     document.getElementById('editModal').classList.add('open');
   }
 
@@ -1161,6 +1190,7 @@
     products[idx].desc  = desc;
     products[idx].price = price;
     products[idx].category = cat;
+    products[idx].descFormatted = document.getElementById('edit-format-toggle').classList.contains('on');
 
     var ok = await saveProductsToGitHub(products);
     if (ok) {
@@ -1172,6 +1202,20 @@
     } else {
       toast('Грешка при запис', 'error');
     }
+  }
+
+  // ─── FORMAT DESC TOGGLE ───
+  function toggleFormatDesc(prefix) {
+    var tog = document.getElementById(prefix + '-format-toggle');
+    var lbl = document.getElementById(prefix + '-format-label');
+    var hint = document.getElementById(prefix + '-format-hint');
+    var textarea = document.getElementById(prefix + '-desc');
+    var isOn = tog.classList.toggle('on');
+    lbl.classList.toggle('on', isOn);
+    lbl.textContent = isOn ? 'Форматиран текст' : 'Обикновен текст';
+    hint.style.display = isOn ? 'block' : 'none';
+    textarea.style.minHeight = isOn ? '180px' : '80px';
+    if (prefix === 'edit') textarea.style.minHeight = isOn ? '220px' : '120px';
   }
 
   // ─── ORDERS (от Google Script) ───
