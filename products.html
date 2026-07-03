@@ -681,7 +681,7 @@
           <p class="product-cat">${meta.label}</p>
           <h3 class="product-name">${p.name}</h3>
           <div class="product-desc">${renderDesc(p.desc, p.descFormatted)}</div>
-          <p class="product-price">${priceDisplay(p.price)}</p>
+          <p class="product-price" ${p.descFormatted ? 'style="font-size:1.4rem;margin-top:0.5rem;"' : ''}>${priceDisplay(p.price)}</p>
           ${urgencySettings.enabled ? '<p style="font-size:0.72rem;color:var(--danger);letter-spacing:0.05em;margin-bottom:0.5rem;">🔥 Само ' + urgencySettings.qty + ' бройки налични</p>' : ''}
           ${sizesHTML}
           <button
