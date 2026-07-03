@@ -285,12 +285,14 @@
     "qty": 2
   },
   "settings": {
-    "siteName": "AURAraR",
+    "siteName": "SEnNe",
     "contactMode": "email",
     "phone": "0876 127 997",
     "hours": "Всеки ден",
     "eyebrow": "Премиум звук",
     "hero": "Живей с Аура",
+    "productsSubtitle": "",
+    "reviews": [],
     "showCategories": false,
     "customCategories": [
       {
