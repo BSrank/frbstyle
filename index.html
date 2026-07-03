@@ -259,6 +259,11 @@
       font-size: 1.1rem; margin-bottom: 0.4rem;
     }
     .feature-text { font-size: 0.8rem; color: var(--muted); line-height: 1.6; }
+    .review-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; display: flex; flex-direction: column; gap: 0.8rem; }
+    .review-stars { color: #e8d44d; font-size: 1rem; letter-spacing: 2px; }
+    .review-text { font-size: 0.85rem; color: var(--muted); line-height: 1.7; font-style: italic; flex: 1; }
+    .review-author { font-size: 0.82rem; font-weight: 500; color: var(--text); }
+    .review-courier { font-size: 0.72rem; color: var(--info, #5299e0); }
 
     
     footer {
@@ -634,6 +639,12 @@
   </div>
 </div>
 
+<section class="section" id="reviews" style="display:none;">
+  <p class="section-label">Отзиви</p>
+  <h2 class="section-title">Какво казват клиентите</h2>
+  <div id="reviewsGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem;margin-top:2rem;"></div>
+</section>
+
 <section class="section" id="contact">
   <p class="section-label">Контакт</p>
   <h2 class="section-title">Свържи се с нас</h2>
@@ -865,6 +876,22 @@
       const last = words.pop();
       heroH1.innerHTML = words.join(' ') + '<br>с <em>' + last + '</em>';
     }
+    renderReviews(s.reviews || []);
+  }
+
+  function renderReviews(reviews) {
+    const section = document.getElementById('reviews');
+    const grid = document.getElementById('reviewsGrid');
+    if (!section || !grid) return;
+    const visible = reviews.filter(r => r && r.text);
+    section.style.display = visible.length > 0 ? 'block' : 'none';
+    grid.innerHTML = visible.map(r => `
+      <div class="review-card">
+        <div class="review-stars">★★★★★</div>
+        <div class="review-text">"${r.text}"</div>
+        <div class="review-author">— ${r.author || ''}</div>
+        ${r.courier ? `<div class="review-courier">${r.courier} доставка ✓</div>` : ''}
+      </div>`).join('');
   }
 
   async function submitContactForm() {
