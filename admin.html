@@ -313,6 +313,10 @@
             <span class="toggle-label" id="label-showCategories">Показани</span>
           </div>
           <p style="font-size:0.72rem;color:var(--muted);margin-top:0.5rem;">Изключи за да скриеш картите с категории. "Намери своя стил" заглавието остава.</p>
+          <div class="form-group" style="max-width:360px; margin-top:0.8rem;">
+            <label>Подзаглавие на продуктите</label>
+            <input type="text" id="settings-products-subtitle" placeholder="The Forbidden Style — Collection" />
+          </div>
         </div>
 
         <!-- HERO TEXT -->
@@ -1022,13 +1026,15 @@
     var nameEl = document.getElementById('settings-sitename');
     var phoneEl = document.getElementById('settings-phone');
     var hoursEl = document.getElementById('settings-hours');
-    var eyebrowEl = document.getElementById('settings-eyebrow');
+    var subtitleEl = document.getElementById('settings-products-subtitle');
     var heroEl = document.getElementById('settings-hero');
-    if (nameEl) nameEl.value = siteSettings.siteName || '';
-    if (phoneEl) phoneEl.value = siteSettings.phone || '';
-    if (hoursEl) hoursEl.value = siteSettings.hours || '';
-    if (eyebrowEl) eyebrowEl.value = siteSettings.eyebrow || 'Нова колекция 2026';
-    if (heroEl) heroEl.value = siteSettings.hero || 'Живей с Аура';
+    var eyebrowEl = document.getElementById('settings-eyebrow');
+    if (nameEl) { nameEl.value = siteSettings.siteName || ''; nameEl.placeholder = siteSettings.siteName || 'The Forbidden Style'; }
+    if (phoneEl) { phoneEl.value = siteSettings.phone || ''; phoneEl.placeholder = siteSettings.phone || '0876 127 997'; }
+    if (hoursEl) { hoursEl.value = siteSettings.hours || ''; hoursEl.placeholder = siteSettings.hours || 'Всеки ден'; }
+    if (subtitleEl) { subtitleEl.value = siteSettings.productsSubtitle || ''; subtitleEl.placeholder = siteSettings.productsSubtitle || 'The Forbidden Style — Collection'; }
+    if (heroEl) { heroEl.value = siteSettings.hero || ''; heroEl.placeholder = siteSettings.hero || 'Живей с Аура'; }
+    if (eyebrowEl) { eyebrowEl.value = siteSettings.eyebrow || ''; eyebrowEl.placeholder = siteSettings.eyebrow || 'Нова колекция 2026'; }
     var mode = siteSettings.contactMode || 'phone';
     var radioPhone = document.getElementById('contact-phone');
     var radioEmail = document.getElementById('contact-email');
@@ -1077,6 +1083,7 @@
       hours: document.getElementById('settings-hours').value.trim() || 'Всеки ден',
       eyebrow: document.getElementById('settings-eyebrow').value.trim() || 'Нова колекция 2026',
       hero: document.getElementById('settings-hero').value.trim() || 'Живей с Аура',
+      productsSubtitle: document.getElementById('settings-products-subtitle').value.trim(),
       showCategories: siteSettings.showCategories !== false,
       customCategories: siteSettings.customCategories || [],
       theme: siteSettings.theme || 'noir-luxe',
