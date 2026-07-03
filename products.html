@@ -156,6 +156,11 @@
     .product-cat { font-size: 0.65rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.3rem; }
     .product-name { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; font-weight: 400; margin-bottom: 0.3rem; line-height: 1.2; }
     .product-desc { font-size: 0.78rem; color: var(--muted); line-height: 1.6; margin-bottom: 1rem; flex: 1; }
+    .desc-header { font-size: 0.78rem; font-weight: 600; color: var(--text); margin: 0.8rem 0 0.3rem; }
+    .desc-header:first-child { margin-top: 0; }
+    .desc-item { display: flex; gap: 0.5rem; font-size: 0.78rem; color: var(--muted); line-height: 1.5; margin-bottom: 0.2rem; }
+    .desc-item::before { content: '→'; color: var(--accent); flex-shrink: 0; }
+    .desc-gap { height: 0.4rem; }
     .product-price { font-size: 1.1rem; color: var(--accent); font-family: 'Cormorant Garamond', serif; margin-bottom: 1rem; }
 
     
@@ -581,6 +586,31 @@
   }
 
   const EUR_RATE = 1.95583;
+
+  function renderDesc(desc, formatted) {
+    if (!desc) return '';
+    if (!formatted) return desc.replace(/\n/g, '<br>');
+    const lines = desc.split('\n');
+    let html = '';
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].trim();
+      if (!line) { html += '<div class="desc-gap"></div>'; continue; }
+      if (line.endsWith(':')) {
+        html += '<div class="desc-header">' + boldify(line.slice(0,-1)) + '</div>';
+      } else if (line.startsWith('\u2192') || line.startsWith('-')) {
+        const text = line.replace(/^[\u2192\-]\s*/, '');
+        html += '<div class="desc-item">' + boldify(text) + '</div>';
+      } else {
+        html += '<span style="font-size:0.78rem;color:var(--muted);">' + boldify(line) + '</span><br>';
+      }
+    }
+    return html;
+  }
+
+  function boldify(text) {
+    return text.replace(/\*\*([^*]+)\*\*/g, '<strong style="color:var(--text);">$1</strong>');
+  }
+
   function toEUR(bgn) { return (parseFloat(bgn) / EUR_RATE).toFixed(2); }
   function priceDisplay(bgn) { return '€' + toEUR(bgn) + ' <span style="color:var(--muted);font-size:0.8em;">(' + parseFloat(bgn).toFixed(2) + ' лв)</span>'; }
   
@@ -650,7 +680,7 @@
         <div class="product-body">
           <p class="product-cat">${meta.label}</p>
           <h3 class="product-name">${p.name}</h3>
-          <p class="product-desc">${p.desc}</p>
+          <div class="product-desc">${renderDesc(p.desc, p.descFormatted)}</div>
           <p class="product-price">${priceDisplay(p.price)}</p>
           ${urgencySettings.enabled ? '<p style="font-size:0.72rem;color:var(--danger);letter-spacing:0.05em;margin-bottom:0.5rem;">🔥 Само ' + urgencySettings.qty + ' бройки налични</p>' : ''}
           ${sizesHTML}
