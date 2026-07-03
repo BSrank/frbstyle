@@ -349,7 +349,7 @@
 </nav>
 
 <div class="page-header">
-  <p>The Forbidden Style — Collection</p>
+  <p id="products-subtitle">The Forbidden Style — Collection</p>
   <h1>Всички продукти</h1>
 </div>
 
@@ -464,6 +464,8 @@
         el.innerHTML = '<em style="font-style:italic;font-weight:300;font-size:0.85em;">' + (words.join(' ') || '') + '</em> <span>' + last + '</span>';
       });
       document.querySelectorAll('.footer-logo').forEach(function(el) { el.textContent = sName; });
+      const subtitle = document.getElementById('products-subtitle');
+      if (subtitle) subtitle.textContent = (data.settings && data.settings.productsSubtitle) ? data.settings.productsSubtitle : sName + ' — Collection';
     } catch (e) {
       console.warn('Не може да зареди от Google Sheets, ползва demo данни.');
       allProducts = getDemoProducts();
@@ -681,7 +683,7 @@
           <p class="product-cat">${meta.label}</p>
           <h3 class="product-name">${p.name}</h3>
           <div class="product-desc">${renderDesc(p.desc, p.descFormatted)}</div>
-          <p class="product-price" ${p.descFormatted ? 'style="font-size:1.4rem;margin-top:0.5rem;"' : ''}>${priceDisplay(p.price)}</p>
+          <p class="product-price" style="font-size:1.4rem;margin-top:0.5rem;">${priceDisplay(p.price)}</p>
           ${urgencySettings.enabled ? '<p style="font-size:0.72rem;color:var(--danger);letter-spacing:0.05em;margin-bottom:0.5rem;">🔥 Само ' + urgencySettings.qty + ' бройки налични</p>' : ''}
           ${sizesHTML}
           <button
