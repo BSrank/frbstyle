@@ -816,9 +816,10 @@
     document.title = name + ' — Curated Drops';
 
     document.querySelectorAll('.nav-logo').forEach(el => {
-      const parts = name.toLowerCase().split(' ');
-      const last = parts.pop();
-      el.innerHTML = '<em style="font-style:italic;font-weight:300;font-size:0.85em;">the</em> ' + parts.join(' ').replace(/^the\s*/i,'') + (parts.length > 1 || parts[0] !== 'the' ? ' ' : '') + '<span>' + last + '</span>';
+      const words = name.split(' ');
+      const last = words.pop();
+      const rest = words.join(' ');
+      el.innerHTML = '<em style="font-style:italic;font-weight:300;font-size:0.85em;">' + (rest || '') + '</em> <span>' + last + '</span>';
     });
 
     document.querySelectorAll('.footer-logo').forEach(el => {
