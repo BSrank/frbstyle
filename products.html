@@ -461,7 +461,15 @@
       document.querySelectorAll('.nav-logo').forEach(function(el) {
         const words = sName.split(' ');
         const last = words.pop();
-        el.innerHTML = '<em style="font-style:italic;font-weight:300;font-size:0.85em;">' + (words.join(' ') || '') + '</em> <span>' + last + '</span>';
+        const first = words[0] || '';
+        const middle = words.slice(1).join(' ');
+        let html = '';
+        if (first.toLowerCase() === 'the') {
+          html = '<em style="font-style:italic;font-weight:300;font-size:0.85em;">the</em> ' + (middle ? middle + ' ' : '') + '<span>' + last + '</span>';
+        } else {
+          html = (words.join(' ') ? words.join(' ') + ' ' : '') + '<span>' + last + '</span>';
+        }
+        el.innerHTML = html;
       });
       document.querySelectorAll('.footer-logo').forEach(function(el) { el.textContent = sName; });
       const subtitle = document.getElementById('products-subtitle');
