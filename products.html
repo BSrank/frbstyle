@@ -742,8 +742,29 @@
     img.style.opacity = '1';
     if (img.previousElementSibling) img.previousElementSibling.style.display = 'none';
     img.style.cursor = 'zoom-in';
-    img.onclick = function() { openLightbox(p.id); };
+
+    // Click → lightbox (само ако не е бил swipe)
+    img.onclick = function() {
+      if (!img._wasSwiped) openLightbox(p.id);
+      img._wasSwiped = false;
+    };
+
+    // Swipe на карта → смяна на снимка (без lightbox)
     if (found.length > 1) {
+      let tx = 0;
+      img.addEventListener('touchstart', function(e) {
+        tx = e.touches[0].clientX;
+        img._wasSwiped = false;
+      }, { passive: true });
+
+      img.addEventListener('touchend', function(e) {
+        const dx = e.changedTouches[0].clientX - tx;
+        if (Math.abs(dx) > 35) {
+          img._wasSwiped = true;
+          changeImage(p.id, dx < 0 ? 1 : -1);
+        }
+      }, { passive: true });
+
       const nav = document.getElementById('imgnav-' + p.id);
       const dots = document.getElementById('imgdots-' + p.id);
       if (!nav || !dots) return;
