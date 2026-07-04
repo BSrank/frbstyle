@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Формат на текста</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400&family=DM+Sans:wght@300;400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#0a0a0a;color:#f0ece4;font-family:'DM Sans',sans-serif;padding:3rem 5%;max-width:900px;margin:0 auto;}
+h1{font-family:'Cormorant Garamond',serif;font-size:2.5rem;font-weight:300;color:#c9a96e;margin-bottom:0.5rem;}
+.subtitle{font-size:0.75rem;letter-spacing:0.2em;text-transform:uppercase;color:#555;margin-bottom:3rem;}
+
+.row{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-bottom:2rem;align-items:start;}
+.col-label{font-size:0.62rem;letter-spacing:0.2em;text-transform:uppercase;color:#555;margin-bottom:0.8rem;}
+
+.code-box{background:#111;border:1px solid #2a2a2a;padding:1rem 1.2rem;font-family:'JetBrains Mono',monospace;font-size:0.82rem;color:#c9a96e;line-height:1.8;border-radius:4px;white-space:pre;}
+
+.result-box{background:#111;border:1px solid #1e1e1e;padding:1.2rem 1.5rem;border-radius:4px;}
+
+/* Result styles */
+.desc-header{font-size:0.85rem;font-weight:600;color:#f0ece4;margin:0.8rem 0 0.3rem;}
+.desc-header:first-child{margin-top:0;}
+.desc-item{display:flex;gap:0.5rem;font-size:0.82rem;color:#888;line-height:1.5;margin-bottom:0.2rem;}
+.desc-item::before{content:'→';color:#c9a96e;flex-shrink:0;}
+.desc-gap{height:0.4rem;}
+.highlight-box{background:#0a0a0a;border:1px solid #2a2a2a;border-left:3px solid #c9a96e;padding:0.8rem 1rem;margin:0.6rem 0;font-size:0.82rem;color:#888;line-height:1.7;}
+.highlight-box strong{color:#f0ece4;}
+.plain-text{font-size:0.82rem;color:#888;line-height:1.7;}
+
+.divider{height:1px;background:#1e1e1e;margin:2.5rem 0;}
+.tip{background:rgba(201,169,110,0.08);border:1px solid rgba(201,169,110,0.2);padding:1rem 1.2rem;border-radius:4px;font-size:0.8rem;color:#888;line-height:1.7;margin-top:2rem;}
+.tip strong{color:#c9a96e;}
+</style>
+</head>
+<body>
+
+<h1>Формат на текста</h1>
+<div class="subtitle">Как да пишеш в Admin панела → как изглежда в сайта</div>
+
+<div style="background:#111;border:1px solid #2a2a2a;border-radius:4px;padding:1.5rem;margin-bottom:3rem;">
+  <div style="font-size:0.62rem;letter-spacing:0.2em;text-transform:uppercase;color:#555;margin-bottom:1rem;">Копирай символ — кликни върху него</div>
+  <div style="display:flex;gap:0.8rem;flex-wrap:wrap;">
+    <div onclick="copyAndShow(this,'→')" style="background:#0a0a0a;border:1px solid #2a2a2a;padding:0.8rem 1.2rem;border-radius:4px;cursor:pointer;text-align:center;min-width:80px;" title="Копирай →">
+      <div style="font-size:1.5rem;color:#c9a96e;font-family:monospace;">→</div>
+      <div style="font-size:0.65rem;color:#555;margin-top:4px;">стрелка</div>
+    </div>
+    <div onclick="copyAndShow(this,'-')" style="background:#0a0a0a;border:1px solid #2a2a2a;padding:0.8rem 1.2rem;border-radius:4px;cursor:pointer;text-align:center;min-width:80px;" title="Копирай -">
+      <div style="font-size:1.5rem;color:#c9a96e;font-family:monospace;">-</div>
+      <div style="font-size:0.65rem;color:#555;margin-top:4px;">тире</div>
+    </div>
+    <div onclick="copyAndShow(this,'**')" style="background:#0a0a0a;border:1px solid #2a2a2a;padding:0.8rem 1.2rem;border-radius:4px;cursor:pointer;text-align:center;min-width:80px;" title="Копирай **">
+      <div style="font-size:1.5rem;color:#c9a96e;font-family:monospace;">**</div>
+      <div style="font-size:0.65rem;color:#555;margin-top:4px;">bold</div>
+    </div>
+    <div onclick="copyAndShow(this,'!')" style="background:#0a0a0a;border:1px solid #2a2a2a;padding:0.8rem 1.2rem;border-radius:4px;cursor:pointer;text-align:center;min-width:80px;" title="Копирай !">
+      <div style="font-size:1.5rem;color:#c9a96e;font-family:monospace;">!</div>
+      <div style="font-size:0.65rem;color:#555;margin-top:4px;">highlight</div>
+    </div>
+    <div onclick="copyAndShow(this,':')" style="background:#0a0a0a;border:1px solid #2a2a2a;padding:0.8rem 1.2rem;border-radius:4px;cursor:pointer;text-align:center;min-width:80px;" title="Копирай :">
+      <div style="font-size:1.5rem;color:#c9a96e;font-family:monospace;">:</div>
+      <div style="font-size:0.65rem;color:#555;margin-top:4px;">хедър</div>
+    </div>
+  </div>
+  <div id="copyMsg2" style="margin-top:0.8rem;font-size:0.75rem;color:#c9a96e;visibility:hidden;">✓ Копирано!</div>
+</div>
+
+<!-- HEADER -->
+<div class="row">
+  <div>
+    <div class="col-label">Пишеш в Admin:</div>
+    <div class="code-box">Основни характеристики:</div>
+  </div>
+  <div>
+    <div class="col-label">Резултат в сайта:</div>
+    <div class="result-box">
+      <div class="desc-header">Основни характеристики</div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- BULLET -->
+<div class="row">
+  <div>
+    <div class="col-label">Пишеш в Admin:</div>
+    <div class="code-box">→ Active Noise Cancellation
+→ **Apple** устройства
+→ Find My и Hey Siri</div>
+  </div>
+  <div>
+    <div class="col-label">Резултат в сайта:</div>
+    <div class="result-box">
+      <div class="desc-item">Active Noise Cancellation</div>
+      <div class="desc-item"><strong style="color:#f0ece4;">Apple</strong> устройства</div>
+      <div class="desc-item">Find My и Hey Siri</div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- DASH BULLET -->
+<div class="row">
+  <div>
+    <div class="col-label">Пишеш в Admin (с тире):</div>
+    <div class="code-box">- Econt доставка
+- Speedy доставка
+- 1-3 работни дни</div>
+  </div>
+  <div>
+    <div class="col-label">Резултат в сайта:</div>
+    <div class="result-box">
+      <div class="desc-item">Econt доставка</div>
+      <div class="desc-item">Speedy доставка</div>
+      <div class="desc-item">1-3 работни дни</div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- BOLD -->
+<div class="row">
+  <div>
+    <div class="col-label">Пишеш в Admin:</div>
+    <div class="code-box">Над **6 часа** работа
+До **4 допълнителни** зареждания</div>
+  </div>
+  <div>
+    <div class="col-label">Резултат в сайта:</div>
+    <div class="result-box">
+      <div class="plain-text">Над <strong style="color:#f0ece4;">6 часа</strong> работа</div>
+      <div class="plain-text">До <strong style="color:#f0ece4;">4 допълнителни</strong> зареждания</div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- HIGHLIGHT BOX -->
+<div class="row">
+  <div>
+    <div class="col-label">Пишеш в Admin (с !):</div>
+    <div class="code-box">! **Важно:** Преглед и тест
+преди заплащане.</div>
+  </div>
+  <div>
+    <div class="col-label">Резултат в сайта:</div>
+    <div class="result-box">
+      <div class="highlight-box"><strong>Важно:</strong> Преглед и тест преди заплащане.</div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- EMPTY LINE -->
+<div class="row">
+  <div>
+    <div class="col-label">Пишеш в Admin (празен ред):</div>
+    <div class="code-box">Първа точка
+
+Втора точка след пауза</div>
+  </div>
+  <div>
+    <div class="col-label">Резултат в сайта:</div>
+    <div class="result-box">
+      <div class="plain-text">Първа точка</div>
+      <div class="desc-gap"></div>
+      <div class="plain-text">Втора точка след пауза</div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- COMBINED -->
+<div>
+  <div class="col-label" style="margin-bottom:1rem;">Пълен пример — комбиниран:</div>
+  <div class="row">
+    <div class="code-box">Основни характеристики:
+→ **ANC** шумопотискане
+→ Find My и Hey Siri
+→ iOS и Android
+
+! **Опция Преглед и Тест** —
+прегледайте преди плащане.
+
+Батерия:
+→ Над **6 часа** работа
+→ До **4** допълнителни зареждания</div>
+    <div class="result-box">
+      <div class="desc-header">Основни характеристики</div>
+      <div class="desc-item"><strong style="color:#f0ece4;">ANC</strong> шумопотискане</div>
+      <div class="desc-item">Find My и Hey Siri</div>
+      <div class="desc-item">iOS и Android</div>
+      <div class="desc-gap"></div>
+      <div class="highlight-box"><strong>Опция Преглед и Тест</strong> — прегледайте преди плащане.</div>
+      <div class="desc-header">Батерия</div>
+      <div class="desc-item">Над <strong style="color:#f0ece4;">6 часа</strong> работа</div>
+      <div class="desc-item">До <strong style="color:#f0ece4;">4</strong> допълнителни зареждания</div>
+    </div>
+  </div>
+</div>
+
+<div class="tip">
+  <strong>Резюме на символите — кликни за копиране:</strong><br><br>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.8rem;margin-top:0.5rem;">
+    <div onclick="copyText('→')" style="background:#0a0a0a;border:1px solid #2a2a2a;padding:0.7rem 1rem;border-radius:4px;cursor:pointer;transition:border-color 0.2s;" onmouseover="this.style.borderColor='#c9a96e'" onmouseout="this.style.borderColor='#2a2a2a'">
+      <span style="font-family:monospace;color:#c9a96e;font-size:1rem;">→</span> <span style="color:#888;font-size:0.78rem;">точка със стрелка</span>
+    </div>
+    <div onclick="copyText('-')" style="background:#0a0a0a;border:1px solid #2a2a2a;padding:0.7rem 1rem;border-radius:4px;cursor:pointer;transition:border-color 0.2s;" onmouseover="this.style.borderColor='#c9a96e'" onmouseout="this.style.borderColor='#2a2a2a'">
+      <span style="font-family:monospace;color:#c9a96e;font-size:1rem;">-</span> <span style="color:#888;font-size:0.78rem;">точка с тире</span>
+    </div>
+    <div onclick="copyText('**текст**')" style="background:#0a0a0a;border:1px solid #2a2a2a;padding:0.7rem 1rem;border-radius:4px;cursor:pointer;transition:border-color 0.2s;" onmouseover="this.style.borderColor='#c9a96e'" onmouseout="this.style.borderColor='#2a2a2a'">
+      <span style="font-family:monospace;color:#c9a96e;font-size:1rem;">**текст**</span> <span style="color:#888;font-size:0.78rem;">удебелен</span>
+    </div>
+    <div onclick="copyText('!')" style="background:#0a0a0a;border:1px solid #2a2a2a;padding:0.7rem 1rem;border-radius:4px;cursor:pointer;transition:border-color 0.2s;" onmouseover="this.style.borderColor='#c9a96e'" onmouseout="this.style.borderColor='#2a2a2a'">
+      <span style="font-family:monospace;color:#c9a96e;font-size:1rem;">!</span> <span style="color:#888;font-size:0.78rem;">highlight кутия</span>
+    </div>
+    <div onclick="copyText('Заглавие:')" style="background:#0a0a0a;border:1px solid #2a2a2a;padding:0.7rem 1rem;border-radius:4px;cursor:pointer;transition:border-color 0.2s;" onmouseover="this.style.borderColor='#c9a96e'" onmouseout="this.style.borderColor='#2a2a2a'">
+      <span style="font-family:monospace;color:#c9a96e;font-size:1rem;">Заглавие:</span> <span style="color:#888;font-size:0.78rem;">хедър (с : накрая)</span>
+    </div>
+    <div onclick="copyText(' ')" style="background:#0a0a0a;border:1px solid #2a2a2a;padding:0.7rem 1rem;border-radius:4px;cursor:pointer;transition:border-color 0.2s;" onmouseover="this.style.borderColor='#c9a96e'" onmouseout="this.style.borderColor='#2a2a2a'">
+      <span style="font-family:monospace;color:#c9a96e;font-size:1rem;">[празен ред]</span> <span style="color:#888;font-size:0.78rem;">пауза/разделител</span>
+    </div>
+  </div>
+  <div id="copyMsg" style="margin-top:0.8rem;font-size:0.75rem;color:#c9a96e;display:none;">✓ Копирано!</div>
+</div>
+
+<script>
+function copyAndShow(el, text) {
+  navigator.clipboard.writeText(text);
+  var msg = document.getElementById('copyMsg2');
+  msg.style.visibility = 'visible';
+  el.style.borderColor = '#c9a96e';
+  setTimeout(function() { msg.style.visibility = 'hidden'; el.style.borderColor = '#2a2a2a'; }, 1500);
+}
+function copyText(text) {
+  navigator.clipboard.writeText(text);
+  var msg = document.getElementById('copyMsg');
+  msg.style.display = 'block';
+  setTimeout(function() { msg.style.display = 'none'; }, 1500);
+}
+</script>
+
+</body>
+</html>
