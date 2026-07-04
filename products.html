@@ -406,7 +406,7 @@
         <div class="form-group"><label>Имe и фамилия *</label><input type="text" id="fullName" placeholder="Иван Иванов" required /></div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label>Телефон *</label><input type="tel" id="phone" placeholder="08XXXXXXXX" required /></div>
+        <div class="form-group"><label>Телефон *</label><input type="tel" id="phone" placeholder="08XXXXXXXX" required inputmode="numeric" onkeypress="return /[\d\s]/.test(event.key)" oninput="this.value=this.value.replace(/[^\d\s]/g,'')" /></div>
         <div class="form-group"><label>Имейл ✉️</label><input type="email" id="email" placeholder="За потвърждение (опция)" /></div>
       </div>
       <div class="form-row">
