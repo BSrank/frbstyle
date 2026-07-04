@@ -296,7 +296,7 @@
     "reviews": [],
     "terms": {
       "alert": "⚠️ ВАЖНО: Продуктите предлагани от theAuraPods  НЕ са оригинални продукти на Apple Inc. Предлагаме висококачествени съвместими слушалки, вдъхновени от дизайна на AirPods. Правейки поръчка потвърждавате че сте наясно с това.",
-      "lastUpdated": "",
+      "lastUpdated": "04.07.2026",
       "sections": [
         {
           "title": "Terms of Service",
@@ -304,7 +304,7 @@
         }
       ]
     },
-    "showTerms": false,
+    "showTerms": true,
     "showCategories": false,
     "customCategories": [
       {
