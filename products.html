@@ -457,6 +457,7 @@
       loadCustomCategories(data.settings || {});
       applyTheme((data.settings || {}).theme || 'noir-luxe');
       if (data.settings && data.settings.scriptUrlEncoded) { try { SCRIPT_URL = atob(data.settings.scriptUrlEncoded); } catch(e) {} }
+      window._siteSettings = data.settings || {};
       const sName = (data.settings && data.settings.siteName) ? data.settings.siteName : 'The Forbidden Style';
       document.title = sName + ' — Продукти';
       document.querySelectorAll('.nav-logo').forEach(function(el) {
@@ -1041,7 +1042,11 @@
       action: 'placeOrder',
       courier, fullName, phone, email, city, office,
       items: cart_local.map(i => ({ name: i.name, size: i.size || '', qty: i.qty, price: i.price })),
-      total: cartTotalBGN().toFixed(2)
+      total: cartTotalBGN().toFixed(2),
+      contactMode: (window._siteSettings || {}).contactMode || 'phone',
+      contactPhone: (window._siteSettings || {}).phone || '0876 127 997',
+      siteName: (window._siteSettings || {}).siteName || 'The Forbidden Style',
+      siteUrl: window.location.origin + window.location.pathname.replace('products.html', '')
     };
 
     try {
