@@ -1,1 +1,212 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Условия за ползване</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{--bg:#0a0a0a;--surface:#111;--surface2:#1a1a1a;--border:#2a2a2a;--text:#f0ece4;--muted:#888;--accent:#c9a96e;--danger:#e05252;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-weight:300;min-height:100vh;}
 
+/* NAV */
+nav{display:flex;justify-content:space-between;align-items:center;padding:20px 6%;border-bottom:1px solid var(--border);}
+.nav-logo{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:400;color:var(--text);text-decoration:none;}
+.nav-logo span{color:var(--accent);}
+.nav-links{display:flex;gap:2rem;}
+.nav-links a{font-size:0.7rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);text-decoration:none;}
+.nav-links a:hover{color:var(--text);}
+
+/* ALERT BANNER */
+.alert-banner{background:rgba(224,82,82,0.1);border:1px solid rgba(224,82,82,0.3);border-left:4px solid var(--danger);padding:1rem 1.5rem;display:flex;gap:1rem;align-items:flex-start;}
+.alert-icon{color:var(--danger);font-size:1.1rem;flex-shrink:0;margin-top:1px;}
+.alert-text{font-size:0.82rem;line-height:1.7;color:#f0ece4;}
+.alert-text strong{color:var(--danger);}
+.alert-wrap{padding:2rem 6% 0;}
+
+/* HERO */
+.terms-hero{padding:4rem 6% 3rem;border-bottom:1px solid var(--border);}
+.terms-eyebrow{font-size:0.62rem;letter-spacing:0.25em;text-transform:uppercase;color:var(--accent);margin-bottom:0.8rem;}
+.terms-title{font-family:'Cormorant Garamond',serif;font-size:clamp(2.5rem,5vw,4rem);font-weight:300;color:var(--text);margin-bottom:1rem;}
+.terms-meta{font-size:0.75rem;color:var(--muted);display:flex;gap:2rem;flex-wrap:wrap;}
+.terms-meta span{display:flex;align-items:center;gap:6px;}
+
+/* CONTENT */
+.terms-body{display:grid;grid-template-columns:240px 1fr;gap:4rem;padding:4rem 6%;max-width:1100px;margin:0 auto;}
+
+/* TOC */
+.toc{position:sticky;top:2rem;height:fit-content;}
+.toc-title{font-size:0.62rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--accent);margin-bottom:1rem;}
+.toc-item{display:block;font-size:0.78rem;color:var(--muted);text-decoration:none;padding:6px 0;border-bottom:1px solid var(--border);transition:color 0.2s;}
+.toc-item:hover{color:var(--text);}
+.toc-num{color:var(--accent);margin-right:6px;font-size:0.7rem;}
+
+/* SECTIONS */
+.terms-section{margin-bottom:3rem;padding-bottom:3rem;border-bottom:1px solid var(--border);}
+.terms-section:last-child{border-bottom:none;}
+.section-num{font-size:0.62rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--accent);margin-bottom:0.5rem;}
+.section-title{font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:300;color:var(--text);margin-bottom:1.2rem;}
+.section-text{font-size:0.85rem;color:var(--muted);line-height:1.9;}
+.section-text p{margin-bottom:0.8rem;}
+.section-text strong{color:var(--text);font-weight:500;}
+.section-list{list-style:none;margin:0.8rem 0;}
+.section-list li{display:flex;gap:0.8rem;font-size:0.85rem;color:var(--muted);line-height:1.7;margin-bottom:0.5rem;}
+.section-list li::before{content:'→';color:var(--accent);flex-shrink:0;}
+.highlight-box{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);padding:1rem 1.2rem;margin:1rem 0;font-size:0.82rem;color:var(--muted);line-height:1.7;}
+.highlight-box strong{color:var(--text);}
+
+/* FOOTER */
+footer{padding:2rem 6%;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;}
+.footer-logo{font-family:'Cormorant Garamond',serif;font-size:1rem;color:var(--text);}
+.footer-logo span{color:var(--accent);}
+.footer-copy{font-size:0.7rem;color:var(--muted);}
+.footer-links{display:flex;gap:1.5rem;}
+.footer-links a{font-size:0.7rem;color:var(--muted);text-decoration:none;}
+.footer-links a:hover{color:var(--text);}
+
+@media(max-width:768px){
+  .terms-body{grid-template-columns:1fr;}
+  .toc{display:none;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html" id="navLogo"><em style="font-style:italic;font-weight:300;font-size:0.85em;">the</em> forbidden<span> style</span></a>
+  <div class="nav-links">
+    <a href="index.html">Начало</a>
+    <a href="products.html">Продукти</a>
+    <a href="index.html#contact">Контакт</a>
+  </div>
+</nav>
+
+<!-- ALERT BANNER -->
+<div class="alert-wrap" id="alertWrap" style="display:none;">
+  <div class="alert-banner">
+    <span class="alert-icon">⚠️</span>
+    <div class="alert-text" id="alertText"></div>
+  </div>
+</div>
+
+<div class="terms-hero">
+  <div class="terms-eyebrow">Правна информация</div>
+  <h1 class="terms-title">Условия за ползване</h1>
+  <div class="terms-meta">
+    <span>📅 Последна актуализация: <strong id="lastUpdated">—</strong></span>
+    <span>🌐 <strong id="siteDomain">theaurapods.store</strong></span>
+  </div>
+</div>
+
+<div class="terms-body">
+  <div class="toc">
+    <div class="toc-title">Съдържание</div>
+    <div id="tocList"></div>
+  </div>
+  <div id="termsSections"></div>
+</div>
+
+<footer>
+  <div class="footer-logo"><em style="font-style:italic;font-weight:300;font-size:0.85em;">the</em> forbidden<span> style</span></div>
+  <div class="footer-copy">© 2026 The Forbidden Style. Всички права запазени.</div>
+  <div class="footer-links">
+    <a href="index.html">Начало</a>
+    <a href="products.html">Продукти</a>
+  </div>
+</footer>
+
+<script>
+const GITHUB_REPO = 'BSrank/frbstyle';
+
+async function loadTerms() {
+  try {
+    const res = await fetch('https://raw.githubusercontent.com/' + GITHUB_REPO + '/main/products.json?t=' + Date.now());
+    const data = await res.json();
+    const s = data.settings || {};
+    const terms = s.terms || {};
+
+    // Apply site name
+    const name = s.siteName || 'The Forbidden Style';
+    document.title = 'Условия за ползване — ' + name;
+    document.getElementById('navLogo').innerHTML = '<em style="font-style:italic;font-weight:300;font-size:0.85em;">the</em> ' + name.replace(/^the\s*/i,'').split(' ').slice(0,-1).join(' ') + ' <span>' + name.split(' ').pop() + '</span>';
+
+    // Alert banner
+    if (terms.alert) {
+      document.getElementById('alertText').innerHTML = terms.alert;
+      document.getElementById('alertWrap').style.display = 'block';
+    }
+
+    // Last updated
+    if (terms.lastUpdated) document.getElementById('lastUpdated').textContent = terms.lastUpdated;
+    if (s.siteName) document.getElementById('siteDomain').textContent = window.location.hostname;
+
+    // Sections
+    const sections = terms.sections || getDefaultSections();
+    renderSections(sections);
+
+  } catch(e) {
+    renderSections(getDefaultSections());
+  }
+}
+
+function renderSections(sections) {
+  const tocList = document.getElementById('tocList');
+  const content = document.getElementById('termsSections');
+
+  tocList.innerHTML = sections.map((s, i) =>
+    `<a class="toc-item" href="#section-${i+1}"><span class="toc-num">${String(i+1).padStart(2,'0')}.</span>${s.title}</a>`
+  ).join('');
+
+  content.innerHTML = sections.map((s, i) => `
+    <div class="terms-section" id="section-${i+1}">
+      <div class="section-num">0${i+1}.</div>
+      <h2 class="section-title">${s.title}</h2>
+      <div class="section-text">${renderContent(s.content)}</div>
+    </div>
+  `).join('');
+}
+
+function renderContent(text) {
+  if (!text) return '';
+  const lines = text.split('\n');
+  let html = '';
+  let inList = false;
+
+  for (const line of lines) {
+    const t = line.trim();
+    if (!t) { if (inList) { html += '</ul>'; inList = false; } html += '<br>'; continue; }
+    if (t.startsWith('!')) {
+      if (inList) { html += '</ul>'; inList = false; }
+      html += `<div class="highlight-box">${boldify(t.slice(1).trim())}</div>`;
+    } else if (t.startsWith('→') || t.startsWith('-')) {
+      if (!inList) { html += '<ul class="section-list">'; inList = true; }
+      html += `<li>${boldify(t.replace(/^[→\-]\s*/,''))}</li>`;
+    } else {
+      if (inList) { html += '</ul>'; inList = false; }
+      html += `<p>${boldify(t)}</p>`;
+    }
+  }
+  if (inList) html += '</ul>';
+  return html;
+}
+
+function boldify(text) {
+  return text.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+}
+
+function getDefaultSections() {
+  return [
+    { title: 'Обща информация', content: 'Добре дошли в **' + (document.title.split('—')[1] || 'нашия магазин').trim() + '**.\n\nМоля прочетете внимателно настоящите условия преди да използвате сайта или да направите поръчка.' },
+    { title: 'Поръчки и плащане', content: '→ Поръчките се приемат чрез сайта\n→ Плащането е чрез **наложен платеж** при получаване\n→ Няма предплащане\n\n! **Важно:** Ние ще се свържем с вас в рамките на 24 часа след поръчката.' },
+    { title: 'Доставка', content: '→ Доставяме чрез **Econt** и **Speedy**\n→ Срок на доставка: 1-3 работни дни\n→ Цената на доставката се заплаща при получаване' },
+    { title: 'Преглед и тест', content: '! **Опция Преглед и Тест** — имате право да прегледате и тествате продукта преди заплащане при куриера.\n\nАко продуктът не отговаря на очакванията ви, можете да го откажете без допълнителни разходи.' },
+    { title: 'Връщане и рекламации', content: 'Имате право на **14-дневен период** за връщане на продукта.\n\n→ Продуктът трябва да е в оригинален вид\n→ Свържете се с нас за организиране на връщането' },
+    { title: 'Контакт', content: 'При въпроси се свържете с нас чрез контактната форма на сайта или на посочения телефонен номер.\n\nОтговаряме в рамките на 24 часа.' }
+  ];
+}
+
+loadTerms();
+</script>
+</body>
+</html>
