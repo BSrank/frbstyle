@@ -373,7 +373,7 @@
 <footer>
   <div class="footer-logo"><em style="font-style:italic;font-weight:300;font-size:0.85em;">the</em> forbidden<span> style</span></div>
   <p>© 2026 The Forbidden Style. Всички права запазени.</p>
-  <p><a href="index.html">Начало</a> · <a href="index.html#contact">Контакт</a></p>
+  <p><a href="index.html">Начало</a> · <a href="index.html#contact">Контакт</a> · <a href="terms.html" id="termsLink" style="color:var(--muted);display:none;">Условия за ползване</a></p>
 </footer>
 
 <div class="modal-bg" id="cartBg" onclick="closeCart()"></div>
@@ -458,6 +458,8 @@
       applyTheme((data.settings || {}).theme || 'noir-luxe');
       if (data.settings && data.settings.scriptUrlEncoded) { try { SCRIPT_URL = atob(data.settings.scriptUrlEncoded); } catch(e) {} }
       window._siteSettings = data.settings || {};
+      const termsLink = document.getElementById('termsLink');
+      if (termsLink) termsLink.style.display = (data.settings && data.settings.showTerms) ? 'inline' : 'none';
       const sName = (data.settings && data.settings.siteName) ? data.settings.siteName : 'The Forbidden Style';
       document.title = sName + ' — Продукти';
       document.querySelectorAll('.nav-logo').forEach(function(el) {
