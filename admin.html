@@ -343,6 +343,30 @@
           <p style="font-size:0.72rem;color:var(--muted);margin-top:0.5rem;">Промяната се вижда в nav логото и заглавието на браузъра.</p>
         </div>
 
+        <!-- TERMS OF SERVICE -->
+        <div style="margin-bottom:2rem; padding-bottom:2rem; border-bottom:1px solid var(--border);">
+          <p class="cat-toggles-label" style="margin-bottom:1rem;">Условия за ползване (Terms)</p>
+          <div style="margin-bottom:1rem;">
+            <div class="visibility-toggle" onclick="toggleSettingToggle('showTerms')">
+              <div class="toggle-switch" id="toggle-showTerms"></div>
+              <span class="toggle-label" id="label-showTerms">Скрити</span>
+            </div>
+          </div>
+          <div class="form-group" style="margin-bottom:0.8rem;">
+            <label>⚠️ Червен Alert банер (незадължително)</label>
+            <textarea id="settings-terms-alert" placeholder="Важно: Доставките се извършват само в рамките на България." style="min-height:60px;"></textarea>
+          </div>
+          <div class="form-group" style="max-width:200px; margin-bottom:0.8rem;">
+            <label>Дата на актуализация</label>
+            <input type="text" id="settings-terms-date" placeholder="01.07.2026" />
+          </div>
+          <div id="termsSectionsList" style="display:flex;flex-direction:column;gap:0.8rem;margin-bottom:1rem;"></div>
+          <button class="btn btn-ghost" onclick="addTermsSection()" id="addTermsBtn" style="font-size:0.75rem;">+ Добави секция</button>
+          <p style="font-size:0.72rem;color:var(--muted);margin-top:0.5rem;">
+            Формат: <code style="background:var(--surface2);padding:1px 5px;">**bold**</code> · ред с <code style="background:var(--surface2);padding:1px 5px;">→</code> = точка · ред с <code style="background:var(--surface2);padding:1px 5px;">!</code> = highlight box
+          </p>
+        </div>
+
         <!-- REVIEWS -->
         <div style="margin-bottom:2rem; padding-bottom:2rem; border-bottom:1px solid var(--border);">
           <p class="cat-toggles-label" style="margin-bottom:1rem;">Отзиви от клиенти (макс. 6)</p>
@@ -352,8 +376,6 @@
         </div>
 
         <!-- GOOGLE SCRIPT URL -->
-        <div style="margin-bottom:2rem; padding-bottom:2rem; border-bottom:1px solid var(--border);">
-          <p class="cat-toggles-label" style="margin-bottom:1rem;">Google Script URL (за поръчки)</p>
           <div class="form-group" style="max-width:100%;">
             <label>Постави новия URL от Google Apps Script</label>
             <input type="text" id="settings-scripturl" placeholder="https://script.google.com/macros/s/..." style="font-size:0.78rem;letter-spacing:0;" />
@@ -475,7 +497,7 @@
 
 <script>
   // ─── CONFIG ───
-  const GITHUB_REPO   = 'BSrank/frbstyle';
+  var GITHUB_REPO   = 'BSrank/frbstyle';
   const PRODUCTS_FILE = 'products.json';
   const SCRIPT_URL    = 'https://script.google.com/macros/s/AKfycbx3AdL0FZ0t6ofijx6VW4W3JZCVwXqeW8d32pp2YL2ACiY1DDBzuvli4L0znvtnJezj/exec';
   const PW_HASH       = '830ec5c1efee9ed79fee45e2a1da3ebb881d97167febdb1b71a35a20229b9956';
@@ -510,10 +532,11 @@
     btn.textContent = 'Влез'; btn.disabled = false;
   }
 
-  function logout() { sessionStorage.removeItem('zax_session'); sessionStorage.removeItem('zax_token'); location.reload(); }
+  function logout() { sessionStorage.removeItem('zax_session'); sessionStorage.removeItem('zax_token'); sessionStorage.removeItem('zax_repo'); location.reload(); }
 
   if (sessionStorage.getItem('zax_session') && sessionStorage.getItem('zax_token')) {
     GITHUB_TOKEN = sessionStorage.getItem('zax_token');
+    GITHUB_REPO = localStorage.getItem('zax_repo') || 'BSrank/frbstyle';
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('adminPanel').style.display = 'block';
   }
@@ -861,6 +884,48 @@
     }
   }
 
+  // ─── TERMS ───
+  function renderTermsSectionsList() {
+    var sections = (siteSettings.terms && siteSettings.terms.sections) || [];
+    var list = document.getElementById('termsSectionsList');
+    if (!list) return;
+    list.innerHTML = sections.map(function(s, i) {
+      return '<div style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:1rem;position:relative;">' +
+        '<button onclick="removeTermsSection(' + i + ')" style="position:absolute;top:8px;right:8px;background:none;border:none;color:var(--danger);cursor:pointer;">✕</button>' +
+        '<div class="form-group" style="margin-bottom:0.6rem;"><label>Заглавие на секцията</label>' +
+        '<input type="text" id="terms-title-' + i + '" value="' + (s.title||'').replace(/"/g,'&quot;') + '" placeholder="Доставка" style="padding:8px;background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:DM Sans,sans-serif;font-size:0.82rem;border-radius:2px;outline:none;width:100%;" /></div>' +
+        '<div class="form-group"><label>Съдържание</label>' +
+        '<textarea id="terms-content-' + i + '" style="min-height:100px;padding:8px;background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:DM Sans,sans-serif;font-size:0.82rem;border-radius:2px;outline:none;resize:vertical;width:100%;">' + (s.content||'') + '</textarea></div>' +
+      '</div>';
+    }).join('');
+  }
+
+  function addTermsSection() {
+    if (!siteSettings.terms) siteSettings.terms = {};
+    if (!siteSettings.terms.sections) siteSettings.terms.sections = [];
+    siteSettings.terms.sections.push({ title: '', content: '' });
+    renderTermsSectionsList();
+  }
+
+  function removeTermsSection(idx) {
+    siteSettings.terms.sections.splice(idx, 1);
+    renderTermsSectionsList();
+  }
+
+  function collectTerms() {
+    var sections = (siteSettings.terms && siteSettings.terms.sections) || [];
+    return {
+      alert: (document.getElementById('settings-terms-alert') || {}).value || '',
+      lastUpdated: (document.getElementById('settings-terms-date') || {}).value || '',
+      sections: sections.map(function(s, i) {
+        return {
+          title: (document.getElementById('terms-title-' + i) || {}).value || '',
+          content: (document.getElementById('terms-content-' + i) || {}).value || ''
+        };
+      }).filter(function(s) { return s.title; })
+    };
+  }
+
   // ─── REVIEWS ───
   function renderReviewsList() {
     var reviews = siteSettings.reviews || [];
@@ -1077,7 +1142,11 @@
     var lbl = document.getElementById('label-' + key);
     var isOn = siteSettings[key] !== false;
     if (tog) tog.classList.toggle('on', isOn);
-    if (lbl) { lbl.classList.toggle('on', isOn); lbl.textContent = key === 'showCategories' ? (isOn ? 'Показани' : 'Скрити') : (isOn ? 'Включено' : 'Изключено'); }
+    if (lbl) {
+      lbl.classList.toggle('on', isOn);
+      var labels = { showCategories: ['Показани','Скрити'], showTerms: ['Показани','Скрити'] };
+      lbl.textContent = isOn ? (labels[key] ? labels[key][0] : 'Включено') : (labels[key] ? labels[key][1] : 'Изключено');
+    }
     saveSettings();
   }
 
@@ -1105,7 +1174,8 @@
     var lbl = document.getElementById('label-showCategories');
     if (tog) tog.classList.toggle('on', showCat);
     if (lbl) { lbl.classList.toggle('on', showCat); lbl.textContent = showCat ? 'Показани' : 'Скрити'; }
-    var scriptEl = document.getElementById('settings-scripturl');
+    var repoEl = document.getElementById('settings-repo');
+    if (repoEl) { repoEl.value = GITHUB_REPO; repoEl.placeholder = GITHUB_REPO; }
     if (scriptEl) {
       if (siteSettings.scriptUrlEncoded) {
         scriptEl.placeholder = '(запазен — постави нов за да смениш)';
@@ -1118,6 +1188,16 @@
     updateCategoryDropdowns();
     renderThemeGrid();
     renderReviewsList();
+    var showTerms = siteSettings.showTerms === true;
+    var togTerms = document.getElementById('toggle-showTerms');
+    var lblTerms = document.getElementById('label-showTerms');
+    if (togTerms) togTerms.classList.toggle('on', showTerms);
+    if (lblTerms) { lblTerms.classList.toggle('on', showTerms); lblTerms.textContent = showTerms ? 'Показани' : 'Скрити'; }
+    var alertEl = document.getElementById('settings-terms-alert');
+    var dateEl = document.getElementById('settings-terms-date');
+    if (alertEl) alertEl.value = (siteSettings.terms && siteSettings.terms.alert) || '';
+    if (dateEl) dateEl.value = (siteSettings.terms && siteSettings.terms.lastUpdated) || '';
+    renderTermsSectionsList();
   }
 
   function updateContactFields() {
@@ -1145,6 +1225,8 @@
       hero: document.getElementById('settings-hero').value.trim() || 'Живей с Аура',
       productsSubtitle: document.getElementById('settings-products-subtitle').value.trim(),
       reviews: collectReviews(),
+      terms: collectTerms(),
+      showTerms: siteSettings.showTerms === true,
       showCategories: siteSettings.showCategories !== false,
       customCategories: siteSettings.customCategories || [],
       theme: siteSettings.theme || 'noir-luxe',
