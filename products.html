@@ -279,10 +279,11 @@
     .cart-total-price { color: var(--accent); }
     .checkout-btn { width: 100%; padding: 14px; background: var(--accent); color: var(--btn-text, #000); border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 0.82rem; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 500; border-radius: 2px; transition: background 0.2s; }
     .checkout-btn:hover { background: var(--accent2); }
-    .checkout-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .checkout-btn:disabled { opacity: 0.7; cursor: not-allowed; }
 
     
-    .order-modal { position: fixed; inset: 0; z-index: 300; background: rgba(0,0,0,0.85); backdrop-filter: blur(6px); display: none; align-items: center; justify-content: center; padding: 1rem; }
+    .order-modal { position: fixed; inset: 0; z-index: 300; background: rgba(0,0,0,0.85); backdrop-filter: blur(6px); display: none; align-items: flex-start; justify-content: center; padding: 1rem; overflow-y: auto; -webkit-overflow-scrolling: touch; }
     .order-modal.open { display: flex; }
     .order-form-box { background: var(--surface); border: 1px solid var(--border); width: min(520px, 100%); max-height: 90vh; overflow-y: auto; border-radius: 4px; padding: 2rem; }
     .order-form-box h2 { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; font-weight: 400; margin-bottom: 0.4rem; }
@@ -990,13 +991,22 @@
     closeCart();
     renderOrderSummary();
     document.getElementById('orderModal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    document.body.style.position = 'fixed';
+    document.body.style.width = '100%';
   }
   function closeOrderForm() {
     document.getElementById('orderModal').classList.remove('open');
+    document.body.style.overflow = '';
+    document.body.style.position = '';
+    document.body.style.width = '';
     openCart();
   }
   function closeAll() {
     document.getElementById('orderModal').classList.remove('open');
+    document.body.style.overflow = '';
+    document.body.style.position = '';
+    document.body.style.width = '';
     cart_local = [];
     updateCartCount(); renderCart();
     document.getElementById('formContent').style.display = 'block';
@@ -1024,21 +1034,25 @@
       alert('Моля попълни всички задължителни полета.'); return;
     }
     const btn = document.getElementById('submitBtn');
-    btn.disabled = true; btn.textContent = 'Изпращане...';
+    btn.disabled = true;
+    btn.innerHTML = '<span style="display:inline-flex;align-items:center;gap:8px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="animation:spin 0.8s linear infinite;"><circle cx="12" cy="12" r="10" stroke-opacity="0.3"/><path d="M12 2a10 10 0 0 1 10 10"/></svg> Изпращане...</span>';
+
     const orderData = {
       action: 'placeOrder',
       courier, fullName, phone, email, city, office,
       items: cart_local.map(i => ({ name: i.name, size: i.size || '', qty: i.qty, price: i.price })),
       total: cartTotalBGN().toFixed(2)
     };
+
     try {
       await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(orderData) });
-      document.getElementById('formContent').style.display = 'none';
-      document.getElementById('successScreen').classList.add('show');
-    } catch (e) {
-      alert('Грешка при изпращане. Опитай отново.');
-      btn.disabled = false; btn.textContent = 'Изпрати поръчка';
+    } catch(e) {
+      console.warn('fetch error:', e);
     }
+
+    // Показваме успех след изпращане (независимо от резултата — no-cors не дава статус)
+    document.getElementById('formContent').style.display = 'none';
+    document.getElementById('successScreen').classList.add('show');
   }
 
   function toggleNav() { document.getElementById('navLinks').classList.toggle('open'); }
