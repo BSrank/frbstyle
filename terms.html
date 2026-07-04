@@ -119,6 +119,31 @@ footer{padding:2rem 6%;border-top:1px solid var(--border);display:flex;justify-c
 <script>
 const GITHUB_REPO = 'BSrank/frbstyle';
 
+function applyTheme(id) {
+  const THEMES = {
+    'noir-luxe':{fonts:'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap',css:':root{--bg:#0a0a0a;--surface:#111111;--surface2:#1a1a1a;--border:#2a2a2a;--text:#f0ece4;--muted:#888;--accent:#c9a96e;--accent2:#e8d5b0;}'},
+    'blanc-eclat':{fonts:'https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap',css:':root{--bg:#fafaf8;--surface:#ffffff;--surface2:#f0ebe0;--border:#e8e4dd;--text:#1a1a1a;--muted:#888;--accent:#8b6914;--accent2:#c9a96e;}'},
+    'chrome-wave':{fonts:'https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600&display=swap',css:':root{--bg:#0d0d14;--surface:#13131f;--surface2:#1a1a2e;--border:rgba(255,255,255,0.08);--text:#ffffff;--muted:rgba(255,255,255,0.4);--accent:#a78bfa;--accent2:#60a5fa;}'},
+    'rose-atelier':{fonts:'https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;1,400&family=Inter:wght@300;400;500&display=swap',css:':root{--bg:#fdf6f0;--surface:#ffffff;--surface2:#fde8df;--border:#e8d5c8;--text:#2c1810;--muted:#886050;--accent:#c4614a;--accent2:#e8a090;}'},
+    'concrete-edge':{fonts:'https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap',css:':root{--bg:#f2f0ed;--surface:#ffffff;--surface2:#e8e4dc;--border:#d0ccc4;--text:#1c1c1c;--muted:#666;--accent:#e8d44d;--accent2:#f0e060;}'},
+    'ink-editorial':{fonts:'https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap',css:':root{--bg:#f7f5f0;--surface:#ffffff;--surface2:#e8e4dc;--border:#d8d4cc;--text:#111111;--muted:#888;--accent:#111111;--accent2:#333;}'},
+    'solar-flare':{fonts:'https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;700;900&display=swap',css:':root{--bg:#fff8f0;--surface:#ffffff;--surface2:#fff0e8;--border:#e8d0b8;--text:#111111;--muted:#666;--accent:#ff4d00;--accent2:#ff7733;}'},
+    'pearl-minimal':{fonts:'https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap',css:':root{--bg:#ffffff;--surface:#ffffff;--surface2:#f8f8f8;--border:#e0e0e0;--text:#1a1a1a;--muted:#aaa;--accent:#1a1a1a;--accent2:#444;}'},
+    'voltage':{fonts:'https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@300;400;500;600&display=swap',css:':root{--bg:#0a0a0a;--surface:#111111;--surface2:#1a1a1a;--border:#222222;--text:#ffffff;--muted:#444;--accent:#00ff88;--accent2:#00ccff;}'},
+    'sand-dune':{fonts:'https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap',css:':root{--bg:#f0ead8;--surface:#ffffff;--surface2:#e8dcc8;--border:#d4c4a0;--text:#3d2e1e;--muted:#7a6040;--accent:#c9a96e;--accent2:#e8d4a0;}'}
+  };
+  const t = THEMES[id] || THEMES['noir-luxe'];
+  let s = document.getElementById('theme-style');
+  if (s) s.remove();
+  s = document.createElement('style'); s.id = 'theme-style';
+  s.textContent = t.css + ' body{background:var(--bg);color:var(--text);}';
+  document.head.appendChild(s);
+  let l = document.getElementById('theme-font');
+  if (l) l.remove();
+  l = document.createElement('link'); l.id = 'theme-font'; l.rel = 'stylesheet'; l.href = t.fonts;
+  document.head.appendChild(l);
+}
+
 async function loadTerms() {
   try {
     const res = await fetch('https://raw.githubusercontent.com/' + GITHUB_REPO + '/main/products.json?t=' + Date.now());
@@ -126,10 +151,19 @@ async function loadTerms() {
     const s = data.settings || {};
     const terms = s.terms || {};
 
+    // Apply theme
+    applyTheme(s.theme || 'noir-luxe');
+
     // Apply site name
     const name = s.siteName || 'The Forbidden Style';
     document.title = 'Условия за ползване — ' + name;
-    document.getElementById('navLogo').innerHTML = '<em style="font-style:italic;font-weight:300;font-size:0.85em;">the</em> ' + name.replace(/^the\s*/i,'').split(' ').slice(0,-1).join(' ') + ' <span>' + name.split(' ').pop() + '</span>';
+    const words = name.split(' '); const last = words.pop(); const first = words[0] || '';
+    const logoHtml = first.toLowerCase() === 'the'
+      ? '<em style="font-style:italic;font-weight:300;font-size:0.85em;">the</em> ' + (words.slice(1).join(' ') ? words.slice(1).join(' ') + ' ' : '') + '<span>' + last + '</span>'
+      : (words.join(' ') ? words.join(' ') + ' ' : '') + '<span>' + last + '</span>';
+    document.getElementById('navLogo').innerHTML = logoHtml;
+    document.querySelectorAll('.footer-logo').forEach(el => el.innerHTML = logoHtml);
+    document.querySelectorAll('.footer-copy').forEach(el => el.textContent = '© 2026 ' + name + '. Всички права запазени.');
 
     // Alert banner
     if (terms.alert) {
