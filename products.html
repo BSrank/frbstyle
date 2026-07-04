@@ -767,14 +767,28 @@
     // Swipe на карта → смяна на снимка (без lightbox)
     if (found.length > 1) {
       let tx = 0;
+      let ty = 0;
+      let isHorizontal = null;
+
       img.addEventListener('touchstart', function(e) {
         tx = e.touches[0].clientX;
+        ty = e.touches[0].clientY;
+        isHorizontal = null;
         img._wasSwiped = false;
       }, { passive: true });
 
+      img.addEventListener('touchmove', function(e) {
+        const dx = Math.abs(e.touches[0].clientX - tx);
+        const dy = Math.abs(e.touches[0].clientY - ty);
+        if (isHorizontal === null) {
+          isHorizontal = dx > dy;
+        }
+        if (isHorizontal) e.preventDefault();
+      }, { passive: false });
+
       img.addEventListener('touchend', function(e) {
         const dx = e.changedTouches[0].clientX - tx;
-        if (Math.abs(dx) > 35) {
+        if (isHorizontal && Math.abs(dx) > 35) {
           img._wasSwiped = true;
           changeImage(p.id, dx < 0 ? 1 : -1);
         }
