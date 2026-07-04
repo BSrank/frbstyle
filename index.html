@@ -658,7 +658,7 @@
 <footer>
   <div class="footer-logo"><em style="font-style:italic;font-weight:300;font-size:0.85em;">the</em> forbidden<span> style</span></div>
   <p>© 2026 The Forbidden Style. Всички права запазени.</p>
-  <p><a href="products.html">Продукти</a> · <a href="#contact">Контакт</a></p>
+  <p><a href="products.html">Продукти</a> · <a href="index.html#contact">Контакт</a> · <a href="terms.html" id="termsLink" style="color:var(--muted);display:none;">Условия за ползване</a></p>
 </footer>
 
 <div class="cookie-bar" id="cookieBar">
@@ -882,6 +882,9 @@
       const last = words.pop();
       heroH1.innerHTML = words.join(' ') + '<br>с <em>' + last + '</em>';
     }
+    const termsLink = document.getElementById('termsLink');
+    if (termsLink) termsLink.style.display = s.showTerms ? 'inline' : 'none';
+
     renderReviews(s.reviews || []);
   }
 
