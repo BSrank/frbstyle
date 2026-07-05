@@ -33,7 +33,7 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:20px 6
 .terms-meta span{display:flex;align-items:center;gap:6px;}
 
 /* CONTENT */
-.terms-body{display:grid;grid-template-columns:240px 1fr;gap:4rem;padding:4rem 6%;max-width:1100px;margin:0 auto;}
+.terms-body{display:grid;grid-template-columns:240px 1fr;gap:4rem;padding:3rem 6%;max-width:1100px;margin:0 auto;}
 
 /* TOC */
 .toc{position:sticky;top:2rem;height:fit-content;}
@@ -192,6 +192,11 @@ async function loadTerms() {
 function renderSections(sections) {
   const tocList = document.getElementById('tocList');
   const content = document.getElementById('termsSections');
+
+  if (!sections || sections.length === 0) {
+    content.innerHTML = '<div style="color:var(--muted);font-size:0.85rem;padding:2rem 0;">Съдържанието се зарежда...</div>';
+    return;
+  }
 
   tocList.innerHTML = sections.map((s, i) =>
     `<a class="toc-item" href="#section-${i+1}"><span class="toc-num">${String(i+1).padStart(2,'0')}.</span>${s.title}</a>`
