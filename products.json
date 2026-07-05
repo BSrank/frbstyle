@@ -262,13 +262,7 @@
       "active": true,
       "sizes": [],
       "qty": 2,
-      "images": [
-        "images/cat__3010/p_1783017260911/1.png",
-        "images/cat__3010/p_1783017260911/2.jpg",
-        "images/cat__3010/p_1783017260911/3.jpg",
-        "images/cat__3010/p_1783017260911/4.jpg",
-        "images/cat__3010/p_1783017260911/5.jpg"
-      ],
+      "images": [],
       "descFormatted": true
     }
   ],
