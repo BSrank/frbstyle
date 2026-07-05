@@ -372,7 +372,7 @@
 
 <footer>
   <div class="footer-logo"><em style="font-style:italic;font-weight:300;font-size:0.85em;">the</em> forbidden<span> style</span></div>
-  <p>© 2026 theAuraPods. Всички права запазени.</p>
+  <p><span id="footerCopy">© 2026 The Forbidden Style. Всички права запазени.</span></p>
   <p><a href="index.html">Начало</a> · <a href="index.html#contact">Контакт</a> · <a href="terms.html" id="termsLink" style="color:var(--muted);display:none;">Условия за ползване</a></p>
 </footer>
 
@@ -477,6 +477,8 @@
         el.style.visibility = 'visible';
       });
       document.querySelectorAll('.footer-logo').forEach(function(el) { el.textContent = sName; });
+      const footerCopy = document.getElementById('footerCopy');
+      if (footerCopy) footerCopy.textContent = '© 2026 ' + sName + '. Всички права запазени.';
       const subtitle = document.getElementById('products-subtitle');
       if (subtitle) subtitle.textContent = (data.settings && data.settings.productsSubtitle) ? data.settings.productsSubtitle : sName + ' — Collection';
     } catch (e) {
