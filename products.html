@@ -685,6 +685,8 @@
             id="photo-${p.id}"
             data-idx="0"
             data-paths='${JSON.stringify(imagePaths)}'
+            loading="lazy"
+            decoding="async"
             onerror="handleImgError(this)"
             onload="this.style.opacity=1; this.previousElementSibling.style.display='none';"
           />
@@ -759,6 +761,8 @@
     img.style.opacity = '1';
     if (img.previousElementSibling) img.previousElementSibling.style.display = 'none';
     img.style.cursor = 'zoom-in';
+    // Preload всички снимки на продукта
+    found.slice(1).forEach(function(src) { var pi = new Image(); pi.src = src; });
 
     // Click → lightbox (само ако не е бил swipe)
     img.onclick = function() {
@@ -857,6 +861,14 @@
     }
   }
 
+  function preloadAdjacentImages(found, idx) {
+    const next = (idx + 1) % found.length;
+    const prev = (idx - 1 + found.length) % found.length;
+    [next, prev].forEach(function(i) {
+      if (i !== idx) { var img = new Image(); img.src = found[i]; }
+    });
+  }
+
   function changeImage(productId, dir) {
     const img = document.getElementById('photo-' + productId);
     const nav = document.getElementById('imgnav-' + productId);
@@ -867,8 +879,12 @@
     let idx = parseInt(img.dataset.foundIdx || '0');
     idx = (idx + dir + found.length) % found.length;
     img.dataset.foundIdx = idx;
+    img.style.opacity = '0.7';
     img.src = found[idx];
+    img.onload = function() { img.style.opacity = '1'; };
+    img.style.transition = 'opacity 0.15s ease';
     if (dots) dots.querySelectorAll('.img-dot').forEach((d, i) => d.classList.toggle('active', i === idx));
+    preloadAdjacentImages(found, idx);
     // Sync lightbox if open
     const lb = document.getElementById('lightbox');
     if (lb && lb.classList.contains('open')) {
