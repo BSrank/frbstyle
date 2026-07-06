@@ -283,7 +283,7 @@
       "sections": []
     },
     "showTerms": true,
-    "showCategories": true,
+    "showCategories": false,
     "customCategories": [
       {
         "id": "cat__3010",
