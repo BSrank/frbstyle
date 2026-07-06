@@ -160,7 +160,7 @@
       "category": "clothes",
       "price": 80,
       "desc": "",
-      "active": true,
+      "active": false,
       "sizes": [
         {
           "size": "XS",
