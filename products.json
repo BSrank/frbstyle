@@ -6,7 +6,7 @@
       "category": "clothes",
       "price": 80,
       "desc": "100% памук бродерия",
-      "active": true,
+      "active": false,
       "sizes": [
         {
           "size": "XS",
@@ -45,7 +45,7 @@
       "category": "clothes",
       "price": 80,
       "desc": "бродерия 100% памук",
-      "active": true,
+      "active": false,
       "sizes": [
         {
           "size": "XS",
@@ -84,7 +84,7 @@
       "category": "clothes",
       "price": 80,
       "desc": "100% бродерия - памук",
-      "active": true,
+      "active": false,
       "sizes": [
         {
           "size": "XS",
@@ -122,7 +122,7 @@
       "category": "clothes",
       "price": 80,
       "desc": "",
-      "active": true,
+      "active": false,
       "sizes": [
         {
           "size": "XS",
@@ -160,7 +160,7 @@
       "category": "clothes",
       "price": 80,
       "desc": "",
-      "active": true,
+      "active": false,
       "sizes": [
         {
           "size": "XS",
@@ -196,7 +196,7 @@
       "category": "clothes",
       "price": 80,
       "desc": "",
-      "active": true,
+      "active": false,
       "sizes": [
         {
           "size": "XS",
@@ -273,16 +273,6 @@
     "contactMode": "email",
     "phone": "",
     "hours": "",
-    "eyebrow": "Премиум звук",
-    "hero": "Живей с Аура",
-    "productsSubtitle": "",
-    "reviews": [],
-    "terms": {
-      "alert": "",
-      "lastUpdated": "",
-      "sections": []
-    },
-    "showTerms": true,
     "showCategories": false,
     "customCategories": [
       {
@@ -292,6 +282,16 @@
         "active": false
       }
     ],
+    "reviews": [],
+    "eyebrow": "Премиум звук",
+    "hero": "Живей с Аура",
+    "productsSubtitle": "",
+    "terms": {
+      "alert": "",
+      "lastUpdated": "",
+      "sections": []
+    },
+    "showTerms": true,
     "theme": "noir-luxe",
     "scriptUrlEncoded": "aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J5cGY0bTRoaDYtT2lJVkcyVE9Qa3o0TWxRSkxfS19Wb3JOQXRVU2JveFVhX21tc1B6QmRVRXpoSTctTU1kV1VFNS0vZXhlYw=="
   }
