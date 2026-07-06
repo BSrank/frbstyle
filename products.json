@@ -271,8 +271,18 @@
   "settings": {
     "siteName": "The Forbidden Style",
     "contactMode": "email",
-    "phone": "",
-    "hours": "",
+    "phone": "0876 127 997",
+    "hours": "Всеки ден",
+    "eyebrow": "Нова колекция 2026",
+    "hero": "Живей с Аура",
+    "productsSubtitle": "The Forbidden Style",
+    "reviews": [],
+    "terms": {
+      "alert": "",
+      "lastUpdated": "",
+      "sections": []
+    },
+    "showTerms": true,
     "showCategories": false,
     "customCategories": [
       {
@@ -282,16 +292,6 @@
         "active": false
       }
     ],
-    "reviews": [],
-    "eyebrow": "Нова колекция 2026",
-    "hero": "Живей с Аура",
-    "productsSubtitle": "The Forbidden Style",
-    "terms": {
-      "alert": "",
-      "lastUpdated": "",
-      "sections": []
-    },
-    "showTerms": true,
     "theme": "noir-luxe",
     "scriptUrlEncoded": "aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J5cGY0bTRoaDYtT2lJVkcyVE9Qa3o0TWxRSkxfS19Wb3JOQXRVU2JveFVhX21tc1B6QmRVRXpoSTctTU1kV1VFNS0vZXhlYw=="
   }
