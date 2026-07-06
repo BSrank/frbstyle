@@ -84,7 +84,7 @@
       "category": "clothes",
       "price": 80,
       "desc": "100% бродерия - памук",
-      "active": false,
+      "active": true,
       "sizes": [
         {
           "size": "XS",
