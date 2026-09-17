@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Откажи поръчка</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{--bg:#0a0a0a;--surface:#111;--surface2:#1a1a1a;--border:#2a2a2a;--text:#f0ece4;--muted:#888;--accent:#c9a96e;--danger:#e05252;--btn-text:#000;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;display:flex;flex-direction:column;}
+nav{display:flex;justify-content:space-between;align-items:center;padding:20px 6%;border-bottom:1px solid var(--border);}
+.nav-logo{font-family:'Cormorant Garamond',serif;font-size:1.5rem;color:var(--text);text-decoration:none;}
+.nav-logo span{color:var(--accent);}
+.container{flex:1;display:flex;align-items:center;justify-content:center;padding:3rem 6%;}
+.box{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:2.5rem;max-width:480px;width:100%;text-align:center;}
+.icon{font-size:3rem;margin-bottom:1.5rem;}
+.title{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:300;margin-bottom:0.8rem;}
+.subtitle{font-size:0.85rem;color:var(--muted);line-height:1.7;margin-bottom:2rem;}
+.order-info{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:1rem;margin-bottom:2rem;text-align:left;}
+.order-info p{font-size:0.82rem;color:var(--muted);margin-bottom:0.3rem;}
+.order-info strong{color:var(--text);}
+.btn-danger{width:100%;padding:14px;background:var(--danger);color:#fff;border:none;font-size:0.78rem;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;border-radius:4px;font-family:'DM Sans',sans-serif;font-weight:500;margin-bottom:0.8rem;}
+.btn-ghost{width:100%;padding:14px;background:transparent;color:var(--muted);border:1px solid var(--border);font-size:0.78rem;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;border-radius:4px;font-family:'DM Sans',sans-serif;}
+.btn-ghost:hover{border-color:var(--muted);color:var(--text);}
+.success-icon{font-size:3rem;margin-bottom:1rem;}
+.success-title{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:300;color:#52c07a;margin-bottom:0.5rem;}
+.success-text{font-size:0.85rem;color:var(--muted);line-height:1.7;}
+.error-box{background:rgba(224,82,82,0.1);border:1px solid rgba(224,82,82,0.3);border-left:3px solid var(--danger);padding:1rem;border-radius:4px;font-size:0.82rem;margin-bottom:1.5rem;text-align:left;}
+footer{padding:1.5rem 6%;border-top:1px solid var(--border);text-align:center;}
+footer p{font-size:0.7rem;color:var(--muted);}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html" id="navLogo"><em style="font-style:italic;font-weight:300;font-size:0.85em;">the</em> forbidden<span> style</span></a>
+</nav>
+
+<div class="container">
+  <div class="box">
+    <div id="errorBox" class="error-box" style="display:none;"></div>
+
+    <div id="confirmContent">
+      <div class="icon">🛒</div>
+      <h1 class="title">Откажи поръчката</h1>
+      <p class="subtitle">Сигурен ли си че искаш да откажеш поръчката? Това действие не може да бъде отменено.</p>
+      <div class="order-info" id="orderInfo" style="display:none;">
+        <p>Клиент: <strong id="infoName">—</strong></p>
+        <p>Продукти: <strong id="infoItems">—</strong></p>
+        <p>Сума: <strong id="infoTotal">—</strong></p>
+      </div>
+      <button class="btn-danger" id="cancelBtn" onclick="cancelOrder()">❌ Потвърди отказ</button>
+      <button class="btn-ghost" onclick="window.location.href='index.html'">Върни се назад</button>
+    </div>
+
+    <div id="successContent" style="display:none;">
+      <div class="success-icon">✓</div>
+      <div class="success-title">Поръчката е отказана</div>
+      <div class="success-text" id="successText">Поръчката ти е успешно отказана.<br>Ще получиш потвърждение на имейла си.</div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p id="footerCopy">© 2026 The Forbidden Style. Всички права запазени.</p>
+</footer>
+
+<script>
+const SCRIPT_URL = atob('aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J4M0FkTDBGWjB0Nm9maWp4NlZXNFczSlpDVndYcWVXOGQzMnBwMllMMkFDaVkxRERCenV2bGk0TDB6bnZ0bkplemovZXhlYw==');
+const REPO = 'BSrank/frbstyle';
+
+const params = new URLSearchParams(window.location.search);
+const token = params.get('token');
+const orderId = params.get('order');
+
+async function init() {
+  // Load settings
+  try {
+    const res = await fetch('https://raw.githubusercontent.com/' + REPO + '/main/products.json?t=' + Date.now());
+    const data = await res.json();
+    const name = (data.settings && data.settings.siteName) || 'The Forbidden Style';
+    document.title = 'Откажи поръчка — ' + name;
+    document.getElementById('footerCopy').textContent = '© 2026 ' + name + '. Всички права запазени.';
+  } catch(e) {}
+
+  if (!token || !orderId) {
+    showError('Невалиден линк. Моля използвай линка от мейла за поръчка.');
+    return;
+  }
+
+  // Verify token
+  try {
+    const vRes = await fetch(SCRIPT_URL + '?action=verifyCancelToken&token=' + token + '&order=' + orderId);
+    const vData = await vRes.json();
+    if (!vData.valid) {
+      showError(vData.message || 'Невалиден или вече използван линк.');
+      return;
+    }
+    const o = vData.order || {};
+    if (o.name) {
+      document.getElementById('infoName').textContent = o.name;
+      document.getElementById('infoItems').textContent = o.items || '—';
+      document.getElementById('infoTotal').textContent = o.total ? 'лв ' + o.total : '—';
+      document.getElementById('orderInfo').style.display = 'block';
+    }
+  } catch(e) {
+    // If can't verify just show the form
+  }
+}
+
+async function cancelOrder() {
+  const btn = document.getElementById('cancelBtn');
+  btn.disabled = true;
+  btn.textContent = 'Обработва се...';
+  try {
+    await fetch(SCRIPT_URL, {
+      method: 'POST', mode: 'no-cors',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ action: 'cancelOrder', token: token, orderId: orderId })
+    });
+    document.getElementById('confirmContent').style.display = 'none';
+    document.getElementById('successContent').style.display = 'block';
+  } catch(e) {
+    showError('Грешка при обработка. Опитай отново или се свържи с нас.');
+    btn.disabled = false;
+    btn.textContent = '❌ Потвърди отказ';
+  }
+}
+
+function showError(msg) {
+  const box = document.getElementById('errorBox');
+  box.textContent = msg;
+  box.style.display = 'block';
+}
+
+init();
+</script>
+</body>
+</html>
