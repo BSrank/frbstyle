@@ -201,6 +201,7 @@
     <div class="tabs">
       <button class="tab active" id="tab-inventory" onclick="showTab('inventory')">📦 Продукти</button>
       <button class="tab" id="tab-orders" onclick="showTab('orders')">🧾 Поръчки</button>
+      <button class="tab" id="tab-reviews" onclick="showTab('reviews')">⭐ Ревюта</button>
       <button class="tab" id="tab-add" onclick="showTab('add')">➕ Нов продукт</button>
       <button class="tab" id="tab-settings" onclick="showTab('settings')">⚙ Настройки</button>
     </div>
@@ -219,9 +220,17 @@
       <div id="ordersLoading" style="text-align:center;padding:3rem;color:var(--muted);">Зареждане...</div>
       <div id="ordersTable" style="display:none; overflow-x:auto;">
         <table class="orders-table">
-          <thead><tr><th>Дата</th><th>Клиент</th><th>Телефон</th><th>Куриер / Офис</th><th>Продукти</th><th>Сума</th></tr></thead>
+          <thead><tr><th>Дата</th><th>Клиент</th><th>Телефон</th><th>Куриер / Офис</th><th>Продукти</th><th>Сума</th><th>Ревю</th></tr></thead>
           <tbody id="ordersBody"></tbody>
         </table>
+      </div>
+    </div>
+
+    <div id="pane-reviews" style="display:none;">
+      <div class="add-product-section">
+        <h3>Ревюта от клиенти</h3>
+        <div id="reviewsAdminLoading" style="color:var(--muted);font-size:0.85rem;padding:1rem 0;">Зареждане...</div>
+        <div id="reviewsAdminList"></div>
       </div>
     </div>
 
@@ -341,6 +350,16 @@
             <input type="text" id="settings-sitename" placeholder="The Forbidden Style" />
           </div>
           <p style="font-size:0.72rem;color:var(--muted);margin-top:0.5rem;">Промяната се вижда в nav логото и заглавието на браузъра.</p>
+        </div>
+
+        <!-- FACEBOOK PIXEL -->
+        <div style="margin-bottom:2rem; padding-bottom:2rem; border-bottom:1px solid var(--border);">
+          <p class="cat-toggles-label" style="margin-bottom:1rem;">Facebook Pixel</p>
+          <div class="form-group" style="max-width:360px;">
+            <label>Pixel ID</label>
+            <input type="text" id="settings-pixel" placeholder="123456789012345" style="letter-spacing:0;" />
+          </div>
+          <p style="font-size:0.72rem;color:var(--muted);margin-top:0.5rem;">Намери го в Facebook Business Manager → Events Manager. Оставяй празно ако нямаш.</p>
         </div>
 
         <!-- TERMS OF SERVICE -->
@@ -497,7 +516,7 @@
 
 <script>
   // ─── CONFIG ───
-  var GITHUB_REPO   = 'BSrank/frbstyle';
+  var GITHUB_REPO   = 'BSrank/frbstyledress';
   const PRODUCTS_FILE = 'products.json';
   const SCRIPT_URL    = 'https://script.google.com/macros/s/AKfycbx3AdL0FZ0t6ofijx6VW4W3JZCVwXqeW8d32pp2YL2ACiY1DDBzuvli4L0znvtnJezj/exec';
   const PW_HASH       = '830ec5c1efee9ed79fee45e2a1da3ebb881d97167febdb1b71a35a20229b9956';
@@ -536,7 +555,6 @@
 
   if (sessionStorage.getItem('zax_session') && sessionStorage.getItem('zax_token')) {
     GITHUB_TOKEN = sessionStorage.getItem('zax_token');
-    GITHUB_REPO = localStorage.getItem('zax_repo') || 'BSrank/frbstyle';
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('adminPanel').style.display = 'block';
   }
@@ -731,6 +749,7 @@
       if (el) el.classList.toggle('active', t === name);
     });
     if (name === 'orders') loadOrders();
+    if (name === 'reviews') loadReviewsAdmin();
     if (name === 'settings') renderSettingsUI();
   }
 
@@ -1174,8 +1193,9 @@
     var lbl = document.getElementById('label-showCategories');
     if (tog) tog.classList.toggle('on', showCat);
     if (lbl) { lbl.classList.toggle('on', showCat); lbl.textContent = showCat ? 'Показани' : 'Скрити'; }
-    var repoEl = document.getElementById('settings-repo');
-    if (repoEl) { repoEl.value = GITHUB_REPO; repoEl.placeholder = GITHUB_REPO; }
+    var pixelEl = document.getElementById('settings-pixel');
+    if (pixelEl) { pixelEl.value = siteSettings.fbPixelId || ''; pixelEl.placeholder = siteSettings.fbPixelId || '123456789012345'; }
+    var scriptEl = document.getElementById('settings-scripturl');
     if (scriptEl) {
       if (siteSettings.scriptUrlEncoded) {
         scriptEl.placeholder = '(запазен — постави нов за да смениш)';
@@ -1219,14 +1239,15 @@
     siteSettings = {
       siteName: document.getElementById('settings-sitename').value.trim() || 'The Forbidden Style',
       contactMode: mode ? mode.value : 'phone',
-      phone: document.getElementById('settings-phone').value.trim() || '0876 127 997',
-      hours: document.getElementById('settings-hours').value.trim() || 'Всеки ден',
+      phone: (mode && mode.value === 'email') ? '' : (document.getElementById('settings-phone').value.trim() || '0876 127 997'),
+      hours: (mode && mode.value === 'email') ? '' : (document.getElementById('settings-hours').value.trim() || 'Всеки ден'),
       eyebrow: document.getElementById('settings-eyebrow').value.trim() || 'Нова колекция 2026',
       hero: document.getElementById('settings-hero').value.trim() || 'Живей с Аура',
       productsSubtitle: document.getElementById('settings-products-subtitle').value.trim(),
       reviews: collectReviews(),
       terms: collectTerms(),
       showTerms: siteSettings.showTerms === true,
+      fbPixelId: document.getElementById('settings-pixel').value.trim(),
       showCategories: siteSettings.showCategories !== false,
       customCategories: siteSettings.customCategories || [],
       theme: siteSettings.theme || 'noir-luxe',
@@ -1262,7 +1283,7 @@
   }
 
   // ─── SCAN IMAGES ───
-  var SITE_URL = 'https://BSrank.github.io/frbstyle';
+  var SITE_URL = 'https://BSrank.github.io/frbstyledress';
 
   async function scanImages(idx) {
     var p = products[idx];
@@ -1368,6 +1389,74 @@
     if (prefix === 'edit') textarea.style.minHeight = isOn ? '220px' : '120px';
   }
 
+  // ─── REVIEWS ADMIN ───
+  async function loadReviewsAdmin() {
+    document.getElementById('reviewsAdminLoading').style.display = 'block';
+    try {
+      var res = await fetch(SCRIPT_URL_DECODED + '?action=getReviews');
+      var data = await res.json();
+      var reviews = data.reviews || [];
+      renderReviewsAdmin(reviews);
+    } catch(e) {
+      document.getElementById('reviewsAdminLoading').textContent = 'Грешка при зареждане.';
+    }
+  }
+
+  function renderReviewsAdmin(reviews) {
+    var list = document.getElementById('reviewsAdminList');
+    var loading = document.getElementById('reviewsAdminLoading');
+    loading.style.display = 'none';
+    if (!reviews.length) {
+      list.innerHTML = '<p style="color:var(--muted);font-size:0.85rem;">Няма ревюта все още.</p>';
+      return;
+    }
+    list.innerHTML = reviews.map(function(r, i) {
+      return '<div style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:1rem;margin-bottom:0.8rem;display:grid;grid-template-columns:1fr auto;gap:1rem;align-items:start;">' +
+        '<div>' +
+          '<div style="color:#e8d44d;font-size:0.9rem;margin-bottom:0.3rem;">★★★★★</div>' +
+          '<div style="font-size:0.85rem;color:var(--muted);font-style:italic;margin-bottom:0.5rem;">"' + (r.text||'') + '"</div>' +
+          '<div style="font-size:0.78rem;color:var(--text);font-weight:500;">— ' + (r.name||'') + '</div>' +
+          (r.date ? '<div style="font-size:0.68rem;color:var(--muted);">' + r.date + '</div>' : '') +
+          (r.product ? '<div style="font-size:0.7rem;color:var(--accent);">Продукт: ' + r.product + '</div>' : '') +
+          '<div style="margin-top:0.5rem;"><span style="font-size:0.65rem;letter-spacing:0.1em;padding:2px 8px;border-radius:10px;background:' + (r.approved ? 'rgba(82,192,122,0.15)' : 'rgba(201,169,110,0.15)') + ';color:' + (r.approved ? '#52c07a' : '#c9a96e') + ';">' + (r.approved ? '✓ Одобрено' : '⏳ Чака одобрение') + '</span></div>' +
+        '</div>' +
+        '<div style="display:flex;flex-direction:column;gap:0.5rem;">' +
+          (!r.approved ? '<button onclick="approveReview(\'' + r.id + '\')" style="background:var(--accent);color:var(--btn-text);border:none;padding:6px 12px;cursor:pointer;font-size:0.68rem;letter-spacing:0.08em;text-transform:uppercase;border-radius:2px;">Одобри</button>' : '') +
+          '<button onclick="deleteReview(\'' + r.id + '\')" style="background:none;border:1px solid var(--danger);color:var(--danger);padding:6px 12px;cursor:pointer;font-size:0.68rem;letter-spacing:0.08em;text-transform:uppercase;border-radius:2px;">Изтрий</button>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  async function approveReview(id) {
+    try {
+      await fetch(SCRIPT_URL_DECODED, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'approveReview', id:id}) });
+      toast('Ревюто е одобрено!', 'success');
+      loadReviewsAdmin();
+    } catch(e) { toast('Грешка', 'error'); }
+  }
+
+  async function deleteReview(id) {
+    if (!confirm('Изтрий ревюто?')) return;
+    try {
+      await fetch(SCRIPT_URL_DECODED, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'deleteReview', id:id}) });
+      toast('Ревюто е изтрито!', 'success');
+      loadReviewsAdmin();
+    } catch(e) { toast('Грешка', 'error'); }
+  }
+
+  async function sendReviewInvite(orderId, clientEmail, clientName) {
+    if (!clientEmail) { toast('Клиентът няма имейл', 'error'); return; }
+    if (!confirm('Изпрати покана за ревю на ' + clientName + '?')) return;
+    try {
+      await fetch(SCRIPT_URL_DECODED, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'sendReviewInvite', orderId:orderId, email:clientEmail, name:clientName, siteName: siteSettings.siteName || 'The Forbidden Style', siteUrl: 'https://BSrank.github.io/frbstyle/'}) });
+      // Mark as invited in UI
+      var btn = document.getElementById('invite-btn-' + orderId);
+      if (btn) { btn.textContent = '✓ Поканен'; btn.disabled = true; btn.style.color = '#52c07a'; btn.style.borderColor = '#52c07a'; }
+      toast('Поканата е изпратена!', 'success');
+    } catch(e) { toast('Грешка при изпращане', 'error'); }
+  }
+
   // ─── ORDERS (от Google Script) ───
   var ordersLoaded = false;
   function loadOrders() {
@@ -1384,16 +1473,21 @@
     document.getElementById('ordersTable').style.display = 'block';
     var body = document.getElementById('ordersBody');
     if (!orders.length) {
-      body.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:2rem;">Няма поръчки</td></tr>';
+      body.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:2rem;">Няма поръчки</td></tr>';
       return;
     }
     body.innerHTML = orders.slice().reverse().map(function(o) {
       var d = o.date ? new Date(o.date).toLocaleString('bg-BG') : '—';
       var items = (o.items||[]).map(function(i) { return i.name + (i.size?' ('+i.size+')':'') + ' ×' + i.qty; }).join(', ');
+      var orderId = o.id || (o.date + o.phone);
+      var inviteBtn = o.email
+        ? '<button id="invite-btn-' + orderId + '" onclick="sendReviewInvite(\'' + orderId + '\',\'' + o.email + '\',\'' + (o.name||'') + '\')" style="background:none;border:1px solid var(--border);color:var(--muted);padding:4px 8px;cursor:pointer;font-size:0.65rem;letter-spacing:0.08em;text-transform:uppercase;border-radius:2px;white-space:nowrap;">' + (o.reviewInvited ? '✓ Поканен' : '✉ Покани') + '</button>'
+        : '<span style="color:var(--muted);font-size:0.68rem;">Няма мейл</span>';
       return '<tr><td>' + d + '</td><td>' + (o.name||'—') + '</td><td>' + (o.phone||'—') + '</td>' +
         '<td>' + (o.courier||'—') + '<br><small style="color:var(--muted)">' + (o.city||'') + ' · ' + (o.office||'') + '</small></td>' +
         '<td><div class="order-items-list">' + items + '</div></td>' +
-        '<td style="color:var(--accent)">лв ' + (o.total||'—') + '</td></tr>';
+        '<td style="color:var(--accent)">лв ' + (o.total||'—') + '</td>' +
+        '<td>' + inviteBtn + '</td></tr>';
     }).join('');
   }
 
