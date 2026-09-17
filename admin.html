@@ -1173,10 +1173,10 @@
   }
 
   function toggleSettingToggle(key) {
-    siteSettings[key] = siteSettings[key] === false ? true : false;
+    siteSettings[key] = !siteSettings[key];
     var tog = document.getElementById('toggle-' + key);
     var lbl = document.getElementById('label-' + key);
-    var isOn = siteSettings[key] !== false;
+    var isOn = !!siteSettings[key];
     if (tog) tog.classList.toggle('on', isOn);
     if (lbl) {
       lbl.classList.toggle('on', isOn);
