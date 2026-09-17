@@ -220,7 +220,7 @@
       <div id="ordersLoading" style="text-align:center;padding:3rem;color:var(--muted);">Зареждане...</div>
       <div id="ordersTable" style="display:none; overflow-x:auto;">
         <table class="orders-table">
-          <thead><tr><th>Дата</th><th>Клиент</th><th>Телефон</th><th>Куриер / Офис</th><th>Продукти</th><th>Сума</th><th>Ревю</th></tr></thead>
+          <thead><tr><th>Дата</th><th>Клиент</th><th>Мейл</th><th>Телефон</th><th>Куриер / Офис</th><th>Продукти</th><th>Сума</th><th>Ревю</th></tr></thead>
           <tbody id="ordersBody"></tbody>
         </table>
       </div>
@@ -1169,7 +1169,7 @@
   };
 
   function loadSettings(data) {
-    siteSettings = Object.assign({ siteName: 'The Forbidden Style', contactMode: 'phone', phone: '0876 127 997', hours: 'Всеки ден', showCategories: true, customCategories: [], reviews: [] }, data.settings || {});
+    siteSettings = Object.assign({ siteName: 'The Forbidden Style', contactMode: 'phone', phone: '0876 127 997', hours: 'Всеки ден', showCategories: true, customCategories: [], reviews: [], showManualReviews: false, showClientReviews: false, showTerms: false }, data.settings || {});
   }
 
   function toggleSettingToggle(key) {
@@ -1500,21 +1500,33 @@
     document.getElementById('ordersTable').style.display = 'block';
     var body = document.getElementById('ordersBody');
     if (!orders.length) {
-      body.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:2rem;">Няма поръчки</td></tr>';
+      body.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:2rem;">Няма поръчки</td></tr>';
       return;
     }
     body.innerHTML = orders.slice().reverse().map(function(o) {
       var d = o.date ? new Date(o.date).toLocaleString('bg-BG') : '—';
       var items = (o.items||[]).map(function(i) { return i.name + (i.size?' ('+i.size+')':'') + ' ×' + i.qty; }).join(', ');
       var orderId = o.id || (o.date + o.phone);
-      var inviteBtn = o.email
-        ? '<button id="invite-btn-' + orderId + '" onclick="sendReviewInvite(\'' + orderId + '\',\'' + o.email + '\',\'' + (o.name||'') + '\')" style="background:none;border:1px solid var(--border);color:var(--muted);padding:4px 8px;cursor:pointer;font-size:0.65rem;letter-spacing:0.08em;text-transform:uppercase;border-radius:2px;white-space:nowrap;">' + (o.reviewInvited ? '✓ Поканен' : '✉ Покани') + '</button>'
-        : '<span style="color:var(--muted);font-size:0.68rem;">Няма мейл</span>';
-      return '<tr><td>' + d + '</td><td>' + (o.name||'—') + '</td><td>' + (o.phone||'—') + '</td>' +
+      var hasReview = o.reviewLeft;
+      var reviewCell = '';
+      if (hasReview) {
+        reviewCell = '<span style="color:#52c07a;font-size:0.72rem;">✓ Оставил ревю</span>';
+      } else if (o.email) {
+        var invited = o.reviewInvited;
+        reviewCell = '<button id="invite-btn-' + orderId + '" onclick="sendReviewInvite(\'' + orderId + '\',\'' + o.email + '\',\'' + (o.name||'').replace(/'/g,"\\'") + '\')" style="background:none;border:1px solid ' + (invited ? '#52c07a' : 'var(--border)') + ';color:' + (invited ? '#52c07a' : 'var(--muted)') + ';padding:4px 8px;cursor:pointer;font-size:0.65rem;letter-spacing:0.08em;text-transform:uppercase;border-radius:2px;white-space:nowrap;">' + (invited ? '✓ Поканен' : '✉ Покани') + '</button>';
+      } else {
+        reviewCell = '<span style="color:var(--muted);font-size:0.68rem;">Няма мейл</span>';
+      }
+      return '<tr>' +
+        '<td>' + d + '</td>' +
+        '<td>' + (o.name||'—') + '</td>' +
+        '<td style="font-size:0.75rem;">' + (o.email||'—') + '</td>' +
+        '<td>' + (o.phone||'—') + '</td>' +
         '<td>' + (o.courier||'—') + '<br><small style="color:var(--muted)">' + (o.city||'') + ' · ' + (o.office||'') + '</small></td>' +
         '<td><div class="order-items-list">' + items + '</div></td>' +
         '<td style="color:var(--accent)">лв ' + (o.total||'—') + '</td>' +
-        '<td>' + inviteBtn + '</td></tr>';
+        '<td>' + reviewCell + '</td>' +
+      '</tr>';
     }).join('');
   }
 
