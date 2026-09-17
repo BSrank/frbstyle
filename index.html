@@ -898,22 +898,44 @@
     const termsLink = document.getElementById('termsLink');
     if (termsLink) termsLink.style.display = s.showTerms ? 'inline' : 'none';
 
-    renderReviews(s.reviews || []);
+    renderReviews(s);
   }
 
-  function renderReviews(reviews) {
+  function renderReviews(s) {
     const section = document.getElementById('reviews');
     const grid = document.getElementById('reviewsGrid');
     if (!section || !grid) return;
-    const visible = reviews.filter(r => r && r.text);
-    section.style.display = visible.length > 0 ? 'block' : 'none';
-    grid.innerHTML = visible.map(r => `
+
+    const manualReviews = s.showManualReviews ? (s.reviews || []).filter(r => r && r.text) : [];
+    const showClient = s.showClientReviews === true;
+
+    if (!manualReviews.length && !showClient) {
+      section.style.display = 'none';
+      return;
+    }
+
+    section.style.display = 'block';
+    grid.innerHTML = manualReviews.map(r => `
       <div class="review-card">
         <div class="review-stars">★★★★★</div>
         <div class="review-text">"${r.text}"</div>
         <div class="review-author">— ${r.author || ''}</div>
         ${r.courier ? `<div class="review-courier">${r.courier} доставка ✓</div>` : ''}
       </div>`).join('');
+
+    if (showClient) {
+      fetch(SCRIPT_URL2 + '?action=getReviews')
+        .then(r => r.json())
+        .then(data => {
+          const clientReviews = (data.reviews || []).filter(r => r.approved).slice(0, 3);
+          clientReviews.forEach(r => {
+            const card = document.createElement('div');
+            card.className = 'review-card';
+            card.innerHTML = `<div class="review-stars">★★★★★</div><div class="review-text">"${r.text}"</div><div class="review-author">— ${r.name || ''}</div>${r.date ? `<div style="font-size:0.68rem;color:var(--muted);">${r.date}</div>` : ''}`;
+            grid.appendChild(card);
+          });
+        }).catch(() => {});
+    }
   }
 
   async function submitContactForm() {
