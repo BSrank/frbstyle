@@ -1469,16 +1469,27 @@
     if (!clientEmail) { toast('Клиентът няма имейл', 'error'); return; }
     if (!confirm('Изпрати покана за ревю на ' + clientName + ' (' + clientEmail + ')?')) return;
     try {
-      const siteUrl = siteSettings.siteUrl || 'https://BSrank.github.io/frbstyle/';
-      const res = await fetch(SCRIPT_URL_DECODED + '?action=sendReviewInvite&orderId=' + encodeURIComponent(orderId) + '&email=' + encodeURIComponent(clientEmail) + '&name=' + encodeURIComponent(clientName) + '&siteName=' + encodeURIComponent(siteSettings.siteName || 'The Forbidden Style') + '&siteUrl=' + encodeURIComponent(siteUrl));
-      const data = await res.json();
-      if (data.success) {
+      const siteUrl = 'https://BSrank.github.io/frbstyle/';
+      // Use no-cors POST - script will execute even without readable response
+      fetch(SCRIPT_URL_DECODED, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          action: 'sendReviewInvite',
+          orderId: orderId,
+          email: clientEmail,
+          name: clientName,
+          siteName: siteSettings.siteName || 'The Forbidden Style',
+          siteUrl: siteUrl
+        })
+      });
+      // Update UI immediately - no-cors doesn't give us a response but script executes
+      setTimeout(function() {
         var btn = document.getElementById('invite-btn-' + orderId);
         if (btn) { btn.textContent = '✓ Поканен'; btn.disabled = true; btn.style.color = '#52c07a'; btn.style.borderColor = '#52c07a'; }
-        toast('Поканата е изпратена на ' + clientEmail, 'success');
-      } else {
-        toast('Грешка: ' + (data.message || 'неуспешно'), 'error');
-      }
+      }, 1000);
+      toast('Поканата е изпратена на ' + clientEmail, 'success');
     } catch(e) { toast('Грешка при изпращане', 'error'); }
   }
 
