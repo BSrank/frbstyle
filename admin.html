@@ -388,7 +388,23 @@
 
         <!-- REVIEWS -->
         <div style="margin-bottom:2rem; padding-bottom:2rem; border-bottom:1px solid var(--border);">
-          <p class="cat-toggles-label" style="margin-bottom:1rem;">Отзиви от клиенти (макс. 6)</p>
+          <p class="cat-toggles-label" style="margin-bottom:1rem;">Отзиви от клиенти (до 6)</p>
+          <div style="display:flex;flex-direction:column;gap:0.8rem;margin-bottom:1rem;">
+            <div>
+              <div class="visibility-toggle" onclick="toggleSettingToggle('showManualReviews')">
+                <div class="toggle-switch" id="toggle-showManualReviews"></div>
+                <span class="toggle-label" id="label-showManualReviews">Скрити</span>
+              </div>
+              <p style="font-size:0.68rem;color:var(--muted);margin-top:4px;">Ръчни ревюта — добавяш ги ти от тук долу</p>
+            </div>
+            <div>
+              <div class="visibility-toggle" onclick="toggleSettingToggle('showClientReviews')">
+                <div class="toggle-switch" id="toggle-showClientReviews"></div>
+                <span class="toggle-label" id="label-showClientReviews">Скрити</span>
+              </div>
+              <p style="font-size:0.68rem;color:var(--muted);margin-top:4px;">Клиентски ревюта — реални от потребители (управляваш от ⭐ Ревюта таба)</p>
+            </div>
+          </div>
           <div id="reviewsList" style="display:flex;flex-direction:column;gap:0.8rem;margin-bottom:1rem;"></div>
           <button class="btn btn-ghost" onclick="addReview()" id="addReviewBtn" style="font-size:0.75rem;">+ Добави отзив</button>
           <p style="font-size:0.72rem;color:var(--muted);margin-top:0.5rem;">Показват се на началната страница преди "Свържи се с нас". Празни отзиви се пропускат.</p>
@@ -1163,7 +1179,7 @@
     if (tog) tog.classList.toggle('on', isOn);
     if (lbl) {
       lbl.classList.toggle('on', isOn);
-      var labels = { showCategories: ['Показани','Скрити'], showTerms: ['Показани','Скрити'] };
+      var labels = { showCategories: ['Показани','Скрити'], showTerms: ['Показани','Скрити'], showManualReviews: ['Показани','Скрити'], showClientReviews: ['Показани','Скрити'] };
       lbl.textContent = isOn ? (labels[key] ? labels[key][0] : 'Включено') : (labels[key] ? labels[key][1] : 'Изключено');
     }
     saveSettings();
@@ -1213,6 +1229,14 @@
     var lblTerms = document.getElementById('label-showTerms');
     if (togTerms) togTerms.classList.toggle('on', showTerms);
     if (lblTerms) { lblTerms.classList.toggle('on', showTerms); lblTerms.textContent = showTerms ? 'Показани' : 'Скрити'; }
+
+    ['showManualReviews','showClientReviews'].forEach(function(key) {
+      var isOn = siteSettings[key] === true;
+      var tog = document.getElementById('toggle-' + key);
+      var lbl = document.getElementById('label-' + key);
+      if (tog) tog.classList.toggle('on', isOn);
+      if (lbl) { lbl.classList.toggle('on', isOn); lbl.textContent = isOn ? 'Показани' : 'Скрити'; }
+    });
     var alertEl = document.getElementById('settings-terms-alert');
     var dateEl = document.getElementById('settings-terms-date');
     if (alertEl) alertEl.value = (siteSettings.terms && siteSettings.terms.alert) || '';
@@ -1247,6 +1271,8 @@
       reviews: collectReviews(),
       terms: collectTerms(),
       showTerms: siteSettings.showTerms === true,
+      showManualReviews: siteSettings.showManualReviews === true,
+      showClientReviews: siteSettings.showClientReviews === true,
       fbPixelId: document.getElementById('settings-pixel').value.trim(),
       showCategories: siteSettings.showCategories !== false,
       customCategories: siteSettings.customCategories || [],
