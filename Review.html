@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Остави ревю</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{--bg:#0a0a0a;--surface:#111;--surface2:#1a1a1a;--border:#2a2a2a;--text:#f0ece4;--muted:#888;--accent:#c9a96e;--btn-text:#000;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;display:flex;flex-direction:column;}
+nav{display:flex;justify-content:space-between;align-items:center;padding:20px 6%;border-bottom:1px solid var(--border);}
+.nav-logo{font-family:'Cormorant Garamond',serif;font-size:1.5rem;color:var(--text);text-decoration:none;}
+.nav-logo span{color:var(--accent);}
+
+.container{flex:1;display:flex;align-items:center;justify-content:center;padding:3rem 6%;}
+.form-box{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:2.5rem;max-width:500px;width:100%;}
+.form-eyebrow{font-size:0.62rem;letter-spacing:0.25em;text-transform:uppercase;color:var(--accent);margin-bottom:0.8rem;}
+.form-title{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:300;margin-bottom:0.5rem;}
+.form-subtitle{font-size:0.8rem;color:var(--muted);margin-bottom:2rem;line-height:1.6;}
+.form-group{margin-bottom:1.2rem;}
+.form-group label{display:block;font-size:0.68rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-bottom:0.5rem;}
+.form-group input,.form-group textarea{width:100%;padding:10px 12px;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.88rem;border-radius:4px;outline:none;}
+.form-group textarea{min-height:120px;resize:vertical;}
+.stars-row{display:flex;gap:0.5rem;margin-bottom:1.2rem;}
+.star{font-size:2rem;cursor:pointer;color:var(--border);transition:color 0.15s;}
+.star.active{color:#e8d44d;}
+.btn{width:100%;padding:14px;background:var(--accent);color:var(--btn-text);border:none;font-size:0.78rem;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;border-radius:4px;font-family:'DM Sans',sans-serif;font-weight:500;}
+.btn:disabled{opacity:0.5;cursor:not-allowed;}
+.error-box{background:rgba(224,82,82,0.1);border:1px solid rgba(224,82,82,0.3);border-left:3px solid #e05252;padding:1rem;border-radius:4px;font-size:0.82rem;color:#f0ece4;margin-bottom:1.5rem;}
+.success-box{text-align:center;padding:2rem;}
+.success-icon{font-size:3rem;margin-bottom:1rem;}
+.success-title{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:300;color:var(--accent);margin-bottom:0.5rem;}
+.success-text{font-size:0.85rem;color:var(--muted);line-height:1.7;}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html" id="navLogo"><em style="font-style:italic;font-weight:300;font-size:0.85em;">the</em> forbidden<span> style</span></a>
+</nav>
+
+<div class="container">
+  <div class="form-box">
+    <div id="errorBox" class="error-box" style="display:none;"></div>
+    <div id="formContent">
+      <div class="form-eyebrow">Клиентско мнение</div>
+      <h1 class="form-title">Остави ревю</h1>
+      <p class="form-subtitle" id="formSubtitle">Благодарим ти за поръчката! Споделете вашето мнение.</p>
+      <div class="stars-row" id="starsRow">
+        <span class="star active" data-val="1">★</span>
+        <span class="star active" data-val="2">★</span>
+        <span class="star active" data-val="3">★</span>
+        <span class="star active" data-val="4">★</span>
+        <span class="star active" data-val="5">★</span>
+      </div>
+      <div class="form-group">
+        <label>Вашето мнение *</label>
+        <textarea id="reviewText" placeholder="Разкажете ни за вашия опит с продукта и доставката..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>Вашето име</label>
+        <input type="text" id="reviewName" placeholder="Мартин К." />
+      </div>
+      <button class="btn" id="submitBtn" onclick="submitReview()">Изпрати ревюто</button>
+    </div>
+    <div id="successContent" class="success-box" style="display:none;">
+      <div class="success-icon">⭐</div>
+      <div class="success-title">Благодарим ти!</div>
+      <div class="success-text">Твоето ревю беше изпратено успешно.<br>Ще бъде публикувано след одобрение.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const SCRIPT_URL = atob('aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J4M0FkTDBGWjB0Nm9maWp4NlZXNFczSlpDVndYcWVXOGQzMnBwMllMMkFDaVkxRERCenV2bGk0TDB6bnZ0bkplemovZXhlYw==');
+const REPO = 'BSrank/frbstyle';
+
+// Get token from URL
+const params = new URLSearchParams(window.location.search);
+const token = params.get('token');
+const orderId = params.get('order');
+
+let rating = 5;
+let orderData = null;
+
+// Stars
+document.querySelectorAll('.star').forEach(function(star) {
+  star.addEventListener('click', function() {
+    rating = parseInt(this.dataset.val);
+    document.querySelectorAll('.star').forEach(function(s) {
+      s.classList.toggle('active', parseInt(s.dataset.val) <= rating);
+    });
+  });
+});
+
+async function init() {
+  if (!token || !orderId) {
+    showError('Невалиден линк. Моля използвай линка от мейла.');
+    return;
+  }
+  try {
+    // Load settings for theme/name
+    const res = await fetch('https://raw.githubusercontent.com/' + REPO + '/main/products.json?t=' + Date.now());
+    const data = await res.json();
+    const s = data.settings || {};
+    const name = s.siteName || 'The Forbidden Style';
+    document.title = 'Остави ревю — ' + name;
+    document.getElementById('formSubtitle').textContent = 'Благодарим ти за поръчката от ' + name + '! Споделете вашето мнение.';
+
+    // Verify token
+    const vRes = await fetch(SCRIPT_URL + '?action=verifyReviewToken&token=' + token + '&order=' + orderId);
+    const vData = await vRes.json();
+    if (!vData.valid) {
+      showError(vData.message || 'Невалиден или изтекъл линк.');
+      return;
+    }
+    orderData = vData.order;
+    if (orderData && orderData.name) {
+      document.getElementById('reviewName').value = orderData.name.split(' ')[0] + ' ' + (orderData.name.split(' ')[1] ? orderData.name.split(' ')[1][0] + '.' : '');
+    }
+  } catch(e) {
+    showError('Грешка при зареждане. Опитай отново.');
+  }
+}
+
+async function submitReview() {
+  const text = document.getElementById('reviewText').value.trim();
+  const name = document.getElementById('reviewName').value.trim();
+  if (!text) { showError('Моля напишете вашето мнение.'); return; }
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true; btn.textContent = 'Изпращане...';
+  try {
+    await fetch(SCRIPT_URL, {
+      method: 'POST', mode: 'no-cors',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        action: 'submitReview',
+        token: token, orderId: orderId,
+        rating: rating, text: text, name: name
+      })
+    });
+    document.getElementById('formContent').style.display = 'none';
+    document.getElementById('successContent').style.display = 'block';
+  } catch(e) {
+    showError('Грешка при изпращане. Опитай отново.');
+    btn.disabled = false; btn.textContent = 'Изпрати ревюто';
+  }
+}
+
+function showError(msg) {
+  const box = document.getElementById('errorBox');
+  box.textContent = msg; box.style.display = 'block';
+}
+
+init();
+</script>
+</body>
+</html>
