@@ -638,8 +638,13 @@
 </div>
 
 <section class="section" id="reviews" style="display:none;">
-  <p class="section-label">Отзиви</p>
-  <h2 class="section-title">Какво казват клиентите</h2>
+  <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:1rem;margin-bottom:0.5rem;">
+    <div>
+      <p class="section-label">Отзиви</p>
+      <h2 class="section-title">Какво казват клиентите</h2>
+    </div>
+    <a href="reviews.html" style="font-size:0.7rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--accent);text-decoration:none;">Виж всички →</a>
+  </div>
   <div id="reviewsGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem;margin-top:2rem;"></div>
 </section>
 
@@ -763,7 +768,7 @@
     let products = [];
     let settings = {};
     try {
-      const res = await fetch('https://raw.githubusercontent.com/BSrank/frbstyle/main/products.json?t=' + Date.now());
+      const res = await fetch('https://raw.githubusercontent.com/BSrank/frbstyledress/main/products.json?t=' + Date.now());
       const data = await res.json();
       products = data.products || [];
       settings = data.settings || {};
@@ -818,6 +823,12 @@
   }
 
   function applySettings(s) {
+    if (s.fbPixelId && !document.getElementById('fb-pixel')) {
+      var pScript = document.createElement('script');
+      pScript.id = 'fb-pixel';
+      pScript.textContent = '!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version="2.0";n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,"script","https://connect.facebook.net/en_US/fbevents.js");fbq("init","' + s.fbPixelId + '");fbq("track","PageView");';
+      document.head.appendChild(pScript);
+    }
     applyTheme(s.theme || 'noir-luxe');
     if (s.scriptUrlEncoded) { try { SCRIPT_URL = atob(s.scriptUrlEncoded); SCRIPT_URL2 = SCRIPT_URL; } catch(e) {} }
     const name = s.siteName || 'The Forbidden Style';
