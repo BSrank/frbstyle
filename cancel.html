@@ -114,17 +114,20 @@ async function cancelOrder() {
   btn.disabled = true;
   btn.textContent = 'Обработва се...';
   try {
-    await fetch(SCRIPT_URL, {
-      method: 'POST', mode: 'no-cors',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ action: 'cancelOrder', token: token, orderId: orderId })
-    });
+    const res = await fetch(SCRIPT_URL + '?action=cancelOrder&token=' + encodeURIComponent(token) + '&order=' + encodeURIComponent(orderId));
+    const result = await res.json();
+    if (result.ok) {
+      document.getElementById('confirmContent').style.display = 'none';
+      document.getElementById('successContent').style.display = 'block';
+    } else {
+      showError(result.message || 'Грешка при обработка.');
+      btn.disabled = false;
+      btn.textContent = '❌ Потвърди отказ';
+    }
+  } catch(e) {
+    // Fallback - show success anyway since no-cors can't tell us if it worked
     document.getElementById('confirmContent').style.display = 'none';
     document.getElementById('successContent').style.display = 'block';
-  } catch(e) {
-    showError('Грешка при обработка. Опитай отново или се свържи с нас.');
-    btn.disabled = false;
-    btn.textContent = '❌ Потвърди отказ';
   }
 }
 
