@@ -1261,31 +1261,24 @@
 
   async function saveSettings() {
     var mode = document.querySelector('input[name="contactMode"]:checked');
-    siteSettings = {
-      siteName: document.getElementById('settings-sitename').value.trim() || 'The Forbidden Style',
-      contactMode: mode ? mode.value : 'phone',
-      phone: (mode && mode.value === 'email') ? '' : (document.getElementById('settings-phone').value.trim() || '0876 127 997'),
-      hours: (mode && mode.value === 'email') ? '' : (document.getElementById('settings-hours').value.trim() || 'Всеки ден'),
-      eyebrow: document.getElementById('settings-eyebrow').value.trim() || 'Нова колекция 2026',
-      hero: document.getElementById('settings-hero').value.trim() || 'Живей с Аура',
-      productsSubtitle: document.getElementById('settings-products-subtitle').value.trim(),
-      reviews: collectReviews(),
-      terms: collectTerms(),
-      showTerms: siteSettings.showTerms === true,
-      showManualReviews: siteSettings.showManualReviews === true,
-      showClientReviews: siteSettings.showClientReviews === true,
-      fbPixelId: document.getElementById('settings-pixel').value.trim(),
-      showCategories: siteSettings.showCategories !== false,
-      customCategories: siteSettings.customCategories || [],
-      theme: siteSettings.theme || 'noir-luxe',
-      scriptUrlEncoded: (function() {
-        var newUrl = document.getElementById('settings-scripturl').value.trim();
-        if (newUrl && newUrl.startsWith('https://script.google.com')) {
-          return btoa(newUrl);
-        }
-        return siteSettings.scriptUrlEncoded || '';
-      })()
-    };
+    // Update siteSettings в place - не го rebuild-ваме за да не губим toggle стойности
+    siteSettings.siteName = document.getElementById('settings-sitename').value.trim() || 'The Forbidden Style';
+    siteSettings.contactMode = mode ? mode.value : 'phone';
+    siteSettings.phone = (mode && mode.value === 'email') ? '' : (document.getElementById('settings-phone').value.trim() || '0876 127 997');
+    siteSettings.hours = (mode && mode.value === 'email') ? '' : (document.getElementById('settings-hours').value.trim() || 'Всеки ден');
+    siteSettings.eyebrow = document.getElementById('settings-eyebrow').value.trim() || 'Нова колекция 2026';
+    siteSettings.hero = document.getElementById('settings-hero').value.trim() || 'Живей с Аура';
+    siteSettings.productsSubtitle = document.getElementById('settings-products-subtitle').value.trim();
+    siteSettings.reviews = collectReviews();
+    siteSettings.terms = collectTerms();
+    siteSettings.fbPixelId = document.getElementById('settings-pixel').value.trim();
+    siteSettings.customCategories = siteSettings.customCategories || [];
+    siteSettings.theme = siteSettings.theme || 'noir-luxe';
+    var newUrl = document.getElementById('settings-scripturl').value.trim();
+    if (newUrl && newUrl.startsWith('https://script.google.com')) {
+      siteSettings.scriptUrlEncoded = btoa(newUrl);
+    }
+    // showCategories, showTerms, showManualReviews, showClientReviews се управляват от toggleSettingToggle
     var currentData = { products: products, urgency: urgencyData, settings: siteSettings };
     setSaving(true);
     try {
@@ -1474,13 +1467,18 @@
 
   async function sendReviewInvite(orderId, clientEmail, clientName) {
     if (!clientEmail) { toast('Клиентът няма имейл', 'error'); return; }
-    if (!confirm('Изпрати покана за ревю на ' + clientName + '?')) return;
+    if (!confirm('Изпрати покана за ревю на ' + clientName + ' (' + clientEmail + ')?')) return;
     try {
-      await fetch(SCRIPT_URL_DECODED, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'sendReviewInvite', orderId:orderId, email:clientEmail, name:clientName, siteName: siteSettings.siteName || 'The Forbidden Style', siteUrl: 'https://BSrank.github.io/frbstyle/'}) });
-      // Mark as invited in UI
-      var btn = document.getElementById('invite-btn-' + orderId);
-      if (btn) { btn.textContent = '✓ Поканен'; btn.disabled = true; btn.style.color = '#52c07a'; btn.style.borderColor = '#52c07a'; }
-      toast('Поканата е изпратена!', 'success');
+      const siteUrl = siteSettings.siteUrl || 'https://BSrank.github.io/frbstyle/';
+      const res = await fetch(SCRIPT_URL_DECODED + '?action=sendReviewInvite&orderId=' + encodeURIComponent(orderId) + '&email=' + encodeURIComponent(clientEmail) + '&name=' + encodeURIComponent(clientName) + '&siteName=' + encodeURIComponent(siteSettings.siteName || 'The Forbidden Style') + '&siteUrl=' + encodeURIComponent(siteUrl));
+      const data = await res.json();
+      if (data.success) {
+        var btn = document.getElementById('invite-btn-' + orderId);
+        if (btn) { btn.textContent = '✓ Поканен'; btn.disabled = true; btn.style.color = '#52c07a'; btn.style.borderColor = '#52c07a'; }
+        toast('Поканата е изпратена на ' + clientEmail, 'success');
+      } else {
+        toast('Грешка: ' + (data.message || 'неуспешно'), 'error');
+      }
     } catch(e) { toast('Грешка при изпращане', 'error'); }
   }
 
