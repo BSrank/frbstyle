@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Ревюта</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{--bg:#0a0a0a;--surface:#111;--surface2:#1a1a1a;--border:#2a2a2a;--text:#f0ece4;--muted:#888;--accent:#c9a96e;--accent2:#e8d5b0;--btn-text:#000;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-weight:300;min-height:100vh;}
+nav{display:flex;justify-content:space-between;align-items:center;padding:20px 6%;border-bottom:1px solid var(--border);}
+.nav-logo{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:400;color:var(--text);text-decoration:none;}
+.nav-logo span{color:var(--accent);}
+.nav-links{display:flex;gap:2rem;}
+.nav-links a{font-size:0.7rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);text-decoration:none;}
+.nav-links a:hover{color:var(--text);}
+
+.page-hero{padding:3rem 6% 2rem;border-bottom:1px solid var(--border);}
+.page-eyebrow{font-size:0.62rem;letter-spacing:0.25em;text-transform:uppercase;color:var(--accent);margin-bottom:0.8rem;}
+.page-title{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,4vw,3.5rem);font-weight:300;margin-bottom:0.5rem;}
+
+.rating-summary{padding:2rem 6%;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:3rem;flex-wrap:wrap;}
+.rating-big{text-align:center;}
+.rating-num{font-family:'Cormorant Garamond',serif;font-size:4rem;font-weight:300;color:var(--accent);line-height:1;}
+.rating-stars{color:#e8d44d;font-size:1.2rem;margin:0.3rem 0;}
+.rating-count{font-size:0.75rem;color:var(--muted);}
+.rating-bars{flex:1;min-width:200px;}
+.rating-bar-row{display:flex;align-items:center;gap:0.8rem;margin-bottom:0.4rem;}
+.rating-bar-label{font-size:0.72rem;color:var(--muted);width:40px;text-align:right;}
+.rating-bar-track{flex:1;height:4px;background:var(--surface2);border-radius:2px;overflow:hidden;}
+.rating-bar-fill{height:100%;background:var(--accent);border-radius:2px;transition:width 0.5s ease;}
+
+.reviews-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem;padding:2rem 6% 4rem;}
+.review-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:1.5rem;display:flex;flex-direction:column;gap:0.8rem;}
+.review-stars{color:#e8d44d;font-size:1rem;letter-spacing:2px;}
+.review-text{font-size:0.85rem;color:var(--muted);line-height:1.7;font-style:italic;flex:1;}
+.review-author{font-size:0.82rem;font-weight:500;color:var(--text);}
+.review-date{font-size:0.68rem;color:var(--muted);}
+.review-courier{font-size:0.72rem;color:#5299e0;}
+.review-product{font-size:0.7rem;color:var(--accent);margin-top:0.2rem;}
+
+.empty-state{text-align:center;padding:4rem 6%;color:var(--muted);}
+.empty-icon{font-size:3rem;margin-bottom:1rem;}
+
+footer{padding:2rem 6%;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;}
+.footer-logo{font-family:'Cormorant Garamond',serif;font-size:1rem;color:var(--text);}
+.footer-logo span{color:var(--accent);}
+footer p{font-size:0.7rem;color:var(--muted);}
+
+@media(max-width:600px){
+  nav{padding:16px 5%;}
+  .nav-links{gap:1rem;}
+  .nav-links a{font-size:0.62rem;}
+  .page-hero{padding:2rem 5% 1.5rem;}
+  .rating-summary{padding:1.5rem 5%;}
+  .reviews-grid{padding:1.5rem 5% 3rem;grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html" id="navLogo"><em style="font-style:italic;font-weight:300;font-size:0.85em;">the</em> forbidden<span> style</span></a>
+  <div class="nav-links">
+    <a href="index.html">Начало</a>
+    <a href="products.html">Продукти</a>
+    <a href="index.html#contact">Контакт</a>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <div class="page-eyebrow">Клиентски мнения</div>
+  <h1 class="page-title">Ревюта</h1>
+</div>
+
+<div class="rating-summary" id="ratingSummary" style="display:none;">
+  <div class="rating-big">
+    <div class="rating-num" id="avgRating">5.0</div>
+    <div class="rating-stars">★★★★★</div>
+    <div class="rating-count" id="totalCount">0 ревюта</div>
+  </div>
+  <div class="rating-bars" id="ratingBars"></div>
+</div>
+
+<div class="reviews-grid" id="reviewsGrid">
+  <div class="empty-state">
+    <div class="empty-icon">⭐</div>
+    <p>Зарежда ревюта...</p>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-logo" id="footerLogo"><em style="font-style:italic;font-weight:300;font-size:0.85em;">the</em> forbidden<span> style</span></div>
+  <p id="footerCopy">© 2026 The Forbidden Style. Всички права запазени.</p>
+</footer>
+
+<script>
+const REPO = 'BSrank/frbstyle';
+const SCRIPT_URL = atob('aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J4M0FkTDBGWjB0Nm9maWp4NlZXNFczSlpDVndYcWVXOGQzMnBwMllMMkFDaVkxRERCenV2bGk0TDB6bnZ0bkplemovZXhlYw==');
+
+function applyTheme(id) {
+  const THEMES = {
+    'noir-luxe':{fonts:'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,400&family=DM+Sans:wght@300;400;500&display=swap',css:':root{--bg:#0a0a0a;--surface:#111111;--surface2:#1a1a1a;--border:#2a2a2a;--text:#f0ece4;--muted:#888;--accent:#c9a96e;--accent2:#e8d5b0;--btn-text:#000;}'},
+    'blanc-eclat':{fonts:'https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;1,400&family=DM+Sans:wght@300;400;500&display=swap',css:':root{--bg:#fafaf8;--surface:#fff;--surface2:#f0ebe0;--border:#e8e4dd;--text:#1a1a1a;--muted:#888;--accent:#8b6914;--accent2:#c9a96e;--btn-text:#fff;}'},
+    'chrome-wave':{fonts:'https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600&display=swap',css:':root{--bg:#0d0d14;--surface:#13131f;--surface2:#1a1a2e;--border:rgba(255,255,255,0.08);--text:#fff;--muted:rgba(255,255,255,0.4);--accent:#a78bfa;--accent2:#60a5fa;--btn-text:#fff;}'},
+    'rose-atelier':{fonts:'https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;1,400&family=Inter:wght@300;400;500&display=swap',css:':root{--bg:#fdf6f0;--surface:#fff;--surface2:#fde8df;--border:#e8d5c8;--text:#2c1810;--muted:#886050;--accent:#c4614a;--accent2:#e8a090;--btn-text:#fff;}'},
+    'concrete-edge':{fonts:'https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap',css:':root{--bg:#f2f0ed;--surface:#fff;--surface2:#e8e4dc;--border:#d0ccc4;--text:#1c1c1c;--muted:#666;--accent:#e8d44d;--accent2:#f0e060;--btn-text:#1c1c1c;}'},
+    'ink-editorial':{fonts:'https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap',css:':root{--bg:#f7f5f0;--surface:#fff;--surface2:#e8e4dc;--border:#d8d4cc;--text:#111;--muted:#888;--accent:#111;--accent2:#333;--btn-text:#f7f5f0;}'},
+    'solar-flare':{fonts:'https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap',css:':root{--bg:#fff8f0;--surface:#fff;--surface2:#fff0e8;--border:#e8d0b8;--text:#111;--muted:#666;--accent:#ff4d00;--accent2:#ff7733;--btn-text:#fff;}'},
+    'pearl-minimal':{fonts:'https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;1,300&family=DM+Sans:wght@300;400;500&display=swap',css:':root{--bg:#fff;--surface:#fff;--surface2:#f8f8f8;--border:#e0e0e0;--text:#1a1a1a;--muted:#aaa;--accent:#1a1a1a;--accent2:#444;--btn-text:#fff;}'},
+    'voltage':{fonts:'https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@300;400;500;600&display=swap',css:':root{--bg:#0a0a0a;--surface:#111;--surface2:#1a1a1a;--border:#222;--text:#fff;--muted:#444;--accent:#00ff88;--accent2:#00ccff;--btn-text:#0a0a0a;}'},
+    'sand-dune':{fonts:'https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;1,300&family=DM+Sans:wght@300;400;500&display=swap',css:':root{--bg:#f0ead8;--surface:#fff;--surface2:#e8dcc8;--border:#d4c4a0;--text:#3d2e1e;--muted:#7a6040;--accent:#c9a96e;--accent2:#e8d4a0;--btn-text:#3d2e1e;}'}
+  };
+  const t = THEMES[id] || THEMES['noir-luxe'];
+  let s = document.getElementById('theme-style');
+  if (s) s.remove();
+  s = document.createElement('style'); s.id = 'theme-style';
+  s.textContent = t.css + ' body{background:var(--bg);color:var(--text);}';
+  document.head.appendChild(s);
+  let l = document.getElementById('theme-font');
+  if (l) l.remove();
+  l = document.createElement('link'); l.id = 'theme-font'; l.rel = 'stylesheet'; l.href = t.fonts;
+  document.head.appendChild(l);
+}
+
+async function loadReviews() {
+  try {
+    const res = await fetch('https://raw.githubusercontent.com/' + REPO + '/main/products.json?t=' + Date.now());
+    const data = await res.json();
+    const s = data.settings || {};
+
+    // Apply theme and name
+    applyTheme(s.theme || 'noir-luxe');
+    const name = s.siteName || 'The Forbidden Style';
+    document.title = 'Ревюта — ' + name;
+    const words = name.split(' '); const last = words.pop(); const first = words[0] || '';
+    const logoHtml = first.toLowerCase() === 'the'
+      ? '<em style="font-style:italic;font-weight:300;font-size:0.85em;">the</em> ' + (words.slice(1).join(' ') ? words.slice(1).join(' ') + ' ' : '') + '<span>' + last + '</span>'
+      : (words.join(' ') ? words.join(' ') + ' ' : '') + '<span>' + last + '</span>';
+    document.getElementById('navLogo').innerHTML = logoHtml;
+    document.getElementById('footerLogo').innerHTML = logoHtml;
+    document.getElementById('footerCopy').textContent = '© 2026 ' + name + '. Всички права запазени.';
+
+    // Load reviews from Google Script
+    const rRes = await fetch(SCRIPT_URL + '?action=getReviews');
+    const rData = await rRes.json();
+    const reviews = (rData.reviews || []).filter(r => r.approved);
+
+    // Manual reviews from settings
+    const manualReviews = (s.reviews || []).filter(r => r.text);
+
+    const allReviews = [...reviews, ...manualReviews];
+
+    renderReviews(allReviews);
+  } catch(e) {
+    document.getElementById('reviewsGrid').innerHTML = '<div class="empty-state"><div class="empty-icon">⭐</div><p>Няма ревюта все още.</p></div>';
+  }
+}
+
+function renderReviews(reviews) {
+  const grid = document.getElementById('reviewsGrid');
+  const summary = document.getElementById('ratingSummary');
+
+  if (!reviews.length) {
+    grid.innerHTML = '<div class="empty-state"><div class="empty-icon">⭐</div><p>Няма ревюта все още.</p></div>';
+    return;
+  }
+
+  summary.style.display = 'flex';
+  document.getElementById('avgRating').textContent = '5.0';
+  document.getElementById('totalCount').textContent = reviews.length + ' ревюта';
+  document.getElementById('ratingBars').innerHTML = [5,4,3,2,1].map(n =>
+    '<div class="rating-bar-row"><span class="rating-bar-label">' + n + ' ★</span><div class="rating-bar-track"><div class="rating-bar-fill" style="width:' + (n===5?'100':'0') + '%"></div></div></div>'
+  ).join('');
+
+  grid.innerHTML = reviews.map(r =>
+    '<div class="review-card">' +
+      '<div class="review-stars">★★★★★</div>' +
+      '<div class="review-text">"' + (r.text || '') + '"</div>' +
+      '<div class="review-author">— ' + (r.author || r.name || '') + '</div>' +
+      (r.date ? '<div class="review-date">' + r.date + '</div>' : '') +
+      (r.courier ? '<div class="review-courier">' + r.courier + ' доставка ✓</div>' : '') +
+      (r.product ? '<div class="review-product">Продукт: ' + r.product + '</div>' : '') +
+    '</div>'
+  ).join('');
+}
+
+loadReviews();
+</script>
+</body>
+</html>
