@@ -73,16 +73,13 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:20px 6
 </div>
 
 <script>
-// ВАЖНО: REPO се декларира само ВЕДНЪЖ. По-рано беше декларирана два пъти
-// с "const" в същия scope, което е синтактична грешка (Identifier 'REPO'
-// has already been declared) и чупеше ЦЕЛИЯ <script> блок -> нищо в тази
-// страница не работеше, включително и бутонът "Изпрати ревюто".
-const REPO = 'BSrank/frbstyle';
 let SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbypf4m4hh6-OiIVG2TOPkz4MlQJL_K_VorNAtUSboxUa_mmsPzBdUEzhI7-MMdWUE5-/exec';
 
 async function loadScriptUrl() {
   try {
-    const r = await fetch('https://raw.githubusercontent.com/' + REPO + '/main/products.json?t=' + Date.now());
+    // Относителен път - зарежда products.json от същото repo/сайт, откъдето е
+    // самата страница. Няма нужда да се хардкодва repo името тук.
+    const r = await fetch('products.json?t=' + Date.now());
     const d = await r.json();
     if (d.settings && d.settings.scriptUrlEncoded) {
       SCRIPT_URL = atob(d.settings.scriptUrlEncoded);
@@ -122,7 +119,7 @@ async function init() {
     return;
   }
   try {
-    const res = await fetch('https://raw.githubusercontent.com/' + REPO + '/main/products.json?t=' + Date.now());
+    const res = await fetch('products.json?t=' + Date.now());
     const data = await res.json();
     const s = data.settings || {};
     const name = s.siteName || 'The Forbidden Style';
