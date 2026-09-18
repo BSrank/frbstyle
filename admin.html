@@ -1470,22 +1470,22 @@
     if (!confirm('Изпрати покана за ревю на ' + clientName + ' (' + clientEmail + ')?')) return;
     try {
       const siteUrl = 'https://BSrank.github.io/frbstyle/';
-      const url = SCRIPT_URL_DECODED
-        + '?action=sendReviewInvite'
-        + '&orderId=' + encodeURIComponent(orderId)
-        + '&email=' + encodeURIComponent(clientEmail)
-        + '&name=' + encodeURIComponent(clientName)
-        + '&siteName=' + encodeURIComponent(siteSettings.siteName || 'The Forbidden Style')
-        + '&siteUrl=' + encodeURIComponent(siteUrl);
-      const res = await fetch(url);
-      const result = await res.json();
-      if (result.success) {
-        var btn = document.getElementById('invite-btn-' + orderId);
-        if (btn) { btn.textContent = '✓ Поканен'; btn.disabled = true; btn.style.color = '#52c07a'; btn.style.borderColor = '#52c07a'; }
-        toast('Поканата е изпратена на ' + clientEmail, 'success');
-      } else {
-        toast('Грешка: ' + (result.message || 'неуспешно'), 'error');
-      }
+      await fetch(SCRIPT_URL_DECODED, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {'Content-Type': 'text/plain'},
+        body: JSON.stringify({
+          action: 'sendReviewInvite',
+          orderId: orderId,
+          email: clientEmail,
+          name: clientName,
+          siteName: siteSettings.siteName || 'The Forbidden Style',
+          siteUrl: siteUrl
+        })
+      });
+      var btn = document.getElementById('invite-btn-' + orderId);
+      if (btn) { btn.textContent = '✓ Поканен'; btn.disabled = true; btn.style.color = '#52c07a'; btn.style.borderColor = '#52c07a'; }
+      toast('Поканата е изпратена на ' + clientEmail, 'success');
     } catch(e) { toast('Грешка: ' + e.message, 'error'); }
   }
 
