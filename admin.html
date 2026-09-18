@@ -1470,18 +1470,19 @@
     if (!confirm('Изпрати покана за ревю на ' + clientName + ' (' + clientEmail + ')?')) return;
     try {
       const siteUrl = 'https://BSrank.github.io/frbstyle/';
+      const params = new URLSearchParams({
+        action: 'sendReviewInvite',
+        orderId: orderId,
+        email: clientEmail,
+        name: clientName,
+        siteName: siteSettings.siteName || 'The Forbidden Style',
+        siteUrl: siteUrl
+      });
       await fetch(SCRIPT_URL_DECODED, {
         method: 'POST',
         mode: 'no-cors',
-        headers: {'Content-Type': 'text/plain'},
-        body: JSON.stringify({
-          action: 'sendReviewInvite',
-          orderId: orderId,
-          email: clientEmail,
-          name: clientName,
-          siteName: siteSettings.siteName || 'The Forbidden Style',
-          siteUrl: siteUrl
-        })
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: params.toString()
       });
       var btn = document.getElementById('invite-btn-' + orderId);
       if (btn) { btn.textContent = '✓ Поканен'; btn.disabled = true; btn.style.color = '#52c07a'; btn.style.borderColor = '#52c07a'; }
