@@ -73,8 +73,13 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:20px 6
 </div>
 
 <script>
+// ВАЖНО: REPO се декларира само ВЕДНЪЖ. По-рано беше декларирана два пъти
+// с "const" в същия scope, което е синтактична грешка (Identifier 'REPO'
+// has already been declared) и чупеше ЦЕЛИЯ <script> блок -> нищо в тази
+// страница не работеше, включително и бутонът "Изпрати ревюто".
 const REPO = 'BSrank/frbstyle';
 let SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbypf4m4hh6-OiIVG2TOPkz4MlQJL_K_VorNAtUSboxUa_mmsPzBdUEzhI7-MMdWUE5-/exec';
+
 async function loadScriptUrl() {
   try {
     const r = await fetch('https://raw.githubusercontent.com/' + REPO + '/main/products.json?t=' + Date.now());
@@ -82,9 +87,11 @@ async function loadScriptUrl() {
     if (d.settings && d.settings.scriptUrlEncoded) {
       SCRIPT_URL = atob(d.settings.scriptUrlEncoded);
     }
-  } catch(e) {}
+    console.log('SCRIPT_URL заредено:', SCRIPT_URL);
+  } catch(e) {
+    console.log('loadScriptUrl грешка (ползва се фиксирания SCRIPT_URL):', e);
+  }
 }
-const REPO = 'BSrank/frbstyle';
 
 // Get token from URL
 const params = new URLSearchParams(window.location.search);
@@ -92,7 +99,6 @@ const token = params.get('token');
 const orderId = params.get('order');
 
 let rating = 5;
-let orderData = null;
 
 // Stars
 document.querySelectorAll('.star').forEach(function(star) {
@@ -104,10 +110,15 @@ document.querySelectorAll('.star').forEach(function(star) {
   });
 });
 
+// Пазим дали loadScriptUrl() е приключил, за да сме сигурни, че
+// submitReview() използва финалния SCRIPT_URL, а не хваща middle-state.
+const scriptUrlReady = loadScriptUrl();
+
 async function init() {
-  await loadScriptUrl();
+  await scriptUrlReady;
   if (!token || !orderId) {
     showError('Невалиден линк. Моля използвай линка от мейла.');
+    disableForm();
     return;
   }
   try {
@@ -117,38 +128,70 @@ async function init() {
     const name = s.siteName || 'The Forbidden Style';
     document.title = 'Остави ревю — ' + name;
     document.getElementById('formSubtitle').textContent = 'Благодарим ти за поръчката от ' + name + '! Споделете вашето мнение.';
-  } catch(e) {}
-  // Show form directly - verification happens on submit via no-cors
-  // Token is validated server-side when submitReview is called
+  } catch(e) {
+    console.log('Грешка при зареждане на products.json:', e);
+  }
+  // Забележка: валидацията на token/orderId става финално на бекенда,
+  // когато submitReview() изпрати заявката.
+}
+
+function disableForm() {
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
 }
 
 async function submitReview() {
   const text = document.getElementById('reviewText').value.trim();
   const name = document.getElementById('reviewName').value.trim();
   if (!text) { showError('Моля напишете вашето мнение.'); return; }
+  if (!token || !orderId) { showError('Невалиден линк. Моля използвай линка от мейла.'); return; }
+
   const btn = document.getElementById('submitBtn');
   btn.disabled = true; btn.textContent = 'Изпращане...';
-  
-  fetch(SCRIPT_URL, {
-    method: 'POST', mode: 'no-cors',
-    headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({
-      action: 'submitReview',
-      token: token, orderId: orderId,
-      rating: rating, text: text, name: name
-    })
-  });
+  hideError();
 
-  // Show success immediately
-  setTimeout(function() {
-    document.getElementById('formContent').style.display = 'none';
-    document.getElementById('successContent').style.display = 'block';
-  }, 800);
+  // Изчакваме loadScriptUrl() да е сигурно готов, преди да пратим заявката.
+  await scriptUrlReady;
+
+  try {
+    // ВАЖНО: без mode:'no-cors', за да можем реално да прочетем отговора
+    // и да покажем истинска грешка, ако нещо се провали. Content-Type
+    // е 'text/plain', за да няма CORS preflight (OPTIONS), който Apps
+    // Script Web App-овете не обработват коректно. Code.gs си парсва
+    // тялото като JSON независимо от Content-Type хедъра.
+    const res = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({
+        action: 'submitReview',
+        token: token, orderId: orderId,
+        rating: rating, text: text, name: name
+      })
+    });
+
+    const result = await res.json();
+    console.log('Отговор от сървъра:', result);
+
+    if (result && result.success) {
+      document.getElementById('formContent').style.display = 'none';
+      document.getElementById('successContent').style.display = 'block';
+    } else {
+      showError((result && result.message) ? result.message : 'Нещо се обърка. Моля опитайте отново.');
+      btn.disabled = false; btn.textContent = 'Изпрати ревюто';
+    }
+  } catch(e) {
+    console.log('Грешка при изпращане на ревю:', e);
+    showError('Възникна грешка при връзката със сървъра. Моля опитайте отново.');
+    btn.disabled = false; btn.textContent = 'Изпрати ревюто';
+  }
 }
 
 function showError(msg) {
   const box = document.getElementById('errorBox');
   box.textContent = msg; box.style.display = 'block';
+}
+function hideError() {
+  document.getElementById('errorBox').style.display = 'none';
 }
 
 init();
