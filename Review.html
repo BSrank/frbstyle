@@ -73,7 +73,17 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:20px 6
 </div>
 
 <script>
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbypf4m4hh6-OiIVG2TOPkz4MlQJL_K_VorNAtUSboxUa_mmsPzBdUEzhI7-MMdWUE5-/exec';
+const REPO = 'BSrank/frbstyle';
+let SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbypf4m4hh6-OiIVG2TOPkz4MlQJL_K_VorNAtUSboxUa_mmsPzBdUEzhI7-MMdWUE5-/exec';
+async function loadScriptUrl() {
+  try {
+    const r = await fetch('https://raw.githubusercontent.com/' + REPO + '/main/products.json?t=' + Date.now());
+    const d = await r.json();
+    if (d.settings && d.settings.scriptUrlEncoded) {
+      SCRIPT_URL = atob(d.settings.scriptUrlEncoded);
+    }
+  } catch(e) {}
+}
 const REPO = 'BSrank/frbstyle';
 
 // Get token from URL
@@ -95,6 +105,7 @@ document.querySelectorAll('.star').forEach(function(star) {
 });
 
 async function init() {
+  await loadScriptUrl();
   if (!token || !orderId) {
     showError('Невалиден линк. Моля използвай линка от мейла.');
     return;
