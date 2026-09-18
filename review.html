@@ -111,28 +111,15 @@ async function init() {
     return;
   }
   try {
-    // Load settings for theme/name
     const res = await fetch('https://raw.githubusercontent.com/' + REPO + '/main/products.json?t=' + Date.now());
     const data = await res.json();
     const s = data.settings || {};
     const name = s.siteName || 'The Forbidden Style';
     document.title = 'Остави ревю — ' + name;
     document.getElementById('formSubtitle').textContent = 'Благодарим ти за поръчката от ' + name + '! Споделете вашето мнение.';
-
-    // Verify token
-    const vRes = await fetch(SCRIPT_URL + '?action=verifyReviewToken&token=' + token + '&order=' + orderId);
-    const vData = await vRes.json();
-    if (!vData.valid) {
-      showError(vData.message || 'Невалиден или изтекъл линк.');
-      return;
-    }
-    orderData = vData.order;
-    if (orderData && orderData.name) {
-      document.getElementById('reviewName').value = orderData.name.split(' ')[0] + ' ' + (orderData.name.split(' ')[1] ? orderData.name.split(' ')[1][0] + '.' : '');
-    }
-  } catch(e) {
-    showError('Грешка при зареждане. Опитай отново.');
-  }
+  } catch(e) {}
+  // Show form directly - verification happens on submit via no-cors
+  // Token is validated server-side when submitReview is called
 }
 
 async function submitReview() {
