@@ -96,11 +96,10 @@ footer p{font-size:0.7rem;color:var(--muted);}
 </footer>
 
 <script>
-const REPO = 'BSrank/frbstyle';
 let SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbypf4m4hh6-OiIVG2TOPkz4MlQJL_K_VorNAtUSboxUa_mmsPzBdUEzhI7-MMdWUE5-/exec';
 async function loadScriptUrl() {
   try {
-    const r = await fetch('https://raw.githubusercontent.com/' + REPO + '/main/products.json?t=' + Date.now());
+    const r = await fetch('products.json?t=' + Date.now());
     const d = await r.json();
     if (d.settings && d.settings.scriptUrlEncoded) {
       SCRIPT_URL = atob(d.settings.scriptUrlEncoded);
@@ -136,7 +135,7 @@ function applyTheme(id) {
 async function loadReviews() {
   await loadScriptUrl();
   try {
-    const res = await fetch('https://raw.githubusercontent.com/' + REPO + '/main/products.json?t=' + Date.now());
+    const res = await fetch('products.json?t=' + Date.now());
     const data = await res.json();
     const s = data.settings || {};
 
