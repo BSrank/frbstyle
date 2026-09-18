@@ -760,7 +760,7 @@
 
   // ─── INVENTORY ───
   function showTab(name) {
-    ['inventory','orders','add','settings'].forEach(function(t) {
+    ['inventory','orders','add','settings','reviews'].forEach(function(t) {
       document.getElementById('pane-' + t).style.display = t === name ? 'block' : 'none';
       var el = document.getElementById('tab-' + t);
       if (el) el.classList.toggle('active', t === name);
