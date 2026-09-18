@@ -1468,26 +1468,23 @@
   async function sendReviewInvite(orderId, clientEmail, clientName) {
     if (!clientEmail) { toast('Клиентът няма имейл', 'error'); return; }
     if (!confirm('Изпрати покана за ревю на ' + clientName + ' (' + clientEmail + ')?')) return;
-    try {
-      const siteUrl = 'https://BSrank.github.io/frbstyle/';
-      const params = new URLSearchParams({
-        action: 'sendReviewInvite',
-        orderId: orderId,
-        email: clientEmail,
-        name: clientName,
-        siteName: siteSettings.siteName || 'The Forbidden Style',
-        siteUrl: siteUrl
-      });
-      await fetch(SCRIPT_URL_DECODED, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-        body: params.toString()
-      });
-      var btn = document.getElementById('invite-btn-' + orderId);
-      if (btn) { btn.textContent = '✓ Поканен'; btn.disabled = true; btn.style.color = '#52c07a'; btn.style.borderColor = '#52c07a'; }
-      toast('Поканата е изпратена на ' + clientEmail, 'success');
-    } catch(e) { toast('Грешка: ' + e.message, 'error'); }
+    const siteUrl = 'https://BSrank.github.io/frbstyle/';
+    const url = SCRIPT_URL_DECODED
+      + '?action=sendReviewInvite'
+      + '&orderId=' + encodeURIComponent(orderId)
+      + '&email=' + encodeURIComponent(clientEmail)
+      + '&name=' + encodeURIComponent(clientName)
+      + '&siteName=' + encodeURIComponent(siteSettings.siteName || 'The Forbidden Style')
+      + '&siteUrl=' + encodeURIComponent(siteUrl);
+    // Open in hidden iframe to bypass CORS
+    var iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    iframe.src = url;
+    document.body.appendChild(iframe);
+    setTimeout(function() { document.body.removeChild(iframe); }, 5000);
+    var btn = document.getElementById('invite-btn-' + orderId);
+    if (btn) { btn.textContent = '✓ Поканен'; btn.disabled = true; btn.style.color = '#52c07a'; btn.style.borderColor = '#52c07a'; }
+    toast('Поканата е изпратена на ' + clientEmail, 'success');
   }
 
   // ─── ORDERS (от Google Script) ───
