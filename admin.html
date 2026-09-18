@@ -1215,6 +1215,7 @@
     var scriptEl = document.getElementById('settings-scripturl');
     if (scriptEl) {
       if (siteSettings.scriptUrlEncoded) {
+        try { SCRIPT_URL_DECODED = atob(siteSettings.scriptUrlEncoded); } catch(e) {}
         scriptEl.placeholder = '(запазен — постави нов за да смениш)';
         scriptEl.value = '';
         document.getElementById('scripturl-status').textContent = '✓ URL е запазен и кодиран';
