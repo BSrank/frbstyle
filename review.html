@@ -128,22 +128,22 @@ async function submitReview() {
   if (!text) { showError('Моля напишете вашето мнение.'); return; }
   const btn = document.getElementById('submitBtn');
   btn.disabled = true; btn.textContent = 'Изпращане...';
-  try {
-    await fetch(SCRIPT_URL, {
-      method: 'POST', mode: 'no-cors',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({
-        action: 'submitReview',
-        token: token, orderId: orderId,
-        rating: rating, text: text, name: name
-      })
-    });
+  
+  fetch(SCRIPT_URL, {
+    method: 'POST', mode: 'no-cors',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({
+      action: 'submitReview',
+      token: token, orderId: orderId,
+      rating: rating, text: text, name: name
+    })
+  });
+
+  // Show success immediately
+  setTimeout(function() {
     document.getElementById('formContent').style.display = 'none';
     document.getElementById('successContent').style.display = 'block';
-  } catch(e) {
-    showError('Грешка при изпращане. Опитай отново.');
-    btn.disabled = false; btn.textContent = 'Изпрати ревюто';
-  }
+  }, 800);
 }
 
 function showError(msg) {
