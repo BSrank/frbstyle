@@ -67,18 +67,16 @@ footer p{font-size:0.7rem;color:var(--muted);}
 </footer>
 
 <script>
-const REPO = 'BSrank/frbstyle';
 let SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbypf4m4hh6-OiIVG2TOPkz4MlQJL_K_VorNAtUSboxUa_mmsPzBdUEzhI7-MMdWUE5-/exec';
 async function loadScriptUrl() {
   try {
-    const r = await fetch('https://raw.githubusercontent.com/' + REPO + '/main/products.json?t=' + Date.now());
+    const r = await fetch('products.json?t=' + Date.now()); // относителен път - не зависи от repo името
     const d = await r.json();
     if (d.settings && d.settings.scriptUrlEncoded) {
       SCRIPT_URL = atob(d.settings.scriptUrlEncoded);
     }
   } catch(e) {}
 }
-const REPO = 'BSrank/frbstyle';
 
 const params = new URLSearchParams(window.location.search);
 const token = params.get('token');
@@ -88,7 +86,7 @@ async function init() {
   await loadScriptUrl();
   // Load settings
   try {
-    const res = await fetch('https://raw.githubusercontent.com/' + REPO + '/main/products.json?t=' + Date.now());
+    const res = await fetch('products.json?t=' + Date.now()); // относителен път - не зависи от repo името
     const data = await res.json();
     const name = (data.settings && data.settings.siteName) || 'The Forbidden Style';
     document.title = 'Откажи поръчка — ' + name;
