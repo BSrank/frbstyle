@@ -122,8 +122,6 @@ footer{padding:2rem 6%;border-top:1px solid var(--border);display:flex;justify-c
 </footer>
 
 <script>
-const GITHUB_REPO = 'BSrank/frbstyle';
-
 function applyTheme(id) {
   const THEMES = {
     'noir-luxe':{fonts:'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap',css:':root{--bg:#0a0a0a;--surface:#111111;--surface2:#1a1a1a;--border:#2a2a2a;--text:#f0ece4;--muted:#888;--accent:#c9a96e;--accent2:#e8d5b0;}'},
@@ -151,7 +149,7 @@ function applyTheme(id) {
 
 async function loadTerms() {
   try {
-    const res = await fetch('https://raw.githubusercontent.com/' + GITHUB_REPO + '/main/products.json?t=' + Date.now());
+    const res = await fetch('products.json?t=' + Date.now()); // относителен път - не зависи от repo името
     const data = await res.json();
     const s = data.settings || {};
     const terms = s.terms || {};
