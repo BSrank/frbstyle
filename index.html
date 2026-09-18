@@ -768,7 +768,7 @@
     let products = [];
     let settings = {};
     try {
-      const res = await fetch('https://raw.githubusercontent.com/BSrank/frbstyle/main/products.json?t=' + Date.now());
+      const res = await fetch('products.json?t=' + Date.now()); // относителен път - не зависи от repo името
       const data = await res.json();
       products = data.products || [];
       settings = data.settings || {};
