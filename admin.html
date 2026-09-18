@@ -125,6 +125,7 @@
   <div class="login-box">
     <h1><em style="font-style:italic;font-weight:300;font-size:0.85em;">the</em> forbidden<span> style</span></h1>
     <p>Admin панел — въведи парола</p>
+    <input type="text" id="repoInput" placeholder="GitHub repo (напр. BSrank/frbstyle)" />
     <input type="password" id="passwordInput" placeholder="Парола" onkeydown="if(event.key==='Enter')login()" />
     <input type="password" id="tokenInput" placeholder="GitHub Token (ghp_...)" style="margin-bottom:1rem;" />
     <button class="login-btn" onclick="login()">Влез</button>
@@ -532,13 +533,28 @@
 
 <script>
   // ─── CONFIG ───
-  var GITHUB_REPO   = 'BSrank/frbstyledress';
+  // GITHUB_REPO вече НЕ се хардкодва тук. Взима се от полето "GitHub repo"
+  // на екрана за логин и се пази в sessionStorage — така при смяна на сайт/
+  // repo просто въвеждаш новото име при вход, без да пипаш код.
+  var GITHUB_REPO   = sessionStorage.getItem('zax_repo') || 'BSrank/frbstyle'; // fallback стойност
   const PRODUCTS_FILE = 'products.json';
   const SCRIPT_URL    = 'https://script.google.com/macros/s/AKfycbypf4m4hh6-OiIVG2TOPkz4MlQJL_K_VorNAtUSboxUa_mmsPzBdUEzhI7-MMdWUE5-/exec';
   var SCRIPT_URL_DECODED = SCRIPT_URL;
   const PW_HASH       = '830ec5c1efee9ed79fee45e2a1da3ebb881d97167febdb1b71a35a20229b9956';
 
   var GITHUB_TOKEN = sessionStorage.getItem('zax_token') || '';
+
+  // SITE_URL (адресът на GitHub Pages сайта) се изчислява автоматично от
+  // GITHUB_REPO — вече не може да излезе разминаване между двете.
+  function siteUrlFromRepo(repo) {
+    var parts = (repo || '').split('/');
+    if (parts.length !== 2 || !parts[0] || !parts[1]) return '';
+    return 'https://' + parts[0] + '.github.io/' + parts[1];
+  }
+  var SITE_URL = siteUrlFromRepo(GITHUB_REPO) || 'https://BSrank.github.io/frbstyle';
+
+  var repoInputEl = document.getElementById('repoInput');
+  if (repoInputEl) repoInputEl.value = GITHUB_REPO;
 
   // ─── AUTH ───
   async function hashPassword(pw) {
@@ -549,19 +565,24 @@
   async function login() {
     var pw    = document.getElementById('passwordInput').value;
     var token = document.getElementById('tokenInput').value.trim();
+    var repo  = document.getElementById('repoInput').value.trim();
     var btn   = document.querySelector('.login-btn');
     btn.textContent = 'Проверка...'; btn.disabled = true;
     var hash = await hashPassword(pw);
-    if (hash === PW_HASH && token.startsWith('ghp_')) {
+    var repoValid = /^[^\/\s]+\/[^\/\s]+$/.test(repo);
+    if (hash === PW_HASH && token.startsWith('ghp_') && repoValid) {
       sessionStorage.setItem('zax_session', '1');
       sessionStorage.setItem('zax_token', token);
+      sessionStorage.setItem('zax_repo', repo);
       GITHUB_TOKEN = token;
+      GITHUB_REPO  = repo;
+      SITE_URL     = siteUrlFromRepo(GITHUB_REPO);
       document.getElementById('loginScreen').style.display = 'none';
       document.getElementById('adminPanel').style.display = 'block';
       document.getElementById('loginError').style.display = 'none';
       loadData();
     } else {
-      document.getElementById('loginError').textContent = !token.startsWith('ghp_') ? 'Невалиден GitHub Token.' : 'Грешна парола.';
+      document.getElementById('loginError').textContent = !repoValid ? 'Въведи repo във формат owner/repo (напр. BSrank/frbstyle).' : (!token.startsWith('ghp_') ? 'Невалиден GitHub Token.' : 'Грешна парола.');
       document.getElementById('loginError').style.display = 'block';
       document.getElementById('passwordInput').value = '';
     }
@@ -572,12 +593,28 @@
 
   if (sessionStorage.getItem('zax_session') && sessionStorage.getItem('zax_token')) {
     GITHUB_TOKEN = sessionStorage.getItem('zax_token');
+    GITHUB_REPO  = sessionStorage.getItem('zax_repo') || GITHUB_REPO;
+    SITE_URL     = siteUrlFromRepo(GITHUB_REPO) || SITE_URL;
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('adminPanel').style.display = 'block';
   }
 
   // ─── GITHUB API ───
   var fileSha = null;
+
+  // ─── GITHUB SAVE QUEUE ───
+  // products.json се записва от няколко различни места (toggle на продукт,
+  // toggle на ревюта, urgency, "Запази настройките" и т.н.). Ако два записа
+  // тръгнат почти едновременно, GitHub приема първия и отхвърля втория
+  // (стар SHA -> 409 Conflict) -> втората промяна тихо се губи. Тази опашка
+  // гарантира, че записите вървят СТРИКТНО един след друг, всеки взима
+  // свеж SHA едва след като предишният е приключил.
+  var ghSaveQueue = Promise.resolve();
+  function queueGitHubSave(taskFn) {
+    var run = ghSaveQueue.then(taskFn, taskFn);
+    ghSaveQueue = run.catch(function() {});
+    return run;
+  }
 
   async function loadProductsFromGitHub() {
     var res = await fetch('https://api.github.com/repos/' + GITHUB_REPO + '/contents/' + PRODUCTS_FILE, {
@@ -593,30 +630,32 @@
   }
 
   async function saveProductsToGitHub(products) {
-    setSaving(true);
-    try {
-      // Вземи свежото SHA преди всеки запис за да избегнем 409 Conflict
-      var getRes = await fetch('https://api.github.com/repos/' + GITHUB_REPO + '/contents/' + PRODUCTS_FILE, {
-        headers: { 'Authorization': 'token ' + GITHUB_TOKEN, 'Accept': 'application/vnd.github.v3+json' }
-      });
-      var getData = await getRes.json();
-      fileSha = getData.sha;
+    return queueGitHubSave(async function() {
+      setSaving(true);
+      try {
+        // Вземи свежото SHA преди всеки запис за да избегнем 409 Conflict
+        var getRes = await fetch('https://api.github.com/repos/' + GITHUB_REPO + '/contents/' + PRODUCTS_FILE, {
+          headers: { 'Authorization': 'token ' + GITHUB_TOKEN, 'Accept': 'application/vnd.github.v3+json' }
+        });
+        var getData = await getRes.json();
+        fileSha = getData.sha;
 
-      var content = btoa(unescape(encodeURIComponent(JSON.stringify({ products: products, urgency: urgencyData, settings: siteSettings }, null, 2))));
-      var body = { message: 'Update products', content: content, sha: fileSha };
-      var res = await fetch('https://api.github.com/repos/' + GITHUB_REPO + '/contents/' + PRODUCTS_FILE, {
-        method: 'PUT',
-        headers: { 'Authorization': 'token ' + GITHUB_TOKEN, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
-      });
-      var data = await res.json();
-      if (data.content) fileSha = data.content.sha;
-      setSaving(false);
-      return res.ok;
-    } catch(e) {
-      setSaving(false);
-      return false;
-    }
+        var content = btoa(unescape(encodeURIComponent(JSON.stringify({ products: products, urgency: urgencyData, settings: siteSettings }, null, 2))));
+        var body = { message: 'Update products', content: content, sha: fileSha };
+        var res = await fetch('https://api.github.com/repos/' + GITHUB_REPO + '/contents/' + PRODUCTS_FILE, {
+          method: 'PUT',
+          headers: { 'Authorization': 'token ' + GITHUB_TOKEN, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        });
+        var data = await res.json();
+        if (data.content) fileSha = data.content.sha;
+        setSaving(false);
+        return res.ok;
+      } catch(e) {
+        setSaving(false);
+        return false;
+      }
+    });
   }
 
   function setSaving(on) {
@@ -679,27 +718,37 @@
 
   async function saveUrgencySettings() {
     urgencyData.qty = parseInt(document.getElementById('urgencyQty').value) || 2;
-    var currentData = { products: products, urgency: urgencyData };
-    setSaving(true);
-    try {
-      var getRes = await fetch('https://api.github.com/repos/' + GITHUB_REPO + '/contents/' + PRODUCTS_FILE, {
-        headers: { 'Authorization': 'token ' + GITHUB_TOKEN, 'Accept': 'application/vnd.github.v3+json' }
-      });
-      var getData = await getRes.json();
-      fileSha = getData.sha;
-      var content = btoa(unescape(encodeURIComponent(JSON.stringify(currentData, null, 2))));
-      var res = await fetch('https://api.github.com/repos/' + GITHUB_REPO + '/contents/' + PRODUCTS_FILE, {
-        method: 'PUT',
-        headers: { 'Authorization': 'token ' + GITHUB_TOKEN, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: 'Update urgency settings', content: content, sha: fileSha })
-      });
-      var d = await res.json();
-      if (d.content) fileSha = d.content.sha;
-      toast(urgencyData.enabled ? 'Urgency е включен — показва "само ' + urgencyData.qty + ' бройки"' : 'Urgency е изключен', 'success');
-    } catch(e) {
-      toast('Грешка при запис', 'error');
-    }
-    setSaving(false);
+    return queueGitHubSave(async function() {
+      var currentData = { products: products, urgency: urgencyData, settings: siteSettings };
+      setSaving(true);
+      try {
+        var getRes = await fetch('https://api.github.com/repos/' + GITHUB_REPO + '/contents/' + PRODUCTS_FILE, {
+          headers: { 'Authorization': 'token ' + GITHUB_TOKEN, 'Accept': 'application/vnd.github.v3+json' }
+        });
+        var getData = await getRes.json();
+        fileSha = getData.sha;
+        var content = btoa(unescape(encodeURIComponent(JSON.stringify(currentData, null, 2))));
+        var res = await fetch('https://api.github.com/repos/' + GITHUB_REPO + '/contents/' + PRODUCTS_FILE, {
+          method: 'PUT',
+          headers: { 'Authorization': 'token ' + GITHUB_TOKEN, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: 'Update urgency settings', content: content, sha: fileSha })
+        });
+        var d = await res.json();
+        if (d.content) fileSha = d.content.sha;
+        setSaving(false);
+        if (res.ok) {
+          toast(urgencyData.enabled ? 'Urgency е включен — показва "само ' + urgencyData.qty + ' бройки"' : 'Urgency е изключен', 'success');
+          return true;
+        } else {
+          toast('Грешка при запис — опитай пак', 'error');
+          return false;
+        }
+      } catch(e) {
+        setSaving(false);
+        toast('Грешка при запис', 'error');
+        return false;
+      }
+    });
   }
 
   function renderCustomCatToggles() {
@@ -1281,30 +1330,40 @@
     }
     // showCategories, showTerms, showManualReviews, showClientReviews се управляват от toggleSettingToggle
     var currentData = { products: products, urgency: urgencyData, settings: siteSettings };
-    setSaving(true);
-    try {
-      var getRes = await fetch('https://api.github.com/repos/' + GITHUB_REPO + '/contents/' + PRODUCTS_FILE, {
-        headers: { 'Authorization': 'token ' + GITHUB_TOKEN, 'Accept': 'application/vnd.github.v3+json' }
-      });
-      var getData = await getRes.json();
-      fileSha = getData.sha;
-      var content = btoa(unescape(encodeURIComponent(JSON.stringify(currentData, null, 2))));
-      var res = await fetch('https://api.github.com/repos/' + GITHUB_REPO + '/contents/' + PRODUCTS_FILE, {
-        method: 'PUT',
-        headers: { 'Authorization': 'token ' + GITHUB_TOKEN, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: 'Update site settings', content: content, sha: fileSha })
-      });
-      var d = await res.json();
-      if (d.content) fileSha = d.content.sha;
-      toast('Настройките са запазени!', 'success');
-    } catch(e) {
-      toast('Грешка при запис', 'error');
-    }
-    setSaving(false);
+    return queueGitHubSave(async function() {
+      setSaving(true);
+      try {
+        var getRes = await fetch('https://api.github.com/repos/' + GITHUB_REPO + '/contents/' + PRODUCTS_FILE, {
+          headers: { 'Authorization': 'token ' + GITHUB_TOKEN, 'Accept': 'application/vnd.github.v3+json' }
+        });
+        var getData = await getRes.json();
+        fileSha = getData.sha;
+        var content = btoa(unescape(encodeURIComponent(JSON.stringify(currentData, null, 2))));
+        var res = await fetch('https://api.github.com/repos/' + GITHUB_REPO + '/contents/' + PRODUCTS_FILE, {
+          method: 'PUT',
+          headers: { 'Authorization': 'token ' + GITHUB_TOKEN, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: 'Update site settings', content: content, sha: fileSha })
+        });
+        var d = await res.json();
+        if (d.content) fileSha = d.content.sha;
+        setSaving(false);
+        if (res.ok) {
+          toast('Настройките са запазени!', 'success');
+          return true;
+        } else {
+          toast('Грешка при запис — опитай пак (натисни Запази отново)', 'error');
+          return false;
+        }
+      } catch(e) {
+        setSaving(false);
+        toast('Грешка при запис', 'error');
+        return false;
+      }
+    });
   }
 
   // ─── SCAN IMAGES ───
-  var SITE_URL = 'https://BSrank.github.io/frbstyledress';
+  // SITE_URL вече се задава динамично горе (secция CONFIG / login), спрямо GITHUB_REPO.
 
   async function scanImages(idx) {
     var p = products[idx];
