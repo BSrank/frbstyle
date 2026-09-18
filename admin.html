@@ -1528,7 +1528,7 @@
   async function sendReviewInvite(orderId, clientEmail, clientName) {
     if (!clientEmail) { toast('Клиентът няма имейл', 'error'); return; }
     if (!confirm('Изпрати покана за ревю на ' + clientName + ' (' + clientEmail + ')?')) return;
-    const siteUrl = 'https://BSrank.github.io/frbstyle/';
+    const siteUrl = SITE_URL + '/'; // динамично - следва GITHUB_REPO, зададен при логин
     // Use no-cors fetch with JSON body - this is how placeOrder works successfully
     fetch(SCRIPT_URL_DECODED, {
       method: 'POST',
