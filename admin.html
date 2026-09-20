@@ -400,22 +400,31 @@
         <!-- REVIEW REWARDS -->
         <div style="margin-bottom:2rem; padding-bottom:2rem; border-bottom:1px solid var(--border);">
           <p class="cat-toggles-label" style="margin-bottom:1rem;">Награда след оставено ревю</p>
-          <p style="font-size:0.72rem;color:var(--muted);margin-bottom:1rem;">
-            След като клиент остави ревю, автоматично получава уникален еднократен код по имейл.
-            С шанс по-долу кодът е за % отстъпка, иначе е за безплатен силиконов кейс при следваща поръчка.
-            При 0% шанс — винаги е кейс.
+          <p style="font-size:0.72rem;color:var(--muted);margin-bottom:1.4rem;">
+            Всеки клиент, оставил ревю, получава уникален еднократен код по имейл (след като одобриш ревюто). Тук решаваш какъв процент от клиентите да получат промокод за отстъпка вместо безплатен кейс.
           </p>
-          <div class="form-grid" style="max-width:500px;">
-            <div class="form-group">
-              <label>Шанс кодът да е за % отстъпка (0-100)</label>
-              <input type="number" id="settings-reward-chance" min="0" max="100" placeholder="0" />
+
+          <div style="margin-bottom:1.6rem;">
+            <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:0.5rem;">
+              <label style="font-size:0.72rem;color:var(--muted);">Колко клиенти да получават промокод за отстъпка (вместо кейс)?</label>
+              <span id="reward-chance-display" style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:var(--accent);">0%</span>
             </div>
-            <div class="form-group">
-              <label>Размер на отстъпката (%), ако кодът е печеливш</label>
-              <input type="number" id="settings-reward-percent" min="0" max="100" placeholder="10" />
+            <input type="range" id="settings-reward-chance" min="0" max="100" step="5" value="0" style="width:100%;accent-color:var(--accent);" oninput="onRewardSliderChange()" onchange="saveSettings()" />
+            <div style="display:flex;justify-content:space-between;font-size:0.62rem;color:var(--muted);margin-top:2px;">
+              <span>0% — винаги кейс</span>
+              <span>100% — винаги промокод</span>
             </div>
           </div>
-          <p style="font-size:0.68rem;color:var(--muted);margin-top:0.6rem;">Пример: 0% шанс = 100% от клиентите получават код за безплатен кейс. 50% шанс = половината получават код за % отстъпка, другата половина — код за кейс.</p>
+
+          <div style="margin-bottom:1rem;">
+            <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:0.5rem;">
+              <label style="font-size:0.72rem;color:var(--muted);">Ако е промокод — с колко отстъпка?</label>
+              <span id="reward-percent-display" style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:var(--accent);">10%</span>
+            </div>
+            <input type="range" id="settings-reward-percent" min="5" max="50" step="5" value="10" style="width:100%;accent-color:var(--accent);" oninput="onRewardSliderChange()" onchange="saveSettings()" />
+          </div>
+
+          <div id="reward-summary-box" style="background:var(--surface2);border:1px dashed var(--border);border-radius:4px;padding:0.9rem 1rem;font-size:0.76rem;color:var(--text);line-height:1.6;"></div>
         </div>
 
         <!-- REVIEWS -->
@@ -1252,6 +1261,29 @@
     siteSettings = Object.assign({ siteName: 'The Forbidden Style', contactMode: 'phone', phone: '0876 127 997', hours: 'Всеки ден', showCategories: true, customCategories: [], reviews: [], showManualReviews: false, showClientReviews: false, showTerms: false, rewardDiscountChance: 0, rewardDiscountPercent: 10 }, data.settings || {});
   }
 
+  function onRewardSliderChange(skipSave) {
+    var chanceEl = document.getElementById('settings-reward-chance');
+    var percentEl = document.getElementById('settings-reward-percent');
+    if (!chanceEl || !percentEl) return;
+    var chance = parseInt(chanceEl.value, 10) || 0;
+    var percent = parseInt(percentEl.value, 10) || 0;
+    var chanceDisplay = document.getElementById('reward-chance-display');
+    var percentDisplay = document.getElementById('reward-percent-display');
+    if (chanceDisplay) chanceDisplay.textContent = chance + '%';
+    if (percentDisplay) percentDisplay.textContent = percent + '%';
+    var summary = document.getElementById('reward-summary-box');
+    if (summary) {
+      if (chance === 0) {
+        summary.innerHTML = '📦 В момента <strong>всички</strong> клиенти, оставили ревю, получават код за <strong>безплатен силиконов кейс</strong>.';
+      } else if (chance === 100) {
+        summary.innerHTML = '💸 В момента <strong>всички</strong> клиенти, оставили ревю, получават <strong>промокод за -' + percent + '% отстъпка</strong>.';
+      } else {
+        summary.innerHTML = '🎲 От всеки 100 клиенти, оставили ревю: <strong>' + chance + '</strong> ще получат <strong>промокод за -' + percent + '% отстъпка</strong>, а останалите <strong>' + (100 - chance) + '</strong> — код за <strong>безплатен силиконов кейс</strong>.';
+      }
+    }
+    if (!skipSave) { /* стойността вече се запазва чрез onchange="saveSettings()" на слайдъра */ }
+  }
+
   function toggleSettingToggle(key) {
     siteSettings[key] = !siteSettings[key];
     var tog = document.getElementById('toggle-' + key);
@@ -1285,6 +1317,7 @@
     var percentEl = document.getElementById('settings-reward-percent');
     if (chanceEl) chanceEl.value = (siteSettings.rewardDiscountChance !== undefined && siteSettings.rewardDiscountChance !== null) ? siteSettings.rewardDiscountChance : 0;
     if (percentEl) percentEl.value = (siteSettings.rewardDiscountPercent !== undefined && siteSettings.rewardDiscountPercent !== null) ? siteSettings.rewardDiscountPercent : 10;
+    onRewardSliderChange(true);
     var mode = siteSettings.contactMode || 'phone';
     var radioPhone = document.getElementById('contact-phone');
     var radioEmail = document.getElementById('contact-email');
