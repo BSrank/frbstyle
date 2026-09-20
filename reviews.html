@@ -43,6 +43,19 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:20px 6
 .empty-state{text-align:center;padding:4rem 6%;color:var(--muted);}
 .empty-icon{font-size:3rem;margin-bottom:1rem;}
 
+.code-box{margin:0 6%;padding:1.4rem 1.6rem;background:var(--surface);border:1px solid var(--border);border-radius:8px;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;}
+.code-box-text{flex:1;min-width:200px;}
+.code-box-title{font-size:0.85rem;color:var(--text);margin-bottom:0.2rem;}
+.code-box-sub{font-size:0.72rem;color:var(--muted);}
+.code-box-form{display:flex;gap:0.6rem;flex-wrap:wrap;}
+.code-box-form input{padding:10px 12px;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.85rem;border-radius:4px;outline:none;text-transform:uppercase;width:180px;}
+.code-box-form button{padding:10px 18px;background:var(--accent);color:var(--btn-text);border:none;font-size:0.72rem;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;border-radius:4px;font-family:'DM Sans',sans-serif;font-weight:500;white-space:nowrap;}
+@media(max-width:600px){
+  .code-box{margin:0 5%;flex-direction:column;align-items:flex-start;}
+  .code-box-form{width:100%;}
+  .code-box-form input{flex:1;width:auto;}
+}
+
 footer{padding:2rem 6%;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;}
 .footer-logo{font-family:'Cormorant Garamond',serif;font-size:1rem;color:var(--text);}
 .footer-logo span{color:var(--accent);}
@@ -72,6 +85,17 @@ footer p{font-size:0.7rem;color:var(--muted);}
 <div class="page-hero">
   <div class="page-eyebrow">Клиентски мнения</div>
   <h1 class="page-title">Ревюта</h1>
+</div>
+
+<div class="code-box" style="margin-top:2rem;">
+  <div class="code-box-text">
+    <div class="code-box-title">Имаш код за ревю от имейл покана?</div>
+    <div class="code-box-sub">Постави кода тук, за да оставиш ревю ръчно.</div>
+  </div>
+  <div class="code-box-form">
+    <input type="text" id="reviewCodeInput" placeholder="напр. AB12CD34" onkeydown="if(event.key==='Enter')goToReviewCode();" />
+    <button onclick="goToReviewCode()">Продължи</button>
+  </div>
 </div>
 
 <div class="rating-summary" id="ratingSummary" style="display:none;">
@@ -193,6 +217,12 @@ function renderReviews(reviews) {
       (r.product ? '<div class="review-product">Продукт: ' + r.product + '</div>' : '') +
     '</div>'
   ).join('');
+}
+
+function goToReviewCode() {
+  const val = document.getElementById('reviewCodeInput').value.trim();
+  if (!val) return;
+  window.location.href = 'review.html?token=' + encodeURIComponent(val);
 }
 
 loadReviews();
