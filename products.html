@@ -399,6 +399,11 @@
       <div class="order-summary-box">
         <p class="order-summary-title">Твоята поръчка</p>
         <div id="orderSummaryItems"></div>
+        <div id="promoRow" style="display:flex;gap:0.5rem;margin:0.8rem 0;">
+          <input type="text" id="promoCodeInput" placeholder="Промокод (ако имаш)" style="flex:1;padding:9px 11px;background:var(--surface2,#1a1a1a);border:1px solid var(--border,#2a2a2a);color:var(--text,#f0ece4);font-family:inherit;font-size:0.82rem;border-radius:2px;outline:none;text-transform:uppercase;" />
+          <button type="button" onclick="applyPromoCode()" id="promoApplyBtn" style="padding:9px 16px;background:none;border:1px solid var(--accent,#c9a96e);color:var(--accent,#c9a96e);cursor:pointer;font-size:0.75rem;letter-spacing:0.08em;text-transform:uppercase;border-radius:2px;white-space:nowrap;">Приложи</button>
+        </div>
+        <div id="promoStatus" style="font-size:0.75rem;margin-bottom:0.6rem;display:none;"></div>
         <div class="order-total-row"><span>Общо:</span><span id="orderSummaryTotal">лв 0.00</span></div>
       </div>
       <div class="form-row">
@@ -1043,9 +1048,61 @@
     document.body.style.position = '';
     document.body.style.width = '';
     cart_local = [];
+    appliedPromo = null;
     updateCartCount(); renderCart();
     document.getElementById('formContent').style.display = 'block';
     document.getElementById('successScreen').classList.remove('show');
+    const promoInput = document.getElementById('promoCodeInput');
+    const promoBtn = document.getElementById('promoApplyBtn');
+    const promoStatus = document.getElementById('promoStatus');
+    if (promoInput) { promoInput.value = ''; promoInput.disabled = false; }
+    if (promoBtn) { promoBtn.style.display = ''; promoBtn.disabled = false; promoBtn.textContent = 'Приложи'; }
+    if (promoStatus) { promoStatus.style.display = 'none'; promoStatus.textContent = ''; }
+  }
+
+  // ─── ПРОМОКОД ───
+  let appliedPromo = null; // { code, type: 'discount'|'case', value }
+
+  function finalTotalBGN() {
+    const raw = cartTotalBGN();
+    if (appliedPromo && appliedPromo.type === 'discount') {
+      return Math.max(0, raw * (1 - (parseFloat(appliedPromo.value) || 0) / 100));
+    }
+    return raw;
+  }
+
+  async function applyPromoCode() {
+    const input = document.getElementById('promoCodeInput');
+    const status = document.getElementById('promoStatus');
+    const code = input.value.trim().toUpperCase();
+    if (!code) return;
+    const btn = document.getElementById('promoApplyBtn');
+    btn.disabled = true; btn.textContent = '...';
+    try {
+      const res = await fetch(SCRIPT_URL + '?action=verifyPromoCode&code=' + encodeURIComponent(code));
+      const data = await res.json();
+      if (data.valid) {
+        appliedPromo = { code, type: data.type, value: data.value };
+        status.style.display = 'block';
+        status.style.color = 'var(--success,#52c07a)';
+        status.textContent = data.type === 'case'
+          ? '✓ Приложен код: безплатен силиконов кейс при тази поръчка!'
+          : '✓ Приложен код: -' + data.value + '% отстъпка!';
+        input.disabled = true;
+        btn.style.display = 'none';
+      } else {
+        appliedPromo = null;
+        status.style.display = 'block';
+        status.style.color = 'var(--danger,#e05252)';
+        status.textContent = data.message || 'Невалиден код.';
+      }
+    } catch(e) {
+      status.style.display = 'block';
+      status.style.color = 'var(--danger,#e05252)';
+      status.textContent = 'Грешка при проверка на кода. Опитай пак.';
+    }
+    btn.disabled = false; if (btn.style.display !== 'none') btn.textContent = 'Приложи';
+    renderOrderSummary();
   }
 
   function renderOrderSummary() {
@@ -1053,11 +1110,19 @@
       <div class="order-summary-item">
         <span>${item.name}${item.size ? ' ('+item.size+')' : ''} ×${item.qty}</span>
         <span>€${toEUR(item.price * item.qty)} (${(item.price * item.qty).toFixed(2)} лв)</span>
-      </div>`).join('');
-    document.getElementById('orderSummaryTotal').textContent = '€' + toEUR(cartTotalBGN()) + ' (' + cartTotalBGN().toFixed(2) + ' лв)';
+      </div>`).join('') + (appliedPromo && appliedPromo.type === 'discount' ? `
+      <div class="order-summary-item" style="color:var(--accent,#c9a96e);">
+        <span>🎁 Промокод ${appliedPromo.code}</span>
+        <span>-${appliedPromo.value}%</span>
+      </div>` : '') + (appliedPromo && appliedPromo.type === 'case' ? `
+      <div class="order-summary-item" style="color:var(--accent,#c9a96e);">
+        <span>🎁 Награда</span>
+        <span>Безплатен кейс</span>
+      </div>` : '');
+    document.getElementById('orderSummaryTotal').textContent = '€' + toEUR(finalTotalBGN()) + ' (' + finalTotalBGN().toFixed(2) + ' лв)';
   }
 
-  
+
   async function submitOrder() {
     const courier = document.getElementById('courier').value;
     const fullName = document.getElementById('fullName').value.trim();
@@ -1079,7 +1144,8 @@
       action: 'placeOrder',
       courier, fullName, phone, email, city, office,
       items: cart_local.map(i => ({ name: i.name, size: i.size || '', qty: i.qty, price: i.price })),
-      total: cartTotalBGN().toFixed(2),
+      total: cartTotalBGN().toFixed(2), // изпраща се ЦЕЛИЯТ сбор преди отстъпка - сървърът смята промокода
+      promoCode: appliedPromo ? appliedPromo.code : '',
       contactMode: (window._siteSettings || {}).contactMode || 'phone',
       contactPhone: (window._siteSettings || {}).phone || '0876 127 997',
       siteName: (window._siteSettings || {}).siteName || 'The Forbidden Style',
@@ -1087,12 +1153,28 @@
     };
 
     try {
-      await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(orderData) });
+      // Без no-cors - четем реалния отговор, за да сме сигурни че промокодът
+      // реално е бил приложен (и за да покажем грешка, ако нещо се провали).
+      const res = await fetch(SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(orderData)
+      });
+      const result = await res.json();
+      if (!result || result.ok !== true) {
+        alert('Възникна грешка при изпращане на поръчката. Моля опитай пак.');
+        btn.disabled = false;
+        btn.textContent = 'Изпрати поръчка';
+        return;
+      }
     } catch(e) {
       console.warn('fetch error:', e);
+      alert('Възникна грешка при връзката със сървъра. Моля опитай пак.');
+      btn.disabled = false;
+      btn.textContent = 'Изпрати поръчка';
+      return;
     }
 
-    // Показваме успех след изпращане (независимо от резултата — no-cors не дава статус)
     document.getElementById('formContent').style.display = 'none';
     document.getElementById('successScreen').classList.add('show');
   }
