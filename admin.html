@@ -308,218 +308,264 @@
       <div class="add-product-section">
         <h3>Настройки на сайта</h3>
 
-        <!-- THEME SELECTOR -->
-        <div style="margin-bottom:2rem; padding-bottom:2rem; border-bottom:1px solid var(--border);">
-          <p class="cat-toggles-label" style="margin-bottom:1rem;">Тема на сайта</p>
-          <div id="themeGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;"></div>
-          <p style="font-size:0.72rem;color:var(--muted);margin-top:0.5rem;">Цветове, шрифтове и стил на бутоните се сменят. Всички настройки и продукти остават.</p>
+        <!-- SETTINGS SUB-NAV -->
+        <div id="settingsSubNav" style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:1.8rem;padding-bottom:1.2rem;border-bottom:1px solid var(--border);">
+          <button type="button" class="settings-subtab active" data-group="design" onclick="showSettingsGroup('design')">🎨 Дизайн и бранд</button>
+          <button type="button" class="settings-subtab" data-group="catalog" onclick="showSettingsGroup('catalog')">🛍 Продукти и категории</button>
+          <button type="button" class="settings-subtab" data-group="rewards" onclick="showSettingsGroup('rewards')">⭐ Ревюта и награди</button>
+          <button type="button" class="settings-subtab" data-group="marketing" onclick="showSettingsGroup('marketing')">📣 Маркетинг</button>
+          <button type="button" class="settings-subtab" data-group="contact" onclick="showSettingsGroup('contact')">📞 Контакт и правно</button>
+          <button type="button" class="settings-subtab" data-group="technical" onclick="showSettingsGroup('technical')">🔧 Техническо</button>
         </div>
+        <style>
+          .settings-subtab{padding:8px 14px;background:var(--surface2);border:1px solid var(--border);color:var(--muted);font-size:0.72rem;letter-spacing:0.04em;cursor:pointer;border-radius:20px;font-family:'DM Sans',sans-serif;white-space:nowrap;}
+          .settings-subtab.active{background:var(--accent);color:var(--btn-text);border-color:var(--accent);}
+        </style>
 
-        <!-- CATEGORIES VISIBILITY -->
-        <div style="margin-bottom:2rem; padding-bottom:2rem; border-bottom:1px solid var(--border);">
-          <p class="cat-toggles-label" style="margin-bottom:1rem;">Категории на началната страница</p>
-          <div class="visibility-toggle" onclick="toggleSettingToggle('showCategories')">
-            <div class="toggle-switch" id="toggle-showCategories"></div>
-            <span class="toggle-label" id="label-showCategories">Показани</span>
-          </div>
-          <p style="font-size:0.72rem;color:var(--muted);margin-top:0.5rem;">Изключи за да скриеш картите с категории. "Намери своя стил" заглавието остава.</p>
-          <div class="form-group" style="max-width:360px; margin-top:0.8rem;">
-            <label>Подзаглавие на продуктите</label>
-            <input type="text" id="settings-products-subtitle" placeholder="The Forbidden Style — Collection" />
-          </div>
-        </div>
+        <!-- ═══ GROUP: ДИЗАЙН И БРАНД ═══ -->
+        <div class="settings-group" id="settings-group-design">
 
-        <!-- HERO TEXT -->
-        <div style="margin-bottom:2rem; padding-bottom:2rem; border-bottom:1px solid var(--border);">
-          <p class="cat-toggles-label" style="margin-bottom:1rem;">Hero текст</p>
-          <div class="form-group" style="max-width:360px; margin-bottom:0.8rem;">
-            <label>Горен малък текст (eyebrow)</label>
-            <input type="text" id="settings-eyebrow" placeholder="Нова колекция 2026" />
+          <!-- THEME SELECTOR -->
+          <div style="margin-bottom:2rem; padding-bottom:2rem; border-bottom:1px solid var(--border);">
+            <p class="cat-toggles-label" style="margin-bottom:1rem;">Тема на сайта</p>
+            <div id="themeGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;"></div>
+            <p style="font-size:0.72rem;color:var(--muted);margin-top:0.5rem;">Цветове, шрифтове и стил на бутоните се сменят. Всички настройки и продукти остават.</p>
           </div>
-          <div class="form-group" style="max-width:360px;">
-            <label>Главно заглавие</label>
-            <input type="text" id="settings-hero" placeholder="Живей с Аура" />
-          </div>
-          <p style="font-size:0.72rem;color:var(--muted);margin-top:0.5rem;">Стилът остава непроменен — само текстът се сменя.</p>
-        </div>
 
-        <!-- SITE NAME -->
-        <div style="margin-bottom:2rem; padding-bottom:2rem; border-bottom:1px solid var(--border);">
-          <p class="cat-toggles-label" style="margin-bottom:1rem;">Име на сайта</p>
-          <div class="form-group" style="max-width:360px;">
-            <label>Показвано име (nav лого + заглавие)</label>
-            <input type="text" id="settings-sitename" placeholder="The Forbidden Style" />
-          </div>
-          <p style="font-size:0.72rem;color:var(--muted);margin-top:0.5rem;">Промяната се вижда в nav логото и заглавието на браузъра.</p>
-        </div>
-
-        <!-- SITE DOMAIN -->
-        <div style="margin-bottom:2rem; padding-bottom:2rem; border-bottom:1px solid var(--border);">
-          <p class="cat-toggles-label" style="margin-bottom:1rem;">Домейн на сайта</p>
-          <div class="form-group" style="max-width:360px;">
-            <label>Публичен адрес (домейн)</label>
-            <input type="text" id="settings-sitedomain" placeholder="https://theaurapods.store/" style="letter-spacing:0;" />
-          </div>
-          <p style="font-size:0.72rem;color:var(--muted);margin-top:0.5rem;">Използва се в имейли (напр. поканата за ревю), вместо адреса на GitHub. Смени го тук, ако смениш домейна — никъде другаде не трябва да се пипа код.</p>
-        </div>
-
-        <!-- FACEBOOK PIXEL -->
-        <div style="margin-bottom:2rem; padding-bottom:2rem; border-bottom:1px solid var(--border);">
-          <p class="cat-toggles-label" style="margin-bottom:1rem;">Facebook Pixel</p>
-          <div class="form-group" style="max-width:360px;">
-            <label>Pixel ID</label>
-            <input type="text" id="settings-pixel" placeholder="123456789012345" style="letter-spacing:0;" />
-          </div>
-          <p style="font-size:0.72rem;color:var(--muted);margin-top:0.5rem;">Намери го в Facebook Business Manager → Events Manager. Оставяй празно ако нямаш.</p>
-        </div>
-
-        <!-- TERMS OF SERVICE -->
-        <div style="margin-bottom:2rem; padding-bottom:2rem; border-bottom:1px solid var(--border);">
-          <p class="cat-toggles-label" style="margin-bottom:1rem;">Условия за ползване (Terms)</p>
-          <div style="margin-bottom:1rem;">
-            <div class="visibility-toggle" onclick="toggleSettingToggle('showTerms')">
-              <div class="toggle-switch" id="toggle-showTerms"></div>
-              <span class="toggle-label" id="label-showTerms">Скрити</span>
+          <!-- SITE NAME -->
+          <div style="margin-bottom:2rem; padding-bottom:2rem; border-bottom:1px solid var(--border);">
+            <p class="cat-toggles-label" style="margin-bottom:1rem;">Име на сайта</p>
+            <div class="form-group" style="max-width:360px;">
+              <label>Показвано име (nav лого + заглавие)</label>
+              <input type="text" id="settings-sitename" placeholder="The Forbidden Style" />
             </div>
+            <p style="font-size:0.72rem;color:var(--muted);margin-top:0.5rem;">Промяната се вижда в nav логото и заглавието на браузъра.</p>
           </div>
-          <div class="form-group" style="margin-bottom:0.8rem;">
-            <label>⚠️ Червен Alert банер (незадължително)</label>
-            <textarea id="settings-terms-alert" placeholder="Важно: Доставките се извършват само в рамките на България." style="min-height:60px;"></textarea>
+
+          <!-- HERO TEXT -->
+          <div style="margin-bottom:2rem; padding-bottom:2rem; border-bottom:1px solid var(--border);">
+            <p class="cat-toggles-label" style="margin-bottom:1rem;">Hero текст</p>
+            <div class="form-group" style="max-width:360px; margin-bottom:0.8rem;">
+              <label>Горен малък текст (eyebrow)</label>
+              <input type="text" id="settings-eyebrow" placeholder="Нова колекция 2026" />
+            </div>
+            <div class="form-group" style="max-width:360px;">
+              <label>Главно заглавие</label>
+              <input type="text" id="settings-hero" placeholder="Живей с Аура" />
+            </div>
+            <p style="font-size:0.72rem;color:var(--muted);margin-top:0.5rem;">Стилът остава непроменен — само текстът се сменя.</p>
           </div>
-          <div class="form-group" style="max-width:200px; margin-bottom:0.8rem;">
-            <label>Дата на актуализация</label>
-            <input type="text" id="settings-terms-date" placeholder="01.07.2026" />
+
+          <!-- SITE DOMAIN -->
+          <div style="margin-bottom:2rem;">
+            <p class="cat-toggles-label" style="margin-bottom:1rem;">Домейн на сайта</p>
+            <div class="form-group" style="max-width:360px;">
+              <label>Публичен адрес (домейн)</label>
+              <input type="text" id="settings-sitedomain" placeholder="https://theaurapods.store/" style="letter-spacing:0;" />
+            </div>
+            <p style="font-size:0.72rem;color:var(--muted);margin-top:0.5rem;">Използва се в имейли (напр. поканата за ревю), вместо адреса на GitHub. Смени го тук, ако смениш домейна — никъде другаде не трябва да се пипа код.</p>
           </div>
-          <div id="termsSectionsList" style="display:flex;flex-direction:column;gap:0.8rem;margin-bottom:1rem;"></div>
-          <button class="btn btn-ghost" onclick="addTermsSection()" id="addTermsBtn" style="font-size:0.75rem;">+ Добави секция</button>
-          <p style="font-size:0.72rem;color:var(--muted);margin-top:0.5rem;">
-            Формат: <code style="background:var(--surface2);padding:1px 5px;">**bold**</code> · ред с <code style="background:var(--surface2);padding:1px 5px;">→</code> = точка · ред с <code style="background:var(--surface2);padding:1px 5px;">!</code> = highlight box
-          </p>
+
         </div>
 
-        <!-- REVIEW REWARDS -->
-        <div style="margin-bottom:2rem; padding-bottom:2rem; border-bottom:1px solid var(--border);">
-          <p class="cat-toggles-label" style="margin-bottom:1rem;">Награда след оставено ревю</p>
-          <p style="font-size:0.72rem;color:var(--muted);margin-bottom:1.4rem;">
-            Всеки клиент, оставил ревю, получава уникален еднократен код по имейл (след като одобриш ревюто). Тук решаваш какъв процент от клиентите да получат промокод за отстъпка вместо безплатен кейс.
-          </p>
+        <!-- ═══ GROUP: ПРОДУКТИ И КАТЕГОРИИ ═══ -->
+        <div class="settings-group" id="settings-group-catalog" style="display:none;">
 
-          <div style="margin-bottom:1.6rem;">
-            <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:0.5rem;">
-              <label style="font-size:0.72rem;color:var(--muted);">Колко клиенти да получават промокод за отстъпка (вместо кейс)?</label>
-              <span id="reward-chance-display" style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:var(--accent);">0%</span>
+          <!-- CATEGORIES VISIBILITY -->
+          <div style="margin-bottom:2rem; padding-bottom:2rem; border-bottom:1px solid var(--border);">
+            <p class="cat-toggles-label" style="margin-bottom:1rem;">Категории на началната страница</p>
+            <div class="visibility-toggle" onclick="toggleSettingToggle('showCategories')">
+              <div class="toggle-switch" id="toggle-showCategories"></div>
+              <span class="toggle-label" id="label-showCategories">Показани</span>
             </div>
-            <input type="range" id="settings-reward-chance" min="0" max="100" step="5" value="0" style="width:100%;accent-color:var(--accent);" oninput="onRewardSliderChange()" onchange="saveSettings()" />
-            <div style="display:flex;justify-content:space-between;font-size:0.62rem;color:var(--muted);margin-top:2px;">
-              <span>0% — винаги кейс</span>
-              <span>100% — винаги промокод</span>
+            <p style="font-size:0.72rem;color:var(--muted);margin-top:0.5rem;">Изключи за да скриеш картите с категории. "Намери своя стил" заглавието остава.</p>
+            <div class="form-group" style="max-width:360px; margin-top:0.8rem;">
+              <label>Подзаглавие на продуктите</label>
+              <input type="text" id="settings-products-subtitle" placeholder="The Forbidden Style — Collection" />
             </div>
           </div>
 
-          <div style="margin-bottom:1rem;">
-            <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:0.5rem;">
-              <label style="font-size:0.72rem;color:var(--muted);">Ако е промокод — с колко отстъпка?</label>
-              <span id="reward-percent-display" style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:var(--accent);">10%</span>
-            </div>
-            <input type="range" id="settings-reward-percent" min="5" max="50" step="5" value="10" style="width:100%;accent-color:var(--accent);" oninput="onRewardSliderChange()" onchange="saveSettings()" />
-          </div>
-
-          <div id="reward-summary-box" style="background:var(--surface2);border:1px dashed var(--border);border-radius:4px;padding:0.9rem 1rem;font-size:0.76rem;color:var(--text);line-height:1.6;"></div>
-        </div>
-
-        <!-- REVIEWS -->
-        <div style="margin-bottom:2rem; padding-bottom:2rem; border-bottom:1px solid var(--border);">
-          <p class="cat-toggles-label" style="margin-bottom:1rem;">Отзиви от клиенти (до 6)</p>
-          <div style="display:flex;flex-direction:column;gap:0.8rem;margin-bottom:1rem;">
-            <div>
-              <div class="visibility-toggle" onclick="toggleSettingToggle('showManualReviews')">
-                <div class="toggle-switch" id="toggle-showManualReviews"></div>
-                <span class="toggle-label" id="label-showManualReviews">Скрити</span>
-              </div>
-              <p style="font-size:0.68rem;color:var(--muted);margin-top:4px;">Ръчни ревюта — добавяш ги ти от тук долу</p>
-            </div>
-            <div>
-              <div class="visibility-toggle" onclick="toggleSettingToggle('showClientReviews')">
-                <div class="toggle-switch" id="toggle-showClientReviews"></div>
-                <span class="toggle-label" id="label-showClientReviews">Скрити</span>
-              </div>
-              <p style="font-size:0.68rem;color:var(--muted);margin-top:4px;">Клиентски ревюта — реални от потребители (управляваш от ⭐ Ревюта таба)</p>
-            </div>
-          </div>
-          <div id="reviewsList" style="display:flex;flex-direction:column;gap:0.8rem;margin-bottom:1rem;"></div>
-          <button class="btn btn-ghost" onclick="addReview()" id="addReviewBtn" style="font-size:0.75rem;">+ Добави отзив</button>
-          <p style="font-size:0.72rem;color:var(--muted);margin-top:0.5rem;">Показват се на началната страница преди "Свържи се с нас". Празни отзиви се пропускат.</p>
-        </div>
-
-        <!-- GOOGLE SCRIPT URL -->
-          <div class="form-group" style="max-width:100%;">
-            <label>Постави новия URL от Google Apps Script</label>
-            <input type="text" id="settings-scripturl" placeholder="https://script.google.com/macros/s/..." style="font-size:0.78rem;letter-spacing:0;" />
-          </div>
-          <div id="scripturl-status" style="font-size:0.72rem;margin-top:0.5rem;color:var(--muted);"></div>
-          <p style="font-size:0.72rem;color:var(--muted);margin-top:0.5rem;">URL-ът се кодира автоматично — никой не може да го види в сорс кода.</p>
-        </div>
-
-        <!-- CONTACT MODE -->
-        <div style="margin-bottom:2rem;">
-          <p class="cat-toggles-label" style="margin-bottom:1rem;">Контакт секция</p>
-          <div style="display:flex; gap:1rem; flex-wrap:wrap; margin-bottom:1rem;">
-            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
-              <input type="radio" name="contactMode" value="phone" id="contact-phone" style="accent-color:var(--accent);" />
-              <span style="font-size:0.85rem;">📞 Телефонен номер</span>
-            </label>
-            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
-              <input type="radio" name="contactMode" value="email" id="contact-email" style="accent-color:var(--accent);" />
-              <span style="font-size:0.85rem;">✉️ Мейл форма</span>
-            </label>
-          </div>
-          <div id="settings-phone-fields">
-            <div class="form-group" style="max-width:280px;">
-              <label>Телефонен номер</label>
-              <input type="text" id="settings-phone" placeholder="0876 127 997" />
-            </div>
-            <div class="form-group" style="max-width:280px; margin-top:0.8rem;">
-              <label>Работно време</label>
-              <input type="text" id="settings-hours" placeholder="Всеки ден" />
-            </div>
-          </div>
-          <div id="settings-email-fields" style="display:none;">
-            <p style="font-size:0.82rem;color:var(--muted);">Клиентите ще виждат форма с Име, Имейл и Съобщение. Мейлът ще дойде при теб.</p>
-          </div>
-        </div>
-
-        <!-- CUSTOM CATEGORIES -->
-        <div style="margin-bottom:2rem; padding-bottom:2rem; border-bottom:1px solid var(--border);">
-          <p class="cat-toggles-label" style="margin-bottom:1rem;">Персонализирани категории</p>
-          <div id="customCatList" style="margin-bottom:1rem;"></div>
-          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:1rem;">
-            <p style="font-size:0.72rem;color:var(--accent);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:0.8rem;">Добави нова категория</p>
-            <div style="display:flex;gap:0.8rem;align-items:flex-start;flex-wrap:wrap;">
-              <div>
-                <div style="font-size:0.68rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.4rem;">Емоджи</div>
-                <div style="position:relative;">
-                  <input type="text" id="newcat-emoji" readonly placeholder="🎧" onclick="toggleEmojiPicker()"
-                    style="width:60px;padding:9px;background:var(--surface);border:1px solid var(--border);color:var(--text);font-size:1.4rem;border-radius:2px;outline:none;text-align:center;cursor:pointer;" />
-                  <div id="emojiPicker" style="display:none;position:absolute;top:44px;left:0;z-index:100;background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:0.8rem;width:280px;box-shadow:0 8px 24px rgba(0,0,0,0.5);">
-                    <div style="font-size:0.62rem;color:var(--muted);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:0.6rem;">Избери емоджи</div>
-                    <div style="display:flex;flex-wrap:wrap;gap:4px;" id="emojiGrid"></div>
+          <!-- CUSTOM CATEGORIES -->
+          <div style="margin-bottom:2rem;">
+            <p class="cat-toggles-label" style="margin-bottom:1rem;">Персонализирани категории</p>
+            <div id="customCatList" style="margin-bottom:1rem;"></div>
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:1rem;">
+              <p style="font-size:0.72rem;color:var(--accent);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:0.8rem;">Добави нова категория</p>
+              <div style="display:flex;gap:0.8rem;align-items:flex-start;flex-wrap:wrap;">
+                <div>
+                  <div style="font-size:0.68rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.4rem;">Емоджи</div>
+                  <div style="position:relative;">
+                    <input type="text" id="newcat-emoji" readonly placeholder="🎧" onclick="toggleEmojiPicker()"
+                      style="width:60px;padding:9px;background:var(--surface);border:1px solid var(--border);color:var(--text);font-size:1.4rem;border-radius:2px;outline:none;text-align:center;cursor:pointer;" />
+                    <div id="emojiPicker" style="display:none;position:absolute;top:44px;left:0;z-index:100;background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:0.8rem;width:280px;box-shadow:0 8px 24px rgba(0,0,0,0.5);">
+                      <div style="font-size:0.62rem;color:var(--muted);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:0.6rem;">Избери емоджи</div>
+                      <div style="display:flex;flex-wrap:wrap;gap:4px;" id="emojiGrid"></div>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div style="flex:1;min-width:160px;">
-                <div style="font-size:0.68rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.4rem;">Име на категорията *</div>
-                <input type="text" id="newcat-name" placeholder="Слушалки"
-                  style="width:100%;padding:9px 11px;background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.88rem;border-radius:2px;outline:none;" />
-              </div>
-              <div style="padding-top:24px;">
-                <button class="btn btn-primary" onclick="addCustomCategory()" style="white-space:nowrap;">+ Добави</button>
+                <div style="flex:1;min-width:160px;">
+                  <div style="font-size:0.68rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.4rem;">Име на категорията *</div>
+                  <input type="text" id="newcat-name" placeholder="Слушалки"
+                    style="width:100%;padding:9px 11px;background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.88rem;border-radius:2px;outline:none;" />
+                </div>
+                <div style="padding-top:24px;">
+                  <button class="btn btn-primary" onclick="addCustomCategory()" style="white-space:nowrap;">+ Добави</button>
+                </div>
               </div>
             </div>
+            <p style="font-size:0.72rem;color:var(--muted);margin-top:0.5rem;">Категориите се появяват в dropdown-а при добавяне на продукт и на началната страница.</p>
           </div>
-          <p style="font-size:0.72rem;color:var(--muted);margin-top:0.5rem;">Категориите се появяват в dropdown-а при добавяне на продукт и на началната страница.</p>
+
         </div>
 
-        <button class="btn btn-primary" onclick="saveSettings()">Запази настройките</button>
+        <!-- ═══ GROUP: РЕВЮТА И НАГРАДИ ═══ -->
+        <div class="settings-group" id="settings-group-rewards" style="display:none;">
+
+          <!-- REVIEW REWARDS -->
+          <div style="margin-bottom:2rem; padding-bottom:2rem; border-bottom:1px solid var(--border);">
+            <p class="cat-toggles-label" style="margin-bottom:1rem;">Награда след оставено ревю</p>
+            <p style="font-size:0.72rem;color:var(--muted);margin-bottom:1.4rem;">
+              Всеки клиент, оставил ревю, получава уникален еднократен код по имейл (след като одобриш ревюто). Тук решаваш какъв процент от клиентите да получат промокод за отстъпка вместо безплатен кейс.
+            </p>
+
+            <div style="margin-bottom:1.6rem;">
+              <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:0.5rem;">
+                <label style="font-size:0.72rem;color:var(--muted);">Колко клиенти да получават промокод за отстъпка (вместо кейс)?</label>
+                <span id="reward-chance-display" style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:var(--accent);">0%</span>
+              </div>
+              <input type="range" id="settings-reward-chance" min="0" max="100" step="5" value="0" style="width:100%;accent-color:var(--accent);" oninput="onRewardSliderChange()" onchange="saveSettings()" />
+              <div style="display:flex;justify-content:space-between;font-size:0.62rem;color:var(--muted);margin-top:2px;">
+                <span>0% — винаги кейс</span>
+                <span>100% — винаги промокод</span>
+              </div>
+            </div>
+
+            <div style="margin-bottom:1rem;">
+              <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:0.5rem;">
+                <label style="font-size:0.72rem;color:var(--muted);">Ако е промокод — с колко отстъпка?</label>
+                <span id="reward-percent-display" style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:var(--accent);">10%</span>
+              </div>
+              <input type="range" id="settings-reward-percent" min="5" max="50" step="5" value="10" style="width:100%;accent-color:var(--accent);" oninput="onRewardSliderChange()" onchange="saveSettings()" />
+            </div>
+
+            <div id="reward-summary-box" style="background:var(--surface2);border:1px dashed var(--border);border-radius:4px;padding:0.9rem 1rem;font-size:0.76rem;color:var(--text);line-height:1.6;"></div>
+          </div>
+
+          <!-- REVIEWS -->
+          <div style="margin-bottom:2rem;">
+            <p class="cat-toggles-label" style="margin-bottom:1rem;">Отзиви от клиенти (до 6)</p>
+            <div style="display:flex;flex-direction:column;gap:0.8rem;margin-bottom:1rem;">
+              <div>
+                <div class="visibility-toggle" onclick="toggleSettingToggle('showManualReviews')">
+                  <div class="toggle-switch" id="toggle-showManualReviews"></div>
+                  <span class="toggle-label" id="label-showManualReviews">Скрити</span>
+                </div>
+                <p style="font-size:0.68rem;color:var(--muted);margin-top:4px;">Ръчни ревюта — добавяш ги ти от тук долу</p>
+              </div>
+              <div>
+                <div class="visibility-toggle" onclick="toggleSettingToggle('showClientReviews')">
+                  <div class="toggle-switch" id="toggle-showClientReviews"></div>
+                  <span class="toggle-label" id="label-showClientReviews">Скрити</span>
+                </div>
+                <p style="font-size:0.68rem;color:var(--muted);margin-top:4px;">Клиентски ревюта — реални от потребители (управляваш от ⭐ Ревюта таба)</p>
+              </div>
+            </div>
+            <div id="reviewsList" style="display:flex;flex-direction:column;gap:0.8rem;margin-bottom:1rem;"></div>
+            <button class="btn btn-ghost" onclick="addReview()" id="addReviewBtn" style="font-size:0.75rem;">+ Добави отзив</button>
+            <p style="font-size:0.72rem;color:var(--muted);margin-top:0.5rem;">Показват се на началната страница преди "Свържи се с нас". Празни отзиви се пропускат.</p>
+          </div>
+
+        </div>
+
+        <!-- ═══ GROUP: МАРКЕТИНГ ═══ -->
+        <div class="settings-group" id="settings-group-marketing" style="display:none;">
+
+          <!-- FACEBOOK PIXEL -->
+          <div style="margin-bottom:2rem;">
+            <p class="cat-toggles-label" style="margin-bottom:1rem;">Facebook Pixel</p>
+            <div class="form-group" style="max-width:360px;">
+              <label>Pixel ID</label>
+              <input type="text" id="settings-pixel" placeholder="123456789012345" style="letter-spacing:0;" />
+            </div>
+            <p style="font-size:0.72rem;color:var(--muted);margin-top:0.5rem;">Намери го в Facebook Business Manager → Events Manager. Оставяй празно ако нямаш.</p>
+          </div>
+
+        </div>
+
+        <!-- ═══ GROUP: КОНТАКТ И ПРАВНО ═══ -->
+        <div class="settings-group" id="settings-group-contact" style="display:none;">
+
+          <!-- CONTACT MODE -->
+          <div style="margin-bottom:2rem; padding-bottom:2rem; border-bottom:1px solid var(--border);">
+            <p class="cat-toggles-label" style="margin-bottom:1rem;">Контакт секция</p>
+            <div style="display:flex; gap:1rem; flex-wrap:wrap; margin-bottom:1rem;">
+              <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+                <input type="radio" name="contactMode" value="phone" id="contact-phone" style="accent-color:var(--accent);" />
+                <span style="font-size:0.85rem;">📞 Телефонен номер</span>
+              </label>
+              <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+                <input type="radio" name="contactMode" value="email" id="contact-email" style="accent-color:var(--accent);" />
+                <span style="font-size:0.85rem;">✉️ Мейл форма</span>
+              </label>
+            </div>
+            <div id="settings-phone-fields">
+              <div class="form-group" style="max-width:280px;">
+                <label>Телефонен номер</label>
+                <input type="text" id="settings-phone" placeholder="0876 127 997" />
+              </div>
+              <div class="form-group" style="max-width:280px; margin-top:0.8rem;">
+                <label>Работно време</label>
+                <input type="text" id="settings-hours" placeholder="Всеки ден" />
+              </div>
+            </div>
+            <div id="settings-email-fields" style="display:none;">
+              <p style="font-size:0.82rem;color:var(--muted);">Клиентите ще виждат форма с Име, Имейл и Съобщение. Мейлът ще дойде при теб.</p>
+            </div>
+          </div>
+
+          <!-- TERMS OF SERVICE -->
+          <div style="margin-bottom:2rem;">
+            <p class="cat-toggles-label" style="margin-bottom:1rem;">Условия за ползване (Terms)</p>
+            <div style="margin-bottom:1rem;">
+              <div class="visibility-toggle" onclick="toggleSettingToggle('showTerms')">
+                <div class="toggle-switch" id="toggle-showTerms"></div>
+                <span class="toggle-label" id="label-showTerms">Скрити</span>
+              </div>
+            </div>
+            <div class="form-group" style="margin-bottom:0.8rem;">
+              <label>⚠️ Червен Alert банер (незадължително)</label>
+              <textarea id="settings-terms-alert" placeholder="Важно: Доставките се извършват само в рамките на България." style="min-height:60px;"></textarea>
+            </div>
+            <div class="form-group" style="max-width:200px; margin-bottom:0.8rem;">
+              <label>Дата на актуализация</label>
+              <input type="text" id="settings-terms-date" placeholder="01.07.2026" />
+            </div>
+            <div id="termsSectionsList" style="display:flex;flex-direction:column;gap:0.8rem;margin-bottom:1rem;"></div>
+            <button class="btn btn-ghost" onclick="addTermsSection()" id="addTermsBtn" style="font-size:0.75rem;">+ Добави секция</button>
+            <p style="font-size:0.72rem;color:var(--muted);margin-top:0.5rem;">
+              Формат: <code style="background:var(--surface2);padding:1px 5px;">**bold**</code> · ред с <code style="background:var(--surface2);padding:1px 5px;">→</code> = точка · ред с <code style="background:var(--surface2);padding:1px 5px;">!</code> = highlight box
+            </p>
+          </div>
+
+        </div>
+
+        <!-- ═══ GROUP: ТЕХНИЧЕСКО ═══ -->
+        <div class="settings-group" id="settings-group-technical" style="display:none;">
+
+          <!-- GOOGLE SCRIPT URL -->
+          <div style="margin-bottom:2rem;">
+            <p class="cat-toggles-label" style="margin-bottom:1rem;">Google Apps Script връзка</p>
+            <div class="form-group" style="max-width:100%;">
+              <label>Постави новия URL от Google Apps Script</label>
+              <input type="text" id="settings-scripturl" placeholder="https://script.google.com/macros/s/..." style="font-size:0.78rem;letter-spacing:0;" />
+            </div>
+            <div id="scripturl-status" style="font-size:0.72rem;margin-top:0.5rem;color:var(--muted);"></div>
+            <p style="font-size:0.72rem;color:var(--muted);margin-top:0.5rem;">URL-ът се кодира автоматично — никой не може да го види в сорс кода.</p>
+          </div>
+
+        </div>
+
+        <button class="btn btn-primary" onclick="saveSettings()" style="margin-top:1rem;">Запази настройките</button>
       </div>
     </div>
   </div>
@@ -1259,6 +1305,15 @@
 
   function loadSettings(data) {
     siteSettings = Object.assign({ siteName: 'The Forbidden Style', contactMode: 'phone', phone: '0876 127 997', hours: 'Всеки ден', showCategories: true, customCategories: [], reviews: [], showManualReviews: false, showClientReviews: false, showTerms: false, rewardDiscountChance: 0, rewardDiscountPercent: 10 }, data.settings || {});
+  }
+
+  function showSettingsGroup(name) {
+    document.querySelectorAll('.settings-group').forEach(function(el) {
+      el.style.display = (el.id === 'settings-group-' + name) ? 'block' : 'none';
+    });
+    document.querySelectorAll('.settings-subtab').forEach(function(btn) {
+      btn.classList.toggle('active', btn.dataset.group === name);
+    });
   }
 
   function onRewardSliderChange(skipSave) {
