@@ -27,11 +27,15 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:20px 6
 .star.active{color:#e8d44d;}
 .btn{width:100%;padding:14px;background:var(--accent);color:var(--btn-text);border:none;font-size:0.78rem;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;border-radius:4px;font-family:'DM Sans',sans-serif;font-weight:500;}
 .btn:disabled{opacity:0.5;cursor:not-allowed;}
+.btn-secondary{background:transparent;border:1px solid var(--accent);color:var(--accent);}
 .error-box{background:rgba(224,82,82,0.1);border:1px solid rgba(224,82,82,0.3);border-left:3px solid #e05252;padding:1rem;border-radius:4px;font-size:0.82rem;color:#f0ece4;margin-bottom:1.5rem;}
 .success-box{text-align:center;padding:2rem;}
 .success-icon{font-size:3rem;margin-bottom:1rem;}
 .success-title{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:300;color:var(--accent);margin-bottom:0.5rem;}
 .success-text{font-size:0.85rem;color:var(--muted);line-height:1.7;}
+.loading-box{text-align:center;padding:2rem;color:var(--muted);font-size:0.85rem;}
+.divider{display:flex;align-items:center;gap:0.8rem;margin:1.6rem 0;color:var(--muted);font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
 </style>
 </head>
 <body>
@@ -43,7 +47,21 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:20px 6
 <div class="container">
   <div class="form-box">
     <div id="errorBox" class="error-box" style="display:none;"></div>
-    <div id="formContent">
+
+    <div id="loadingContent" class="loading-box">Зареждане...</div>
+
+    <div id="manualEntryContent" style="display:none;">
+      <div class="form-eyebrow">Клиентско мнение</div>
+      <h1 class="form-title">Имаш код за ревю?</h1>
+      <p class="form-subtitle">Постави кода, който получи в имейла за покана за ревю.</p>
+      <div class="form-group">
+        <label>Код за ревю</label>
+        <input type="text" id="manualCodeInput" placeholder="напр. AB12CD34" style="text-transform:uppercase;" />
+      </div>
+      <button class="btn" id="manualCheckBtn" onclick="checkManualCode()">Продължи</button>
+    </div>
+
+    <div id="formContent" style="display:none;">
       <div class="form-eyebrow">Клиентско мнение</div>
       <h1 class="form-title">Остави ревю</h1>
       <p class="form-subtitle" id="formSubtitle">Благодарим ти за поръчката! Споделете вашето мнение.</p>
@@ -64,10 +82,11 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:20px 6
       </div>
       <button class="btn" id="submitBtn" onclick="submitReview()">Изпрати ревюто</button>
     </div>
+
     <div id="successContent" class="success-box" style="display:none;">
       <div class="success-icon">⭐</div>
       <div class="success-title">Благодарим ти!</div>
-      <div class="success-text">Твоето ревю беше изпратено успешно.<br>Ще бъде публикувано след одобрение.</div>
+      <div class="success-text">Твоето ревю беше изпратено успешно.<br>Ще бъде публикувано след одобрение.<br><br>Ако получиш награда (кейс или промокод), ще ти я изпратим по имейл веднага след като ревюто бъде одобрено.</div>
     </div>
   </div>
 </div>
@@ -92,8 +111,8 @@ async function loadScriptUrl() {
 
 // Get token from URL
 const params = new URLSearchParams(window.location.search);
-const token = params.get('token');
-const orderId = params.get('order');
+let token = params.get('token');
+let orderId = params.get('order');
 
 let rating = 5;
 
@@ -108,16 +127,16 @@ document.querySelectorAll('.star').forEach(function(star) {
 });
 
 // Пазим дали loadScriptUrl() е приключил, за да сме сигурни, че
-// submitReview() използва финалния SCRIPT_URL, а не хваща middle-state.
+// заявките ползват финалния SCRIPT_URL, а не хващат middle-state.
 const scriptUrlReady = loadScriptUrl();
 
-async function init() {
-  await scriptUrlReady;
-  if (!token || !orderId) {
-    showError('Невалиден линк. Моля използвай линка от мейла.');
-    disableForm();
-    return;
-  }
+function showLoading() {
+  document.getElementById('loadingContent').style.display = 'block';
+  document.getElementById('manualEntryContent').style.display = 'none';
+  document.getElementById('formContent').style.display = 'none';
+}
+
+async function updateSiteName() {
   try {
     const res = await fetch('products.json?t=' + Date.now());
     const data = await res.json();
@@ -128,20 +147,61 @@ async function init() {
   } catch(e) {
     console.log('Грешка при зареждане на products.json:', e);
   }
-  // Забележка: валидацията на token/orderId става финално на бекенда,
-  // когато submitReview() изпрати заявката.
 }
 
-function disableForm() {
-  const btn = document.getElementById('submitBtn');
-  btn.disabled = true;
+// Проверява token (+ по избор orderId) срещу бекенда чрез verifyReviewToken.
+// При успех показва формата за ревю, при грешка показва съобщение.
+async function verifyAndShowForm(tok, ord) {
+  showLoading();
+  document.getElementById('loadingContent').textContent = 'Проверка на кода...';
+  await scriptUrlReady;
+  try {
+    let url = SCRIPT_URL + '?action=verifyReviewToken&token=' + encodeURIComponent(tok);
+    if (ord) url += '&order=' + encodeURIComponent(ord);
+    const res = await fetch(url);
+    const result = await res.json();
+    console.log('verifyReviewToken отговор:', result);
+    if (result && result.valid) {
+      token = tok;
+      orderId = result.orderId || ord;
+      document.getElementById('loadingContent').style.display = 'none';
+      document.getElementById('manualEntryContent').style.display = 'none';
+      document.getElementById('formContent').style.display = 'block';
+      await updateSiteName();
+    } else {
+      document.getElementById('loadingContent').style.display = 'none';
+      showError((result && result.message) ? result.message : 'Невалиден или изтекъл код.');
+    }
+  } catch(e) {
+    console.log('Грешка при проверка на кода:', e);
+    document.getElementById('loadingContent').style.display = 'none';
+    showError('Възникна грешка при връзката със сървъра. Моля опитайте отново.');
+  }
+}
+
+function checkManualCode() {
+  const val = document.getElementById('manualCodeInput').value.trim();
+  if (!val) { showError('Моля въведи кода за ревю от имейла.'); return; }
+  hideError();
+  verifyAndShowForm(val, null);
+}
+
+async function init() {
+  if (token) {
+    // Има токен в линка (дошъл от имейла) - проверяваме го веднага.
+    await verifyAndShowForm(token, orderId);
+  } else {
+    // Няма токен в URL-а - показваме формата за ръчно въвеждане на код.
+    document.getElementById('loadingContent').style.display = 'none';
+    document.getElementById('manualEntryContent').style.display = 'block';
+  }
 }
 
 async function submitReview() {
   const text = document.getElementById('reviewText').value.trim();
   const name = document.getElementById('reviewName').value.trim();
   if (!text) { showError('Моля напишете вашето мнение.'); return; }
-  if (!token || !orderId) { showError('Невалиден линк. Моля използвай линка от мейла.'); return; }
+  if (!token || !orderId) { showError('Невалиден код. Моля опитай отново.'); return; }
 
   const btn = document.getElementById('submitBtn');
   btn.disabled = true; btn.textContent = 'Изпращане...';
