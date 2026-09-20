@@ -353,6 +353,16 @@
           <p style="font-size:0.72rem;color:var(--muted);margin-top:0.5rem;">Промяната се вижда в nav логото и заглавието на браузъра.</p>
         </div>
 
+        <!-- SITE DOMAIN -->
+        <div style="margin-bottom:2rem; padding-bottom:2rem; border-bottom:1px solid var(--border);">
+          <p class="cat-toggles-label" style="margin-bottom:1rem;">Домейн на сайта</p>
+          <div class="form-group" style="max-width:360px;">
+            <label>Публичен адрес (домейн)</label>
+            <input type="text" id="settings-sitedomain" placeholder="https://theaurapods.store/" style="letter-spacing:0;" />
+          </div>
+          <p style="font-size:0.72rem;color:var(--muted);margin-top:0.5rem;">Използва се в имейли (напр. поканата за ревю), вместо адреса на GitHub. Смени го тук, ако смениш домейна — никъде другаде не трябва да се пипа код.</p>
+        </div>
+
         <!-- FACEBOOK PIXEL -->
         <div style="margin-bottom:2rem; padding-bottom:2rem; border-bottom:1px solid var(--border);">
           <p class="cat-toggles-label" style="margin-bottom:1rem;">Facebook Pixel</p>
@@ -1264,6 +1274,8 @@
     var heroEl = document.getElementById('settings-hero');
     var eyebrowEl = document.getElementById('settings-eyebrow');
     if (nameEl) { nameEl.value = siteSettings.siteName || ''; nameEl.placeholder = siteSettings.siteName || 'The Forbidden Style'; }
+    var domainEl = document.getElementById('settings-sitedomain');
+    if (domainEl) { domainEl.value = siteSettings.siteDomain || ''; domainEl.placeholder = 'https://theaurapods.store/'; }
     if (phoneEl) { phoneEl.value = siteSettings.phone || ''; phoneEl.placeholder = siteSettings.phone || '0876 127 997'; }
     if (hoursEl) { hoursEl.value = siteSettings.hours || ''; hoursEl.placeholder = siteSettings.hours || 'Всеки ден'; }
     if (subtitleEl) { subtitleEl.value = siteSettings.productsSubtitle || ''; subtitleEl.placeholder = siteSettings.productsSubtitle || 'The Forbidden Style — Collection'; }
@@ -1338,6 +1350,10 @@
     var mode = document.querySelector('input[name="contactMode"]:checked');
     // Update siteSettings в place - не го rebuild-ваме за да не губим toggle стойности
     siteSettings.siteName = document.getElementById('settings-sitename').value.trim() || 'The Forbidden Style';
+    var domainVal = document.getElementById('settings-sitedomain').value.trim();
+    if (domainVal && !/^https?:\/\//i.test(domainVal)) domainVal = 'https://' + domainVal;
+    if (domainVal && !domainVal.endsWith('/')) domainVal += '/';
+    siteSettings.siteDomain = domainVal;
     siteSettings.contactMode = mode ? mode.value : 'phone';
     siteSettings.phone = (mode && mode.value === 'email') ? '' : (document.getElementById('settings-phone').value.trim() || '0876 127 997');
     siteSettings.hours = (mode && mode.value === 'email') ? '' : (document.getElementById('settings-hours').value.trim() || 'Всеки ден');
@@ -1575,7 +1591,9 @@
   async function sendReviewInvite(orderId, clientEmail, clientName) {
     if (!clientEmail) { toast('Клиентът няма имейл', 'error'); return; }
     if (!confirm('Изпрати покана за ревю на ' + clientName + ' (' + clientEmail + ')?')) return;
-    const siteUrl = SITE_URL + '/'; // динамично - следва GITHUB_REPO, зададен при логин
+    // Ако е зададен домейн в Настройки → използваме него (истинския сайт),
+    // иначе — fallback към GitHub Pages адреса.
+    const siteUrl = siteSettings.siteDomain || (SITE_URL + '/');
     // Use no-cors fetch with JSON body - this is how placeOrder works successfully
     fetch(SCRIPT_URL_DECODED, {
       method: 'POST',
