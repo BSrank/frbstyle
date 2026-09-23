@@ -279,8 +279,8 @@
       }
     ],
     "reviews": [],
-    "showManualReviews": true,
-    "showClientReviews": false,
+    "showManualReviews": false,
+    "showClientReviews": true,
     "showTerms": true,
     "eyebrow": "Премиум звук",
     "hero": "Живей с Аура",
