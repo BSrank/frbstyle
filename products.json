@@ -264,10 +264,6 @@
       "descFormatted": true
     }
   ],
-  "urgency": {
-    "enabled": false,
-    "qty": 2
-  },
   "settings": {
     "siteName": "theAuraPods",
     "contactMode": "email",
@@ -296,6 +292,7 @@
     },
     "theme": "noir-luxe",
     "scriptUrlEncoded": "aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J5cGY0bTRoaDYtT2lJVkcyVE9Qa3o0TWxRSkxfS19Wb3JOQXRVU2JveFVhX21tc1B6QmRVRXpoSTctTU1kV1VFNS0vZXhlYw==",
-    "fbPixelId": ""
+    "fbPixelId": "",
+    "siteDomain": "https://www.zenairpods.store/"
   }
 }
