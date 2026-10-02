@@ -1,8 +1,39 @@
 {
   "products": [],
+  "urgency": {
+    "enabled": false,
+    "qty": 2
+  },
   "settings": {
+    "siteName": "The Forbidden Style",
+    "contactMode": "phone",
+    "phone": "0876 127 997",
+    "hours": "Всеки ден",
+    "showCategories": true,
+    "customCategories": [
+      {
+        "id": "cat__1239",
+        "emoji": "🛍️",
+        "name": "Шампоани",
+        "active": false
+      }
+    ],
+    "reviews": [],
+    "showManualReviews": false,
     "showClientReviews": true,
+    "showTerms": false,
+    "rewardDiscountChance": 0,
+    "rewardDiscountPercent": 10,
     "siteDomain": "",
-    "phone": ""
+    "eyebrow": "Нова колекция 2026",
+    "hero": "Живей с Аура",
+    "productsSubtitle": "",
+    "terms": {
+      "alert": "",
+      "lastUpdated": "",
+      "sections": []
+    },
+    "fbPixelId": "",
+    "theme": "noir-luxe"
   }
 }
