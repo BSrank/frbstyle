@@ -1,5 +1,17 @@
 {
-  "products": [],
+  "products": [
+    {
+      "id": "p_1790977341554",
+      "name": "Оцветяващ шампоан за мъже",
+      "category": "cat__1239",
+      "price": 35,
+      "desc": "ттт",
+      "descFormatted": false,
+      "active": false,
+      "sizes": [],
+      "qty": 0
+    }
+  ],
   "urgency": {
     "enabled": false,
     "qty": 2
