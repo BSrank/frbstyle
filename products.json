@@ -18,9 +18,9 @@
   },
   "settings": {
     "siteName": "The Forbidden Style",
-    "contactMode": "phone",
-    "phone": "0876 127 997",
-    "hours": "Всеки ден",
+    "contactMode": "email",
+    "phone": "",
+    "hours": "",
     "showCategories": true,
     "customCategories": [
       {
