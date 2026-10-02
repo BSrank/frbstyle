@@ -21,7 +21,7 @@
     "contactMode": "phone",
     "phone": "0876 127 997",
     "hours": "Всеки ден",
-    "showCategories": true,
+    "showCategories": false,
     "customCategories": [
       {
         "id": "cat__1239",
