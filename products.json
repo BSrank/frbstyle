@@ -33,7 +33,7 @@
     "reviews": [],
     "showManualReviews": false,
     "showClientReviews": true,
-    "showTerms": false,
+    "showTerms": true,
     "rewardDiscountChance": 0,
     "rewardDiscountPercent": 10,
     "siteDomain": "",
