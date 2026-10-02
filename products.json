@@ -7,7 +7,7 @@
       "price": 35,
       "desc": "ттт",
       "descFormatted": false,
-      "active": false,
+      "active": true,
       "sizes": [],
       "qty": 0
     }
