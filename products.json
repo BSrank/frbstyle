@@ -46,6 +46,14 @@
       "sections": []
     },
     "fbPixelId": "",
-    "theme": "blanc-eclat"
+    "theme": "blanc-eclat",
+    "guarantee": {
+      "enabled": true,
+      "eyebrow": "Правилният избор",
+      "text": "",
+      "guaranteeTitle": "Нашата Гаранция",
+      "guaranteeSubtitle": "",
+      "guaranteeText": ""
+    }
   }
 }
