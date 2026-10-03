@@ -56,7 +56,7 @@
       "guaranteeText": "",
       "image": ""
     },
-    "showFeatures": false,
+    "showFeatures": true,
     "heroImage": ""
   }
 }
