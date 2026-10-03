@@ -119,6 +119,78 @@
       font-style: italic;
       color: var(--accent);
     }
+    .hero.has-image {
+      flex-direction: row;
+      text-align: left;
+      justify-content: space-between;
+      padding-left: 6%;
+      padding-right: 6%;
+      gap: clamp(2rem, 5vw, 5rem);
+    }
+    .hero.has-image .hero-text {
+      flex: 1 1 420px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .hero-image-wrap {
+      flex: 1 1 380px;
+      max-width: 480px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      z-index: 1;
+    }
+    .hero-image-wrap img {
+      width: 100%;
+      height: auto;
+      max-height: 70vh;
+      object-fit: contain;
+      filter: drop-shadow(0 30px 60px rgba(0,0,0,0.25));
+      opacity: 0;
+      animation: fadeUp 1s 0.4s forwards;
+    }
+    @media (max-width: 860px) {
+      .hero.has-image { flex-direction: column; text-align: center; padding-left: 5%; padding-right: 5%; }
+      .hero.has-image .hero-text { align-items: center; }
+      .hero-image-wrap { order: -1; max-width: 280px; margin-bottom: 1rem; }
+    }
+    .guarantee-section { padding: 80px 5%; }
+    .guarantee-grid {
+      display: grid;
+      grid-template-columns: minmax(260px, 420px) 1fr;
+      gap: clamp(2rem, 6vw, 5rem);
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .guarantee-image-wrap img {
+      width: 100%;
+      border-radius: 6px;
+      display: block;
+    }
+    .guarantee-text .section-title { margin-bottom: 1rem; }
+    .guarantee-lead {
+      font-size: 1rem;
+      line-height: 1.7;
+      color: var(--text);
+      margin-bottom: 2rem;
+    }
+    .guarantee-subtitle {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 1rem;
+    }
+    .guarantee-text-body {
+      font-size: 0.9rem;
+      line-height: 1.75;
+      color: var(--muted);
+    }
+    @media (max-width: 760px) {
+      .guarantee-grid { grid-template-columns: 1fr; }
+    }
     .hero-sub {
       font-size: 1rem;
       color: var(--muted);
@@ -559,14 +631,19 @@
   </div>
 </nav>
 
-<section class="hero">
-  <p class="hero-eyebrow">Нова колекция 2026</p>
-  <h1>Живей<br>с <em>Аура</em></h1>
+<section class="hero" id="heroSection">
+  <div class="hero-text">
+    <p class="hero-eyebrow">Нова колекция 2026</p>
+    <h1>Живей<br>с <em>Аура</em></h1>
 
-  <a href="products.html" class="hero-cta">Разгледай колекцията</a>
-  <div class="hero-scroll">
-    <div class="scroll-line"></div>
-    <span>Scroll</span>
+    <a href="products.html" class="hero-cta">Разгледай колекцията</a>
+    <div class="hero-scroll">
+      <div class="scroll-line"></div>
+      <span>Scroll</span>
+    </div>
+  </div>
+  <div class="hero-image-wrap" id="heroImageWrap" style="display:none;">
+    <img id="heroImage" src="" alt="" />
   </div>
 </section>
 
@@ -614,7 +691,7 @@
   </a>
 </template>
 
-<div class="features">
+<div class="features" id="featuresBar">
   <div class="feature">
     <div class="feature-icon">⚡</div>
     <h4 class="feature-title">Бърза доставка</h4>
@@ -636,6 +713,21 @@
     <p class="feature-text" id="support-text">0876 127 997<br>Всеки ден</p>
   </div>
 </div>
+
+<section class="section guarantee-section" id="guaranteeSection" style="display:none;">
+  <div class="guarantee-grid">
+    <div class="guarantee-image-wrap">
+      <img id="guaranteeImage" src="" alt="" />
+    </div>
+    <div class="guarantee-text">
+      <p class="section-label" id="guaranteeEyebrow">Правилният избор</p>
+      <p class="guarantee-lead" id="guaranteeLead"></p>
+      <h3 class="section-title" id="guaranteeTitle" style="font-size:clamp(1.6rem,3vw,2.2rem);">Нашата Гаранция</h3>
+      <p class="guarantee-subtitle" id="guaranteeSubtitle"></p>
+      <p class="guarantee-text-body" id="guaranteeTextBody"></p>
+    </div>
+  </div>
+</section>
 
 <section class="section" id="reviews" style="display:none;">
   <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:1rem;margin-bottom:0.5rem;">
@@ -895,6 +987,47 @@
       const last = words.pop();
       heroH1.innerHTML = words.join(' ') + '<br>с <em>' + last + '</em>';
     }
+
+    const heroSection = document.getElementById('heroSection');
+    const heroImageWrap = document.getElementById('heroImageWrap');
+    const heroImageEl = document.getElementById('heroImage');
+    if (s.heroImage && heroSection && heroImageWrap && heroImageEl) {
+      heroImageEl.src = s.heroImage;
+      heroImageEl.alt = name;
+      heroImageWrap.style.display = 'flex';
+      heroSection.classList.add('has-image');
+    } else if (heroSection) {
+      heroSection.classList.remove('has-image');
+      if (heroImageWrap) heroImageWrap.style.display = 'none';
+    }
+
+    const featuresBar = document.getElementById('featuresBar');
+    if (featuresBar) featuresBar.style.display = (s.showFeatures === false) ? 'none' : '';
+
+    const g = s.guarantee || {};
+    const guaranteeSection = document.getElementById('guaranteeSection');
+    if (guaranteeSection) {
+      if (g.enabled) {
+        const gImg = document.getElementById('guaranteeImage');
+        const gImgWrap = guaranteeSection.querySelector('.guarantee-image-wrap');
+        if (g.image && gImg) { gImg.src = g.image; gImg.alt = g.eyebrow || name; if (gImgWrap) gImgWrap.style.display = ''; }
+        else if (gImgWrap) { gImgWrap.style.display = 'none'; }
+        const gEyebrow = document.getElementById('guaranteeEyebrow');
+        if (gEyebrow) gEyebrow.textContent = g.eyebrow || 'Правилният избор';
+        const gLead = document.getElementById('guaranteeLead');
+        if (gLead) gLead.textContent = g.text || '';
+        const gTitle = document.getElementById('guaranteeTitle');
+        if (gTitle) gTitle.textContent = g.guaranteeTitle || 'Нашата Гаранция';
+        const gSubtitle = document.getElementById('guaranteeSubtitle');
+        if (gSubtitle) gSubtitle.textContent = g.guaranteeSubtitle || '';
+        const gText = document.getElementById('guaranteeTextBody');
+        if (gText) gText.textContent = g.guaranteeText || '';
+        guaranteeSection.style.display = '';
+      } else {
+        guaranteeSection.style.display = 'none';
+      }
+    }
+
     const termsLink = document.getElementById('termsLink');
     if (termsLink) termsLink.style.display = s.showTerms ? 'inline' : 'none';
 
