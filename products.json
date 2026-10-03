@@ -54,6 +54,7 @@
       "guaranteeTitle": "Нашата Гаранция",
       "guaranteeSubtitle": "",
       "guaranteeText": ""
-    }
+    },
+    "showFeatures": true
   }
 }
